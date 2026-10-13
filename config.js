@@ -16,8 +16,10 @@ const config = {
   OWNER_EMAIL: process.env.OWNER_EMAIL || '',
 
   // ---- AI ----
+  // Set GEMINI_API_KEY in your environment (.env / Railway variables).
+  // NOTE: gemini-2.x models are blocked for new keys — use gemini-3.5-flash.
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
-  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
 
   // ---- behaviour ----
   MODE: process.env.MODE || 'public', // public | private

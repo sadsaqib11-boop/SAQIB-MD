@@ -11,19 +11,29 @@ const STYLE_NOTES = {
   mathgpt: 'Ye maths sawal hy — step by step solve karo.',
 };
 
-/** Google Gemini (used when GEMINI_API_KEY is set) */
+/** Google Gemini — try a list of models so one busy/retired model never breaks AI */
+const GEMINI_MODELS = [config.GEMINI_MODEL, 'gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'].filter((m, i, a) => m && a.indexOf(m) === i);
+
 async function askGemini(prompt, imageBase64 = null) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.GEMINI_MODEL}:generateContent?key=${config.GEMINI_API_KEY}`;
   const parts = [{ text: prompt }];
   if (imageBase64) parts.push({ inline_data: { mime_type: 'image/jpeg', data: imageBase64 } });
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts }], generationConfig: { maxOutputTokens: 900 } }),
-  });
-  if (!res.ok) throw new Error(`AI API error ${res.status}`);
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.map((p) => p.text).filter(Boolean).join('') || '❌ Koi jawab nahi mila.';
+  let lastErr;
+  for (const model of GEMINI_MODELS) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${config.GEMINI_API_KEY}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts }], generationConfig: { maxOutputTokens: 900 } }),
+      });
+      if (!res.ok) { lastErr = new Error(`AI API error ${res.status}`); continue; }
+      const data = await res.json();
+      const out = data.candidates?.[0]?.content?.parts?.map((p) => p.text).filter(Boolean).join('');
+      if (out) return out;
+      lastErr = new Error('empty');
+    } catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error('AI API error');
 }
 
 /** Keyless fallback engine (OpenAI-compatible) — works with no API key */
