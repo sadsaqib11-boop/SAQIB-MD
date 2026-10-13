@@ -6,6 +6,8 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const config = require('./config');
+// Load persisted runtime overrides (toggles survive restarts/redeploys).
+require('./lib/settings').load();
 const registry = require('./plugins/_registry');
 const bot = require('./lib/bot');
 
@@ -27,6 +29,11 @@ for (const f of fs.readdirSync(pluginsDir).filter((x) => x.endsWith('.js') && !x
 registry.set(plugins);
 const totalCmds = plugins.reduce((n, p) => n + p.commands.length, 0);
 console.log(`${config.BOT_NAME}: ${plugins.length} plugin files, ${totalCmds} commands`);
+
+// Downloader engine + periodic temp cleanup
+const ytdlp = require('./lib/ytdlp');
+console.log(`[YTDLP] ${ytdlp.available() ? 'available ✅' : 'NOT found ❌'}`);
+setInterval(() => ytdlp.cleanup(), 15 * 60 * 1000).unref?.();
 
 // ---------------------------------------------------------------------------
 // Web server (pairing portal + health)

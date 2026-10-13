@@ -2,17 +2,11 @@
  * SETTINGS — bot behaviour (owner only, live config update)
  */
 const config = require('../config');
-const fs = require('fs');
-const path = require('path');
+const settings = require('../lib/settings');
 
 function saveEnv(key, val) {
-  try {
-    const envPath = path.join(__dirname, '..', '.env');
-    let lines = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf8').split('\n').filter(Boolean) : [];
-    lines = lines.filter((l) => !l.startsWith(key + '='));
-    lines.push(`${key}=${val}`);
-    fs.writeFileSync(envPath, lines.join('\n'));
-  } catch { /* ignore */ }
+  // Persist to the volume-backed settings file (survives redeploys).
+  settings.save();
 }
 
 const handler = async (ctx) => {

@@ -1,20 +1,36 @@
 /**
- * ANIME & LOGO — image APIs
+ * ANIME & LOGO — image / GIF APIs
+ * Uses nekos.best (reliable, keyless) — waifu.pics is dead.
  */
 const config = require('../config');
 const { getJSON } = require('../lib/helpers');
 
-const WAIFU = {
-  waifu: 'https://api.waifu.pics/sfw/waifu',
-  neko: 'https://api.waifu.pics/sfw/neko',
-  shinobu: 'https://api.waifu.pics/sfw/shinobu',
-  megumin: 'https://api.waifu.pics/sfw/megumin',
-  awoo: 'https://api.waifu.pics/sfw/awoo',
-  maid: 'https://api.waifu.pics/sfw/waifu',
-  anime: 'https://api.waifu.pics/sfw/waifu',
-  animegirl: 'https://api.waifu.pics/sfw/waifu',
-  husbando: 'https://api.waifu.pics/sfw/waifu',
+// Image categories -> nekos.best endpoint
+const NEKO = {
+  waifu: 'waifu',
+  neko: 'neko',
+  shinobu: 'neko',
+  megumin: 'neko',
+  awoo: 'kitsune',
+  maid: 'waifu',
+  anime: 'waifu',
+  animegirl: 'waifu',
+  husbando: 'husbando',
+  kitsune: 'kitsune',
 };
+
+// Action GIF categories (nekos.best) — premium reactions
+const GIFS = [
+  'hug', 'pat', 'kiss', 'slap', 'cuddle', 'wink', 'smile', 'dance', 'bite', 'bonk',
+  'highfive', 'handhold', 'poke', 'wave', 'blush', 'smug', 'happy', 'think', 'feed',
+  'tickle', 'laugh', 'baka', 'nod', 'nom', 'nope', 'pout', 'shrug', 'sleep', 'stare',
+  'thumbsup', 'wag', 'punch', 'kick', 'lurk', 'yeet',
+];
+
+async function nekoImage(cat) {
+  const r = await getJSON(`https://nekos.best/api/v2/${cat}`);
+  return r?.results?.[0]?.url || null;
+}
 
 const LOGO_STYLES = ['neon', 'glow', 'galaxy', 'fire', 'ice', 'gold', '3d', 'graffiti', 'royal', 'horror'];
 
@@ -36,11 +52,22 @@ const handler = async (ctx) => {
     return;
   }
 
-  if (WAIFU[command]) {
+  if (NEKO[command]) {
     try {
-      const r = await getJSON(WAIFU[command]);
-      await ctx.send(ctx.from, { image: { url: r.url }, caption: `🌸 ${config.BOT_NAME}` }, { quoted: ctx.m });
-    } catch (e) { await reply('❌ Image nahi mili: ' + e.message); }
+      const url = await nekoImage(NEKO[command]);
+      if (!url) throw new Error('no image');
+      await ctx.send(ctx.from, { image: { url }, caption: `🌸 ${config.BOT_NAME}` }, { quoted: ctx.m });
+    } catch (e) { await reply('❌ Image nahi mili.'); }
+    return;
+  }
+
+  // ---- action GIFs (hug, pat, kiss, …) ----
+  if (GIFS.includes(command)) {
+    try {
+      const url = await nekoImage(command);
+      if (!url) throw new Error('no gif');
+      await ctx.send(ctx.from, { video: { url }, gifPlayback: true, caption: `✨ ${config.BOT_NAME}` }, { quoted: ctx.m });
+    } catch { await reply('❌ GIF nahi mili.'); }
     return;
   }
 
@@ -55,7 +82,7 @@ const handler = async (ctx) => {
 };
 
 module.exports = {
-  commands: [...Object.keys(WAIFU), 'dog', 'cat', 'logo'],
+  commands: [...Object.keys(NEKO), ...GIFS, 'dog', 'cat', 'logo'],
   category: '🎌 ANIME & 🎨 LOGO',
   handler,
 };

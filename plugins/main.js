@@ -76,11 +76,17 @@ const handler = async (ctx) => {
     }
     case 'define': {
       if (!ctx.arg) return reply(`❌ Word do. Example: ${config.PREFIX}define hello`);
+      const word = ctx.arg.trim().split(/\s+/)[0];
       try {
-        const r = await getJSON(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(ctx.arg)}`);
-        if (!r[0]) return reply('❌ Meaning nahi mila.');
-        const mean = r[0].meanings[0].definitions[0].definition;
-        await reply(`📖 *${r[0].word}*\n\n✳️ ${mean}`);
+        const r = await getJSON(`https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&md=d&max=1`);
+        const defs = (r?.[0]?.defs || []).map((d) => d.replace(/^[a-z]\t/, ''));
+        if (!defs.length) {
+          const u = await getJSON(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(word)}`).catch(() => null);
+          const ud = u?.list?.[0]?.definition;
+          if (ud) return reply(`📖 *${word}* (slang)\n\n✳️ ${ud.replace(/[[\]]/g, '').slice(0, 700)}`);
+          return reply('❌ Meaning nahi mila.');
+        }
+        await reply(`📖 *${word}*\n\n${defs.slice(0, 3).map((d, i) => `${i + 1}. ${d}`).join('\n\n')}`);
       } catch { await reply('❌ Meaning nahi mila.'); }
       break;
     }

@@ -16,6 +16,7 @@
 const config = require('../config');
 const { getJSON, downloadMedia, pick } = require('../lib/helpers');
 const { isGroupAdmin } = require('../lib/handler');
+const settings = require('../lib/settings');
 
 const LINK_RE = /(https?:\/\/|www\.|chat\.whatsapp\.com|t\.me\/|wa\.me\/|bit\.ly|tinyurl)/i;
 
@@ -42,15 +43,8 @@ const SPAM_LIMIT = 6;      // messages
 const SPAM_WINDOW = 5000;  // ms
 
 function saveEnv(key, val) {
-  try {
-    const fs = require('fs');
-    const path = require('path');
-    const envPath = path.join(__dirname, '..', '.env');
-    let lines = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf8').split('\n').filter(Boolean) : [];
-    lines = lines.filter((l) => !l.startsWith(key + '='));
-    lines.push(`${key}=${val}`);
-    fs.writeFileSync(envPath, lines.join('\n'));
-  } catch { /* ignore */ }
+  // Persist to the volume-backed settings file (survives redeploys).
+  settings.save();
 }
 
 const TOGGLES = {

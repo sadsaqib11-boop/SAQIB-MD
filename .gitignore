@@ -24,3 +24,6 @@ temp/
 # build
 dist/
 build/
+
+# runtime settings (volume-backed)
+saqib-settings.json

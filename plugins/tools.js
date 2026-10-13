@@ -111,10 +111,13 @@ const handler = async (ctx) => {
     }
     case 'time': {
       const tz = arg || config.TIMEZONE;
+      // Native Intl — no network needed, 100% reliable.
       try {
-        const r = await getJSON(`https://worldtimeapi.org/api/timezone/${encodeURIComponent(tz)}`);
-        await reply(`🕐 *Time — ${tz}*\n${new Date(r.datetime).toLocaleString()}`);
-      } catch { await reply(`🕐 ${new Date().toLocaleString('en-PK', { timeZone: config.TIMEZONE })}`); }
+        const s = new Date().toLocaleString('en-PK', { timeZone: tz, dateStyle: 'full', timeStyle: 'medium' });
+        await reply(`🕐 *Time — ${tz}*\n${s}`);
+      } catch {
+        await reply(`🕐 *${config.TIMEZONE}*\n${new Date().toLocaleString('en-PK', { timeZone: config.TIMEZONE })}`);
+      }
       break;
     }
     case 'ip': {
@@ -199,8 +202,9 @@ const handler = async (ctx) => {
     }
     case 'quote2': {
       try {
-        const r = await getJSON('https://api.quotable.io/random');
-        await reply(`💬 *${r.content}*\n— ${r.author}`);
+        const r = await getJSON('https://zenquotes.io/api/random');
+        const q = Array.isArray(r) ? r[0] : r;
+        await reply(`💬 *${q.q}*\n— ${q.a}`);
       } catch { await reply('❌ Quote fail.'); }
       break;
     }
