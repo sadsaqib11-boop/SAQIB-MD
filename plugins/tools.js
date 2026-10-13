@@ -30,6 +30,33 @@ function safeCalc(expr) {
   return r;
 }
 
+/* ---- RSS helpers (dependency-free news parser) ---- */
+function decodeXml(s) {
+  return String(s)
+    .replace(/<!\[CDATA\[|\]\]>/g, '')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&#8217;/g, "'")
+    .replace(/&#8216;/g, "'").replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+}
+function parseRss(xml) {
+  const out = [];
+  const re = /<item>([\s\S]*?)<\/item>/g;
+  let m;
+  while ((m = re.exec(xml))) {
+    const block = m[1];
+    let title = (block.match(/<title>([\s\S]*?)<\/title>/) || [])[1];
+    const source = (block.match(/<source[^>]*>([\s\S]*?)<\/source>/) || [])[1];
+    if (!title) continue;
+    title = decodeXml(title);
+    const src = source ? decodeXml(source) : '';
+    // Google News appends " - Source" to titles; strip it for a clean look
+    if (src && title.endsWith(' - ' + src)) title = title.slice(0, -(src.length + 3)).trim();
+    out.push({ title, source: src });
+  }
+  return out;
+}
+
 const handler = async (ctx) => {
   const { command, reply, arg } = ctx;
 
@@ -133,11 +160,33 @@ const handler = async (ctx) => {
       break;
     }
     case 'news': {
+      const cats = {
+        world: 'world news', pakistan: 'pakistan', india: 'india', tech: 'technology',
+        sports: 'sports', business: 'business', entertainment: 'entertainment',
+        cricket: 'cricket', science: 'science', health: 'health',
+      };
+      const key = (arg || '').trim().toLowerCase();
+      const q = cats[key] || (arg ? arg : 'world news');
       try {
-        const r = await getJSON('https://inshorts.deta.dev/news?category=world').catch(() => null);
-        const items = r?.data?.slice(0, 5) || [];
+        // Google News RSS (search) — no API key, works worldwide
+        let items = [];
+        try {
+          const xml = await getText(`https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-PK&gl=PK&ceid=PK:en`);
+          items = parseRss(xml);
+        } catch { /* fall through */ }
+        // fallback: BBC World RSS
+        if (!items.length) {
+          try { items = parseRss(await getText('https://feeds.bbci.co.uk/news/world/rss.xml')); } catch { /* ignore */ }
+        }
+        // fallback: Dawn (Pakistan)
+        if (!items.length) {
+          try { items = parseRss(await getText('https://www.dawn.com/feeds/home')); } catch { /* ignore */ }
+        }
+        items = items.slice(0, 6);
         if (!items.length) return reply('❌ News API fail — thori dair baad try karo.');
-        await reply(`📰 *Top News*\n\n${items.map((n, i) => `${i + 1}. ${n.title}`).join('\n\n')}`);
+        const body = items.map((n, i) => `${i + 1}. *${n.title}*${n.source ? `\n   _${n.source}_` : ''}`).join('\n\n');
+        const when = new Date().toLocaleString('en-PK', { timeZone: config.TIMEZONE });
+        await reply(`📰 *Top News${arg ? ` — ${arg}` : ''}*\n\n${body}\n\n_🕐 ${when}_`);
       } catch { await reply('❌ News fail.'); }
       break;
     }
