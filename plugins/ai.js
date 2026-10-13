@@ -3,6 +3,7 @@
  */
 const config = require('../config');
 const { downloadMedia } = require('../lib/helpers');
+const { aiCache } = require('../lib/cache');
 
 const STYLE_NOTES = {
   grok: 'Jawab thoda witty aur sharp style mein do.',
@@ -55,13 +56,22 @@ async function askPollinations(prompt) {
   return out ? String(out).trim() : '❌ Koi jawab nahi mila.';
 }
 
-/** Unified AI entry: Gemini if key present, else keyless fallback */
+/** Unified AI entry: Gemini if key present, else keyless fallback. Cached for speed. */
 async function askAI(prompt, imageBase64 = null) {
+  // Only cache text-only prompts (images are unique).
+  const cacheKey = imageBase64 ? null : 'ai:' + prompt.slice(0, 300);
+  if (cacheKey) {
+    const hit = aiCache.get(cacheKey);
+    if (hit) return hit;
+  }
+  let out;
   if (config.GEMINI_API_KEY) {
-    try { return await askGemini(prompt, imageBase64); }
+    try { out = await askGemini(prompt, imageBase64); }
     catch (e) { /* fall through to keyless engine */ }
   }
-  return askPollinations(prompt);
+  if (!out) out = await askPollinations(prompt);
+  if (cacheKey && out) aiCache.set(cacheKey, out);
+  return out;
 }
 
 const handler = async (ctx) => {
@@ -100,4 +110,5 @@ module.exports = {
   commands: [...config.AI_ALIASES, 'imagine', 'image', 'img'],
   category: '🤖 AI',
   handler,
+  askAI,
 };

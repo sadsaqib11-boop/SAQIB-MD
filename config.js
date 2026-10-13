@@ -30,6 +30,11 @@ const config = {
   GOODBYE: bool(process.env.GOODBYE, true),
   ANTILINK: bool(process.env.ANTILINK, false),
   ANTIDELETE: bool(process.env.ANTIDELETE, false),
+  ANTISPAM: bool(process.env.ANTISPAM, false),
+  AUTOSTATUS: bool(process.env.AUTOSTATUS, false),
+  AUTOVIEWONCE: bool(process.env.AUTOVIEWONCE, false),
+  AUTOBIO: bool(process.env.AUTOBIO, false),
+  CHATBOT: bool(process.env.CHATBOT, false),
   TIMEZONE: process.env.TIMEZONE || 'Asia/Karachi',
   PORT: parseInt(process.env.PORT || '3000', 10),
 
@@ -70,5 +75,8 @@ config.AUDIO_FX = {
   baby: 'asetrate=44100*1.7,aresample=44100,atempo=0.95,lowpass=f=6000',
   demon: 'asetrate=44100*0.7,aresample=44100,atempo=1.05,bass=g=10',
 };
+
+// Auto-react emoji pool (premium feel)
+config.REACT_EMOJIS = ['🔥', '⚡', '❤️', '😍', '👏', '💯', '🎉', '🤩', '😎', '💫', '✨', '🙌', '🥰', '😇', '💥'];
 
 module.exports = config;
