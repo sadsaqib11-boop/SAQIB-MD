@@ -33,6 +33,16 @@ console.log(`${config.BOT_NAME}: ${plugins.length} plugin files, ${totalCmds} co
 // ---------------------------------------------------------------------------
 const app = express();
 app.use(express.json({ limit: '1mb' }));
+
+// CORS — lets the Vercel pairing site call this backend directly.
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/health', (req, res) => {
@@ -50,6 +60,51 @@ app.post('/api/pair', async (req, res) => {
     res.json({ ok: true, code, number: String(req.body?.number || '').replace(/[^0-9]/g, '') });
   } catch (e) {
     res.status(400).json({ ok: false, error: e?.message || 'Pairing fail ho gaya.' });
+  }
+});
+
+// SSE pairing stream — used by the pairing portal for live status
+// (starting → code → linking → paired / error).
+app.post('/api/pair/stream', async (req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-store, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  if (typeof res.flushHeaders === 'function') res.flushHeaders();
+
+  let closed = false;
+  let codeSentToClient = false;
+  const send = (obj) => { if (!closed) { try { res.write(`data: ${JSON.stringify(obj)}\n\n`); } catch { /* ignore */ } } };
+  const cleanup = () => {
+    if (closed) return;
+    closed = true;
+    bot.events.off('code', onCode);
+    bot.events.off('linking', onLinking);
+    bot.events.off('paired', onPaired);
+    bot.events.off('error', onError);
+    try { res.end(); } catch { /* ignore */ }
+  };
+  const onCode = (code) => { codeSentToClient = true; send({ status: 'code', code }); };
+  const onLinking = () => send({ status: 'linking', message: 'Code accepted — finishing the link...' });
+  const onPaired = (num) => { send({ status: 'paired', number: num }); setTimeout(cleanup, 1500); };
+  const onError = (msg) => { send({ status: 'error', error: msg }); cleanup(); };
+
+  // NOTE: use res 'close' (client disconnect), NOT req 'close' — in modern
+  // Node, req 'close' fires as soon as the request body is fully read, which
+  // would tear the stream down before the pairing code is generated.
+  res.on('close', cleanup);
+  bot.events.on('code', onCode);
+  bot.events.on('linking', onLinking);
+  bot.events.on('paired', onPaired);
+  bot.events.on('error', onError);
+
+  send({ status: 'starting', message: 'Connecting to WhatsApp...' });
+  try {
+    const code = await bot.requestPair(req.body?.number);
+    if (!codeSentToClient) send({ status: 'code', code }); // fallback if the event was missed
+  } catch (e) {
+    onError(e?.message || 'Pairing fail ho gaya.');
   }
 });
 
