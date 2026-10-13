@@ -1,5 +1,5 @@
 /**
- * AI — all AI aliases route to Gemini; plus .imagine (image generation)
+ * AI — all AI aliases route to Gemini (if key set) or a keyless engine; plus .imagine (image generation)
  */
 const config = require('../config');
 const { downloadMedia } = require('../lib/helpers');
@@ -11,8 +11,8 @@ const STYLE_NOTES = {
   mathgpt: 'Ye maths sawal hy — step by step solve karo.',
 };
 
+/** Google Gemini (used when GEMINI_API_KEY is set) */
 async function askGemini(prompt, imageBase64 = null) {
-  if (!config.GEMINI_API_KEY) throw new Error('AI key set nahi hy (GEMINI_API_KEY).');
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.GEMINI_MODEL}:generateContent?key=${config.GEMINI_API_KEY}`;
   const parts = [{ text: prompt }];
   if (imageBase64) parts.push({ inline_data: { mime_type: 'image/jpeg', data: imageBase64 } });
@@ -24,6 +24,34 @@ async function askGemini(prompt, imageBase64 = null) {
   if (!res.ok) throw new Error(`AI API error ${res.status}`);
   const data = await res.json();
   return data.candidates?.[0]?.content?.parts?.map((p) => p.text).filter(Boolean).join('') || '❌ Koi jawab nahi mila.';
+}
+
+/** Keyless fallback engine (OpenAI-compatible) — works with no API key */
+async function askPollinations(prompt) {
+  const res = await fetch('https://text.pollinations.ai/openai', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'openai',
+      messages: [
+        { role: 'system', content: `You are ${config.BOT_NAME}, a helpful, friendly WhatsApp assistant. Reply in the user's language (Urdu/Roman Urdu/English). Keep answers clear and useful.` },
+        { role: 'user', content: prompt },
+      ],
+    }),
+  });
+  if (!res.ok) throw new Error(`AI API error ${res.status}`);
+  const data = await res.json();
+  const out = data.choices?.[0]?.message?.content;
+  return out ? String(out).trim() : '❌ Koi jawab nahi mila.';
+}
+
+/** Unified AI entry: Gemini if key present, else keyless fallback */
+async function askAI(prompt, imageBase64 = null) {
+  if (config.GEMINI_API_KEY) {
+    try { return await askGemini(prompt, imageBase64); }
+    catch (e) { /* fall through to keyless engine */ }
+  }
+  return askPollinations(prompt);
 }
 
 const handler = async (ctx) => {
@@ -38,9 +66,6 @@ const handler = async (ctx) => {
   }
 
   // ---- AI chat ----
-  if (!config.GEMINI_API_KEY) {
-    return ctx.reply('⚠️ AI key set nahi hy. Owner ko `GEMINI_API_KEY` set karni hogi.');
-  }
   let prompt = ctx.arg;
   let img = null;
   try {
@@ -54,7 +79,7 @@ const handler = async (ctx) => {
   if (!prompt) return ctx.reply(`❌ Sawal likho. Example: ${config.PREFIX}${ctx.command} Pakistan ka capital kya hy?`);
   const style = STYLE_NOTES[ctx.command.replace(/[0-9]/g, '')] || '';
   try {
-    const answer = await askGemini(style ? `${prompt}\n(${style})` : prompt, img);
+    const answer = await askAI(style ? `${prompt}\n(${style})` : prompt, img);
     await ctx.reply(`🤖 *${config.BOT_NAME} AI*\n\n${answer}`);
   } catch (e) {
     await ctx.reply(`❌ ${e.message}`);

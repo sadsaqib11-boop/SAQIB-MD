@@ -12,7 +12,7 @@ const config = {
   BOT_VERSION: '2.0.0',
   PREFIX: process.env.PREFIX || '.',
   OWNER_NAME: process.env.OWNER_NAME || 'Saqib',
-  OWNER_NUMBER: (process.env.OWNER_NUMBER || '').replace(/[^0-9]/g, ''),
+  OWNER_NUMBER: (process.env.OWNER_NUMBER || '923106762478').replace(/[^0-9]/g, ''),
   OWNER_EMAIL: process.env.OWNER_EMAIL || '',
 
   // ---- AI ----
