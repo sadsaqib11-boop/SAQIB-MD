@@ -11,12 +11,16 @@ const os = require('os');
 const tmp = (ext) => path.join(os.tmpdir(), `saqibmd_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`);
 const run = (cmd, args) => new Promise((res, rej) => execFile(cmd, args, { timeout: 90000, maxBuffer: 1024 * 1024 * 50 }, (e, so, se) => (e ? rej(new Error((se || e.message).slice(0, 200))) : res())));
 
+/** Unwrap view-once wrappers into the inner media message. */
+const unwrap = (qm) => qm?.viewOnceMessage?.message || qm?.viewOnceMessageV2?.message || qm?.viewOnceMessageV2Extension?.message || qm;
+
 const handler = async (ctx) => {
   const { command } = ctx;
 
   // ---------- .sticker ----------
   if (command === 'sticker' || command === 's') {
-    const msg = ctx.m.message.imageMessage || ctx.m.message.videoMessage ? ctx.m.message : ctx.quoted?.message;
+    const own = unwrap(ctx.m.message);
+    const msg = (own.imageMessage || own.videoMessage) ? own : unwrap(ctx.quoted?.message);
     if (!msg || (!msg.imageMessage && !msg.videoMessage)) {
       return ctx.reply(`❌ Image/video do. Media bhejo caption me ${config.PREFIX}sticker likh ke, ya media par reply karo.`);
     }
@@ -40,7 +44,8 @@ const handler = async (ctx) => {
 
   // ---------- .toimg : sticker -> image ----------
   if (command === 'toimg' || command === 'toimage') {
-    const msg = ctx.m.message.stickerMessage ? ctx.m.message : ctx.quoted?.message;
+    const own = unwrap(ctx.m.message);
+    const msg = own.stickerMessage ? own : unwrap(ctx.quoted?.message);
     if (!msg?.stickerMessage) return ctx.reply('❌ Kisi sticker par reply karo.');
     const buf = await downloadMedia(msg.stickerMessage, 'sticker');
     const inp = tmp('webp');
@@ -59,7 +64,9 @@ const handler = async (ctx) => {
 
   // ---------- .tomp3 / .toptt ----------
   if (command === 'tomp3' || command === 'toptt') {
-    const msg = ctx.m.message.audioMessage || ctx.m.message.videoMessage || ctx.quoted?.message?.audioMessage || ctx.quoted?.message?.videoMessage;
+    const ownA = unwrap(ctx.m.message);
+    const qA = unwrap(ctx.quoted?.message);
+    const msg = ownA.audioMessage || ownA.videoMessage || qA?.audioMessage || qA?.videoMessage;
     if (!msg) return ctx.reply(`❌ Audio/voice/video par reply karo.`);
     const isVideo = !!((ctx.m.message.videoMessage) || (ctx.quoted?.message?.videoMessage));
     const buf = await downloadMedia(msg, isVideo ? 'video' : 'audio');
@@ -83,7 +90,9 @@ const handler = async (ctx) => {
   // ---------- audio effects ----------
   const fx = config.AUDIO_FX[command];
   if (fx) {
-    const msg = ctx.m.message.audioMessage || ctx.m.message.videoMessage || ctx.quoted?.message?.audioMessage || ctx.quoted?.message?.videoMessage;
+    const ownA = unwrap(ctx.m.message);
+    const qA = unwrap(ctx.quoted?.message);
+    const msg = ownA.audioMessage || ownA.videoMessage || qA?.audioMessage || qA?.videoMessage;
     if (!msg) return ctx.reply(`❌ Audio/voice note par reply karo.`);
     const isVideo = !!((ctx.m.message.videoMessage) || (ctx.quoted?.message?.videoMessage));
     const buf = await downloadMedia(msg, isVideo ? 'video' : 'audio');

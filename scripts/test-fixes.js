@@ -280,6 +280,29 @@ const fun = require('../plugins/fun');
     ok('delete removes the quoted message', deleted && deleted.id === 'Q1', JSON.stringify(deleted));
   }
 
+  console.log('\n=== reactions: LID-safe mentions ===');
+  {
+    const reactions = require('../plugins/reactions');
+
+    // unresolved LID target -> mention keeps @lid domain (no fake number)
+    const c1 = mockCtx({ command: 'cry', quotedParticipant: '999888777666555@lid' });
+    await reactions.handler(c1);
+    const m1 = c1._sent[0]?.content?.mentions?.[0] || '';
+    ok('reaction unresolved LID keeps @lid', m1.endsWith('@lid'), `got ${m1}`);
+    ok('reaction text shows @999888777666555', /@999888777666555/.test(c1._sent[0]?.content?.text || ''), c1._sent[0]?.content?.text);
+
+    // resolved LID -> real number mention
+    const c2 = mockCtx({ command: 'cry', quotedParticipant: '212223345675336@lid' });
+    await reactions.handler(c2);
+    ok('reaction resolved LID uses real number', (c2._sent[0]?.content?.mentions?.[0] || '') === '923451234567@s.whatsapp.net', `got ${c2._sent[0]?.content?.mentions?.[0]}`);
+
+    // no target -> 'tum', no mentions
+    const c3 = mockCtx({ command: 'cry' });
+    await reactions.handler(c3);
+    ok('reaction with no target says "tum"', /tum/.test(c3._sent[0]?.content?.text || ''), c3._sent[0]?.content?.text);
+    ok('reaction with no target has no mentions', (c3._sent[0]?.content?.mentions || []).length === 0);
+  }
+
   console.log(`\n=== RESULT: ${pass} passed, ${fail} failed ===\n`);
   process.exit(fail ? 1 : 0);
 })();

@@ -5,7 +5,7 @@
  * fun emoji reaction for the rest. Mentions the replied-to user.
  */
 const config = require('../config');
-const { getJSON, pick } = require('../lib/helpers');
+const { getJSON, targetOf } = require('../lib/helpers');
 const { execFile } = require('child_process');
 const fs = require('fs');
 const os = require('os');
@@ -65,9 +65,11 @@ async function nekoGif(cat) {
 
 const handler = async (ctx) => {
   const { command, reply } = ctx;
-  const who = ctx.quoted ? (ctx.quoted.key.participant || '').split('@')[0] : null;
-  const tag = who ? `@${who}` : 'tum';
-  const mentions = who ? [who + '@s.whatsapp.net'] : [];
+  // Resolve the replied-to user through the LID resolver so we never mention a
+  // fake number (raw LIDs like 212223345675336@lid used to leak here).
+  const target = targetOf(ctx);
+  const tag = target ? `@${target.num}` : 'tum';
+  const mentions = target ? [target.jid] : [];
 
   if (GIF_ACTIONS.includes(command)) {
     try {
