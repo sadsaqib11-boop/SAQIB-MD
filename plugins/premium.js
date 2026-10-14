@@ -1,17 +1,17 @@
 /**
- * PREMIUM — enforcement features + premium utilities
- * --------------------------------------------------
- * Toggles (owner only): antidelete, antispam, autoreact, autostatus,
- *                       autoviewonce, autobio, chatbot
- * Commands: readmore, vcf, tts, carbon, ss, tourl, emojimix, premium
+ * PREMIUM — auto/anti toggles + premium utilities
+ * -----------------------------------------------
+ * Toggles (live, persisted, default OFF):
+ *   antidelete, antideleteinbox, antispam, autoreact, autoviewonce,
+ *   autobio, chatbot, anticall, anticallmsg, autoreadstatus, online
  *
  * The `onMessage` hook runs for EVERY message and enforces:
+ *   - auto-status (view/react to statuses)
+ *   - anti-spam (rate-limit users)
  *   - anti-link (delete links in groups)
+ *   - auto-view-once (save view-once media)
  *   - auto-react (react to messages)
  *   - chatbot (AI auto-reply in private chats)
- *   - auto-status (view statuses)
- *   - auto-view-once (save view-once media)
- *   - anti-spam (rate-limit users)
  */
 const config = require('../config');
 const { getJSON, downloadMedia, pick } = require('../lib/helpers');
@@ -20,10 +20,9 @@ const settings = require('../lib/settings');
 
 const LINK_RE = /(https?:\/\/|www\.|chat\.whatsapp\.com|t\.me\/|wa\.me\/|bit\.ly|tinyurl)/i;
 
-// ---- Emoji Kitchen (Google gstatic) — no API key, works for supported pairs ----
+// ---- Emoji Kitchen (Google gstatic) ----
 const EK_DATES = ['20201001', '20210521', '20211115', '20220506', '20220823', '20230301', '20230403', '20230803'];
 function cp(e) { return [...e].map((c) => c.codePointAt(0).toString(16)).join('-'); }
-/** Find a Google Emoji Kitchen PNG for two emojis (parallel HEAD probes). */
 async function emojiKitchen(a, b) {
   const ca = cp(a); const cb = cp(b);
   const urls = [];
@@ -38,18 +37,22 @@ async function emojiKitchen(a, b) {
 }
 
 // ---- anti-spam state ----
-const spamMap = new Map(); // sender -> { count, ts }
-const SPAM_LIMIT = 6;      // messages
-const SPAM_WINDOW = 5000;  // ms
-
-function saveEnv(key, val) {
-  // Persist to the volume-backed settings file (survives redeploys).
-  settings.save();
-}
+const spamMap = new Map();
+const SPAM_LIMIT = 6;
+const SPAM_WINDOW = 5000;
 
 const TOGGLES = {
-  antidelete: 'ANTIDELETE', antispam: 'ANTISPAM', autoreact: 'AUTO_REACT',
-  autostatus: 'AUTOSTATUS', autoviewonce: 'AUTOVIEWONCE', autobio: 'AUTOBIO', chatbot: 'CHATBOT',
+  antidelete: 'ANTIDELETE',
+  antideleteinbox: 'ANTIDELETE_INBOX',
+  antispam: 'ANTISPAM',
+  autoreact: 'AUTO_REACT',
+  autoviewonce: 'AUTOVIEWONCE',
+  autobio: 'AUTOBIO',
+  chatbot: 'CHATBOT',
+  anticall: 'ANTICALL',
+  anticallmsg: 'ANTICALL',
+  autoreadstatus: 'AUTOREAD_STATUS',
+  online: 'ONLINE',
 };
 
 /* ============================ per-message hook ============================ */
@@ -82,7 +85,7 @@ async function onMessage(ctx) {
       await sock.sendMessage(from, { text: `🚫 *Anti-Spam:* +${ctx.senderNum} thoda slow karo!` }).catch(() => {});
       return;
     }
-    if (rec.count > SPAM_LIMIT) return; // drop spammy messages
+    if (rec.count > SPAM_LIMIT) return;
   }
 
   // ---- anti-link (groups) ----
@@ -140,7 +143,7 @@ const handler = async (ctx) => {
   if (TOGGLES[command]) {
     const key = TOGGLES[command];
     config[key] = !config[key];
-    saveEnv(key, config[key]);
+    settings.save();
     await reply(`✅ *${command.toUpperCase()}* ab *${config[key] ? 'ON 🟢' : 'OFF 🔴'}* hy.`);
     return;
   }
@@ -150,8 +153,10 @@ const handler = async (ctx) => {
       await reply(
         `👑 *${config.BOT_NAME} — PREMIUM*\n\n` +
         `🛡️ Anti-Delete: ${config.ANTIDELETE ? 'ON 🟢' : 'OFF 🔴'}\n` +
+        `📥 Anti-Delete Inbox: ${config.ANTIDELETE_INBOX ? 'ON 🟢' : 'OFF 🔴'}\n` +
         `🔗 Anti-Link: ${config.ANTILINK ? 'ON 🟢' : 'OFF 🔴'}\n` +
         `🚫 Anti-Spam: ${config.ANTISPAM ? 'ON 🟢' : 'OFF 🔴'}\n` +
+        `📵 Anti-Call: ${config.ANTICALL ? 'ON 🟢' : 'OFF 🔴'}\n` +
         `😀 Auto-React: ${config.AUTO_REACT ? 'ON 🟢' : 'OFF 🔴'}\n` +
         `👁️ Auto-ViewOnce: ${config.AUTOVIEWONCE ? 'ON 🟢' : 'OFF 🔴'}\n` +
         `📊 Auto-Status: ${config.AUTOSTATUS ? 'ON 🟢' : 'OFF 🔴'}\n` +
@@ -227,7 +232,7 @@ const handler = async (ctx) => {
       return;
     }
 
-    case 'emojimix': {
+    case 'emojimix': case 'emix': {
       const [a, b] = (arg || '').split(/\s+/);
       if (!a || !b) return reply(`❌ Do emoji do. Example: ${config.PREFIX}emojimix 😂 🥰`);
       try {
@@ -245,7 +250,7 @@ const handler = async (ctx) => {
 
 module.exports = {
   commands: [
-    ...Object.keys(TOGGLES), 'premium', 'readmore', 'vcf', 'tts', 'carbon', 'ss', 'tourl', 'emojimix',
+    ...Object.keys(TOGGLES), 'premium', 'readmore', 'vcf', 'tts', 'carbon', 'ss', 'tourl', 'emojimix', 'emix',
   ],
   category: '👑 PREMIUM',
   handler,

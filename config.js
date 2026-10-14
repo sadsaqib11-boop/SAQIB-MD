@@ -1,6 +1,10 @@
 /**
  * SAQIB-MD — Bot Configuration
  * All values are env-driven (see .env.example) with sensible defaults.
+ *
+ * NOTE: every auto/anti feature defaults to OFF. The owner turns them ON
+ * live with a toggle command (e.g. `.autoreact`, `.antidelete`) and the
+ * choice is persisted to disk (survives restarts / redeploys).
  */
 require('dotenv').config();
 
@@ -9,54 +13,104 @@ const bool = (v, d = false) => (v === undefined ? d : String(v).toLowerCase() ==
 const config = {
   // ---- identity ----
   BOT_NAME: process.env.BOT_NAME || 'SAQIB-MD',
-  BOT_VERSION: '2.0.0',
+  BOT_VERSION: '3.0.0',
   PREFIX: process.env.PREFIX || '.',
   OWNER_NAME: process.env.OWNER_NAME || 'Saqib',
-  OWNER_NUMBER: (process.env.OWNER_NUMBER || '923106762478').replace(/[^0-9]/g, ''),
+  OWNER_NUMBER: (process.env.OWNER_NUMBER || '').replace(/[^0-9]/g, ''),
   OWNER_EMAIL: process.env.OWNER_EMAIL || '',
 
   // ---- AI ----
-  // Set GEMINI_API_KEY in your environment (.env / Railway variables).
-  // NOTE: gemini-2.x models are blocked for new keys — use gemini-3.5-flash.
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
   GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
 
-  // ---- behaviour ----
+  // ---- behaviour (ALL OFF BY DEFAULT) ----
   MODE: process.env.MODE || 'public', // public | private
-  AUTO_READ: bool(process.env.AUTO_READ, true),
-  AUTO_TYPING: bool(process.env.AUTO_TYPING, true),
-  AUTO_REACT: bool(process.env.AUTO_REACT, true),
-  WELCOME: bool(process.env.WELCOME, true),
-  GOODBYE: bool(process.env.GOODBYE, true),
+  AUTO_READ: bool(process.env.AUTO_READ, false),
+  AUTO_TYPING: bool(process.env.AUTO_TYPING, false),
+  AUTO_REACT: bool(process.env.AUTO_REACT, false),
+  WELCOME: bool(process.env.WELCOME, false),
+  GOODBYE: bool(process.env.GOODBYE, false),
   ANTILINK: bool(process.env.ANTILINK, false),
-  ANTIDELETE: bool(process.env.ANTIDELETE, true),
+  ANTIDELETE: bool(process.env.ANTIDELETE, false),
+  ANTIDELETE_INBOX: bool(process.env.ANTIDELETE_INBOX, false),
   ANTISPAM: bool(process.env.ANTISPAM, false),
-  AUTOSTATUS: bool(process.env.AUTOSTATUS, true),
-  AUTOVIEWONCE: bool(process.env.AUTOVIEWONCE, true),
+  ANTICALL: bool(process.env.ANTICALL, false),
+  AUTOSTATUS: bool(process.env.AUTOSTATUS, false),
+  AUTOVIEWONCE: bool(process.env.AUTOVIEWONCE, false),
   AUTOBIO: bool(process.env.AUTOBIO, false),
   CHATBOT: bool(process.env.CHATBOT, false),
+  AUTOREAD_STATUS: bool(process.env.AUTOREAD_STATUS, false),
+  ONLINE: bool(process.env.ONLINE, false),
+  RECORDING: bool(process.env.RECORDING, false),
+  STATUSVIEW: bool(process.env.STATUSVIEW, false),
+  ADMINISTRATION: bool(process.env.ADMINISTRATION, false),
+  MENTION_REPLY: bool(process.env.MENTION_REPLY, false),
+
+  // ---- customisable content (persisted) ----
+  WELCOME_MSG: process.env.WELCOME_MSG || '👋 Welcome @user to @group!',
+  GOODBYE_MSG: process.env.GOODBYE_MSG || '🕊️ @user left @group. Allah Hafiz!',
+  STATUS_EMOJI: process.env.STATUS_EMOJI || '🔥',
+  DESCRIPTION: process.env.DESCRIPTION || 'SAQIB-MD — Premium WhatsApp Bot',
+  STICKER_NAME: process.env.STICKER_NAME || 'SAQIB-MD',
+  PRIVACY: process.env.PRIVACY || 'default',
+  GROUP_PRIVACY: process.env.GROUP_PRIVACY || 'default',
+
   TIMEZONE: process.env.TIMEZONE || 'Asia/Karachi',
   PORT: parseInt(process.env.PORT || '3000', 10),
 
-  // ---- session ----
+  // ---- session / multi-session ----
   SESSION_DIR: process.env.SESSION_DIR || './session',
-  SESSION_ID: process.env.SESSION_ID || '', // base64 session (optional)
+  SESSION_ID: process.env.SESSION_ID || '',
+  MAX_SESSIONS: parseInt(process.env.MAX_SESSIONS || '50', 10),
 
-  // ---- runtime flags (mutable via settings) ----
+  // ---- runtime flags ----
   SUDO: (process.env.SUDO || '').split(',').map((s) => s.replace(/[^0-9]/g, '')).filter(Boolean),
 };
 
-// AI command aliases — all route to the same engine.
+// ---------------------------------------------------------------------------
+// AI command aliases — every one routes to the same AI engine.
+// ---------------------------------------------------------------------------
 config.AI_ALIASES = [
-  'ai', 'bot', 'gpt', 'gpt3', 'gpt4', 'gpt4o', 'gpt4mini', 'gpt4vision', 'gpt5', 'gpt5mini',
-  'chatgpt', 'chatgpt4', 'chatgpt4o', 'o1', 'o3', 'o4', 'copilot', 'deepseek', 'deepseekv3',
-  'deepseekcoder', 'gemini', 'geminipro', 'gemini15', 'gemini20', 'gemini25', 'bard', 'palm',
-  'grok', 'grok2', 'grok3', 'grok4', 'claude', 'claude3', 'claude35', 'claude37', 'claude4',
-  'qwen', 'qwen2', 'qwen25', 'llama', 'llama3', 'mistral', 'mixtral', 'kimi', 'perplexity',
-  'mathgpt', 'brain', 'elite', 'assistant', 'smart', 'genius', 'nova', 'apex', 'vertex',
+  // generic
+  'ai', 'bot', 'brain', 'assistant', 'smart', 'genius', 'proai', 'ultra', 'maxai',
+  'nova', 'zenith', 'apex', 'vertex', 'pulse', 'quantum', 'neo', 'omega', 'elite',
+  'elitegpt', 'mathgpt', 'grammar', 'talkai',
+  // OpenAI / GPT
+  'gpt', 'gpt3', 'gpt35', 'gpt35turbo', 'gpt4', 'gpt4turbo', 'gpt4o', 'gpt4omini',
+  'gpt4vision', 'gpt4all', 'gpt5', 'gpt5mini', 'chatgpt', 'chatgpt35', 'chatgpt4',
+  'chatgpt4o', 'chatgpt4turbo', 'chatgptplus', 'chatgptelite', 'o1', 'o1mini',
+  'o1preview', 'o3', 'o3mini', 'o4',
+  // Copilot
+  'copilot', 'mscopilot', 'elitecopilot',
+  // DeepSeek
+  'deepseek', 'deepseekv2', 'deepseekv3', 'deepseekr1', 'deepseekcoder',
+  'deepseekcoder2', 'deepseekmath', 'deepseekllm', 'deepseekvl', 'deepseekchat',
+  // Google
+  'gemini', 'geminipro', 'geminiultra', 'gemininano', 'gemini15', 'gemini15pro',
+  'gemini15flash', 'gemini20', 'gemini20flash', 'gemini25', 'gemini25pro',
+  'gemini25flash', 'bard', 'palm', 'palm2',
+  // xAI Grok
+  'grok', 'grok1', 'grok15', 'grok2', 'grok2mini', 'grok3', 'grok3mini', 'grok4',
+  'grokbeta', 'grokvision',
+  // Anthropic Claude
+  'claude', 'claude1', 'claude2', 'claudeinstant', 'claude3', 'claude3opus',
+  'claude3sonnet', 'claude3haiku', 'claude35', 'claude35sonnet', 'claude35haiku',
+  'claude37', 'claude37sonnet', 'claude4', 'claude4opus', 'claude4sonnet',
+  'claudeopus', 'claudesonnet', 'claudehaiku',
+  // Qwen
+  'qwen', 'qwen15', 'qwen2', 'qwen25', 'qwen3', 'qwencoder', 'qwenmath', 'qwenvl',
+  'qwenmax', 'qwenplus', 'qwenturbo',
+  // Meta / others
+  'llama', 'llama2', 'llama3', 'mistral', 'mixtral', 'falcon', 'bloom', 'bloomz',
+  'orca', 'vicuna', 'alpaca', 'phi2', 'wizard', 'codet5', 'codex', 'starcoder',
+  'codegen', 'kimi', 'perplexity', 'yi', 'yi34b', 'command', 'jurassic', 'ai21',
+  'solar', 'lumin', 'redpajama', 'dolly', 'hugging', 'openassist', 'gptneo', 'gptj',
+  'flant5', 'starlin',
 ];
 
-// Audio effects -> ffmpeg filter map
+// ---------------------------------------------------------------------------
+// Audio effects -> ffmpeg filter map  (`.bass`, `.nightcore`, …)
+// ---------------------------------------------------------------------------
 config.AUDIO_FX = {
   bass: 'equalizer=f=60:gain_type=q:gain=8',
   deep: 'equalizer=f=100:gain_type=o:gain=-6',
@@ -69,14 +123,20 @@ config.AUDIO_FX = {
   chipmunk: 'asetrate=44100*1.6,aresample=44100,atempo=0.9',
   nightcore: 'asetrate=44100*1.25,aresample=44100,atempo=1.0',
   earrape: 'volume=25,acrusher=bits=2',
-  reversefx: 'areverse',
+  reverse: 'areverse',
   slow: 'asetrate=44100*0.8,aresample=44100,atempo=1.0',
   fast: 'asetrate=44100*1.35,aresample=44100,atempo=1.0',
   baby: 'asetrate=44100*1.7,aresample=44100,atempo=0.95,lowpass=f=6000',
   demon: 'asetrate=44100*0.7,aresample=44100,atempo=1.05,bass=g=10',
+  vaporwave: 'asetrate=44100*0.9,aresample=44100,atempo=0.9,aecho=0.8:0.9:40:0.4',
+  echo: 'aecho=0.8:0.9:1000:0.3',
+  karaoke: 'stereotools=mlev=0.03',
+  '8d': 'apulsator=hz=0.09',
+  tremolo: 'tremolo=f=5:d=0.7',
+  vibrato: 'vibrato=f=6.5:d=0.5',
 };
 
-// Auto-react emoji pool (premium feel)
+// Auto-react emoji pool
 config.REACT_EMOJIS = ['🔥', '⚡', '❤️', '😍', '👏', '💯', '🎉', '🤩', '😎', '💫', '✨', '🙌', '🥰', '😇', '💥'];
 
 module.exports = config;

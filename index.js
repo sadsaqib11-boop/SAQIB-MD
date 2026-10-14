@@ -1,6 +1,6 @@
 /**
  * SAQIB-MD — Premium WhatsApp Bot
- * Single process: web pairing portal + WhatsApp bot.
+ * Single process: web pairing portal + WhatsApp bot (multi-session).
  */
 const express = require('express');
 const path = require('path');
@@ -54,11 +54,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/health', (req, res) => {
   const s = bot.getStatus();
-  res.json({ ok: true, bot: config.BOT_NAME, version: config.BOT_VERSION, status: s.status, connected: s.connected, uptime: s.uptime });
+  res.json({ ok: true, bot: config.BOT_NAME, version: config.BOT_VERSION, status: s.status, connected: s.connected, uptime: s.uptime, sessions: s.connectedCount });
 });
 
 app.get('/api/status', (req, res) => {
   res.json({ ok: true, ...bot.getStatus() });
+});
+
+app.get('/api/sessions', (req, res) => {
+  res.json({ ok: true, sessions: bot.listSessions(), max: config.MAX_SESSIONS });
+});
+
+app.post('/api/session/remove', async (req, res) => {
+  try {
+    const ok = await bot.removeSession(req.body?.number);
+    res.json({ ok, removed: ok });
+  } catch (e) {
+    res.status(400).json({ ok: false, error: e?.message || 'Remove fail.' });
+  }
 });
 
 app.post('/api/pair', async (req, res) => {
@@ -73,6 +86,7 @@ app.post('/api/pair', async (req, res) => {
 // SSE pairing stream — used by the pairing portal for live status
 // (starting → code → linking → paired / error).
 app.post('/api/pair/stream', async (req, res) => {
+  const want = String(req.body?.number || '').replace(/[^0-9]/g, '');
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
   res.setHeader('Cache-Control', 'no-cache, no-store, no-transform');
@@ -92,14 +106,12 @@ app.post('/api/pair/stream', async (req, res) => {
     bot.events.off('error', onError);
     try { res.end(); } catch { /* ignore */ }
   };
-  const onCode = (code) => { codeSentToClient = true; send({ status: 'code', code }); };
-  const onLinking = () => send({ status: 'linking', message: 'Code accepted — finishing the link...' });
-  const onPaired = (num) => { send({ status: 'paired', number: num }); setTimeout(cleanup, 1500); };
-  const onError = (msg) => { send({ status: 'error', error: msg }); cleanup(); };
+  const mine = (num) => !want || !num || String(num) === want;
+  const onCode = (e) => { if (!mine(e.number)) return; codeSentToClient = true; send({ status: 'code', code: e.code, number: e.number }); };
+  const onLinking = (e) => { if (!mine(e.number)) return; send({ status: 'linking', number: e.number, message: 'Code accepted — finishing the link...' }); };
+  const onPaired = (e) => { if (!mine(e.number)) return; send({ status: 'paired', number: e.number }); setTimeout(cleanup, 1500); };
+  const onError = (e) => { if (!mine(e.number)) return; send({ status: 'error', error: e.error, number: e.number }); cleanup(); };
 
-  // NOTE: use res 'close' (client disconnect), NOT req 'close' — in modern
-  // Node, req 'close' fires as soon as the request body is fully read, which
-  // would tear the stream down before the pairing code is generated.
   res.on('close', cleanup);
   bot.events.on('code', onCode);
   bot.events.on('linking', onLinking);
@@ -111,7 +123,7 @@ app.post('/api/pair/stream', async (req, res) => {
     const code = await bot.requestPair(req.body?.number);
     if (!codeSentToClient) send({ status: 'code', code }); // fallback if the event was missed
   } catch (e) {
-    onError(e?.message || 'Pairing fail ho gaya.');
+    onError({ number: want, error: e?.message || 'Pairing fail ho gaya.' });
   }
 });
 
@@ -132,10 +144,9 @@ app.listen(config.PORT, () => {
 });
 
 // ---------------------------------------------------------------------------
-// Start the bot
+// Start the bot (restores every saved session)
 // ---------------------------------------------------------------------------
 bot.startBot().catch((e) => console.error('bot start fail:', e?.message || e));
 
-// keep the process alive / friendly shutdown
 process.on('unhandledRejection', (e) => console.error('unhandledRejection:', e?.message || e));
 process.on('uncaughtException', (e) => console.error('uncaughtException:', e?.message || e));

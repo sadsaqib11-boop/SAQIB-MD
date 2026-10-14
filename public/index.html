@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SAQIB-MD • Premium WhatsApp Bot</title>
-<meta name="description" content="SAQIB-MD — Premium WhatsApp Bot. Link your WhatsApp with an 8-digit pairing code." />
+<meta name="description" content="SAQIB-MD — Premium WhatsApp Bot. Link up to 50 WhatsApp numbers with an 8-digit pairing code." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
 <style>
   :root{
@@ -93,6 +93,21 @@
   footer a{color:var(--accent2);text-decoration:none}
   .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:8px}
   @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* sessions */
+  .sessions-card{margin-top:22px}
+  .sess{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border-radius:14px;
+    background:rgba(255,255,255,.03);border:1px solid var(--line);margin-bottom:10px}
+  .sess .num{font-weight:700;font-size:15px}
+  .sess .meta{font-size:12px;color:var(--muted);margin-top:2px}
+  .badge{font-size:11px;padding:4px 10px;border-radius:999px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .badge.connected{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.35)}
+  .badge.pairing{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.35)}
+  .badge.unpaired,.badge.connecting{background:rgba(139,147,184,.15);color:#c7ccff;border:1px solid var(--line)}
+  .badge.error{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.35)}
+  .rm{cursor:pointer;border:none;background:rgba(239,68,68,.14);color:#fca5a5;border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:700;box-shadow:none}
+  .rm:hover{background:rgba(239,68,68,.25)}
+  .empty{color:var(--muted);font-size:13.5px;padding:8px 0}
 </style>
 <script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
 </head>
@@ -103,7 +118,7 @@
       <div class="logo">🤖</div>
       <div>
         <h1>SAQIB-MD</h1>
-        <p>Premium WhatsApp Bot • v2.0.0</p>
+        <p>Premium WhatsApp Bot • v3.0.0 • Multi-Session</p>
       </div>
     </div>
     <div class="pill"><span id="statusDot" class="dot"></span><span id="statusText">Checking…</span></div>
@@ -113,7 +128,7 @@
     <!-- LEFT: pairing -->
     <div class="card">
       <h2>🔗 Link Your WhatsApp</h2>
-      <p class="sub">Apna WhatsApp number country code ke sath likho aur 8-digit pairing code lo. Koi QR scan nahi — sirf code type karo.</p>
+      <p class="sub">Apna WhatsApp number country code ke sath likho aur 8-digit pairing code lo. Koi QR scan nahi — sirf code type karo. <b>Ek bot par 50 tak numbers link ho sakte hain.</b></p>
 
       <label for="num">WhatsApp Number (country code ke sath)</label>
       <div class="field">
@@ -147,19 +162,26 @@
         <div class="stat"><div class="k">Status</div><div class="v" id="sStatus">—</div></div>
         <div class="stat"><div class="k">Uptime</div><div class="v" id="sUptime">—</div></div>
         <div class="stat"><div class="k">Commands</div><div class="v" id="sCmds">—</div></div>
-        <div class="stat"><div class="k">Prefix</div><div class="v" id="sPrefix">—</div></div>
+        <div class="stat"><div class="k">Sessions</div><div class="v" id="sSess">—</div></div>
       </div>
       <div class="feat" id="feat"></div>
       <div class="steps" style="margin-top:20px">
         <b>Premium Features:</b><br/>
-        🤖 60+ AI models (Gemini engine)<br/>
-        🎨 AI image generation (.imagine)<br/>
+        🤖 150+ AI models (Gemini engine)<br/>
+        🎨 AI image generation &amp; logos<br/>
         📥 TikTok / IG / FB / YT downloader<br/>
         🎵 Audio effects &amp; stickers<br/>
         👥 Full group management<br/>
-        🧰 Tools: weather, translate, QR, wiki &amp; more
+        🧰 Tools, fonts, reactions &amp; more
       </div>
     </div>
+  </div>
+
+  <!-- Linked sessions -->
+  <div class="card sessions-card">
+    <h2>📱 Linked Sessions <span id="sessCount" class="chip" style="margin-left:6px">0 / 50</span></h2>
+    <p class="sub">Ye sab numbers is bot se linked hain. Har number ka apna owner hy.</p>
+    <div id="sessions"><div class="empty">Loading…</div></div>
   </div>
 
   <footer>
@@ -182,6 +204,7 @@ async function refreshStatus() {
     $('statusText').textContent = d.connected ? 'Online ✅' : st.charAt(0).toUpperCase() + st.slice(1);
     $('sStatus').textContent = st;
     $('sUptime').textContent = d.uptime || '—';
+    $('sSess').textContent = (d.connectedCount || 0) + ' / ' + (d.maxSessions || 50);
   } catch { $('statusText').textContent = 'Offline'; }
 }
 async function refreshCommands() {
@@ -189,10 +212,36 @@ async function refreshCommands() {
     const r = await fetch(API + '/api/commands');
     const d = await r.json();
     $('sCmds').textContent = d.total || '—';
-    $('sPrefix').textContent = '"' + (d.prefix || '.') + '"';
     const cats = Object.keys(d.categories || {});
     $('feat').innerHTML = cats.map(c => `<span class="chip">${c}</span>`).join('');
   } catch {}
+}
+async function refreshSessions() {
+  try {
+    const r = await fetch(API + '/api/sessions');
+    const d = await r.json();
+    const list = d.sessions || [];
+    $('sessCount').textContent = list.length + ' / ' + (d.max || 50);
+    const box = $('sessions');
+    if (!list.length) { box.innerHTML = '<div class="empty">Abhi koi session linked nahi hy. Upar number daal ke link karo.</div>'; return; }
+    box.innerHTML = list.map(s => `
+      <div class="sess">
+        <div>
+          <div class="num">+${s.number}</div>
+          <div class="meta">Owner: +${s.owner || s.number}${s.since ? ' • since ' + new Date(s.since).toLocaleString() : ''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="badge ${s.status}">${s.status}</span>
+          <button class="rm" data-num="${s.number}">Remove</button>
+        </div>
+      </div>`).join('');
+    box.querySelectorAll('.rm').forEach(b => b.addEventListener('click', async () => {
+      if (!confirm('Session +' + b.dataset.num + ' remove karein?')) return;
+      b.disabled = true; b.textContent = '…';
+      try { await fetch(API + '/api/session/remove', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ number: b.dataset.num }) }); } catch {}
+      refreshSessions(); refreshStatus();
+    }));
+  } catch { $('sessions').innerHTML = '<div class="empty">Sessions load nahi ho sake.</div>'; }
 }
 function showMsg(text, type) {
   const m = $('msg'); m.textContent = text; m.className = 'msg ' + type;
@@ -231,6 +280,7 @@ $('pairBtn').addEventListener('click', async () => {
           showMsg('⏳ Code accept ho gaya — link ho raha hy…', 'ok');
         } else if (evt.status === 'paired') {
           showMsg('✅ Device link ho gaya! Bot online hy 🎉', 'ok');
+          refreshSessions(); refreshStatus();
         } else if (evt.status === 'error') {
           showMsg('❌ ' + (evt.error || 'Pairing fail'), 'err');
         }
@@ -250,8 +300,9 @@ $('copyBtn').addEventListener('click', () => {
   });
 });
 $('num').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('pairBtn').click(); });
-refreshStatus(); refreshCommands();
+refreshStatus(); refreshCommands(); refreshSessions();
 setInterval(refreshStatus, 8000);
+setInterval(refreshSessions, 10000);
 </script>
 </body>
 </html>

@@ -4,6 +4,12 @@
 const config = require('../config');
 const { getJSON, getText, pick } = require('../lib/helpers');
 const crypto = require('crypto');
+const { execFile } = require('child_process');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
+const run = (cmd, args) => new Promise((res, rej) => execFile(cmd, args, { timeout: 90000, maxBuffer: 1024 * 1024 * 50 }, (e, so, se) => (e ? rej(new Error((se || e.message).slice(0, 200))) : res())));
 
 /** Safe arithmetic evaluator (no eval) */
 function safeCalc(expr) {
@@ -208,12 +214,102 @@ const handler = async (ctx) => {
       } catch { await reply('❌ Quote fail.'); }
       break;
     }
+    case 'wthr': {
+      if (!arg) return reply(`❌ City do. Example: ${config.PREFIX}wthr Lahore`);
+      try {
+        const r = await getJSON(`https://wttr.in/${encodeURIComponent(arg)}?format=j1`);
+        const c = r.current_condition[0];
+        await reply(`🌤️ *${arg}* — ${c.temp_C}°C, ${c.weatherDesc[0].value}`);
+      } catch { await reply('❌ City nahi mili.'); }
+      break;
+    }
+    case 'clock': {
+      const s = new Date().toLocaleString('en-PK', { timeZone: config.TIMEZONE, dateStyle: 'full', timeStyle: 'medium' });
+      await reply(`🕰️ *${config.TIMEZONE}*\n${s}`);
+      break;
+    }
+    case 'moon': {
+      const now = new Date();
+      const lp = 2551443; // lunar period (seconds)
+      const newMoon = new Date('2000-01-06T18:14:00Z').getTime() / 1000;
+      const phase = ((now.getTime() / 1000 - newMoon) % lp) / lp;
+      const idx = Math.floor(phase * 8 + 0.5) % 8;
+      const names = ['New Moon 🌑', 'Waxing Crescent 🌒', 'First Quarter 🌓', 'Waxing Gibbous 🌔', 'Full Moon 🌕', 'Waning Gibbous 🌖', 'Last Quarter 🌗', 'Waning Crescent 🌘'];
+      await reply(`🌙 *Moon Phase*\n\n${names[idx]}\n📅 ${now.toDateString()}`);
+      break;
+    }
+    case 'type': {
+      if (!arg) return reply(`❌ Text do. Example: ${config.PREFIX}type hello`);
+      await reply(`⌨️ *Typing…*\n\n${arg.split('').join(' ')}`);
+      break;
+    }
+    case 'spinner': {
+      const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+      await reply(`🔄 ${frames[Math.floor(Math.random() * frames.length)]} Loading…`);
+      break;
+    }
+    case 'loading':
+      await reply('⏳ Loading…\n[▓▓▓▓▓▓▓░░░] 70%');
+      break;
+    case 'cd':
+      await reply('⏱️ Countdown\n\n3️⃣ … 2️⃣ … 1️⃣ … 🚀 GO!');
+      break;
+    case 'rocket':
+      await reply(`🚀\n╭──────╮\n│ ${config.BOT_NAME.slice(0, 6)} │\n╰──────╯\n   🔥🔥🔥\n  🚀 LAUNCH!`);
+      break;
+    case 'chumi': {
+      const who = ctx.quoted ? (ctx.quoted.key.participant || '').split('@')[0] : null;
+      await reply(`😘 *Chumi!* 💋\n${ctx.pushname} ne ${who ? `@${who}` : 'sab'} ko chumi di!`, who ? { mentions: [who + '@s.whatsapp.net'] } : {});
+      break;
+    }
+    case 'fing': {
+      const n = Math.floor(Math.random() * 5) + 1;
+      await reply(`✋ ${'☝️'.repeat(n)} *${n} fingers!*`);
+      break;
+    }
+    case 'nikal': {
+      const who = ctx.quoted ? (ctx.quoted.key.participant || '').split('@')[0] : null;
+      await reply(`🚪 *NIKAL!* ${who ? `@${who} ` : ''}bahar jao! 😤`, who ? { mentions: [who + '@s.whatsapp.net'] } : {});
+      break;
+    }
+    case 'nppm': {
+      if (!arg) return reply(`❌ Package naam do. Example: ${config.PREFIX}nppm express`);
+      try {
+        const r = await getJSON(`https://registry.npmjs.org/${encodeURIComponent(arg.trim())}`);
+        if (r.error) return reply('❌ Package nahi mila.');
+        const latest = r['dist-tags']?.latest;
+        await reply(`📦 *${r.name}* @ ${latest}\n\n📝 ${(r.description || '-').slice(0, 300)}\n🔗 ${r.homepage || '-'}`);
+      } catch { await reply('❌ npm lookup fail.'); }
+      break;
+    }
+    case 'attp': {
+      if (!arg) return reply(`❌ Text do. Example: ${config.PREFIX}attp SAQIB`);
+      try {
+        const prompt = `${arg} glowing neon text, dark background, centered, high quality`;
+        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&nologo=true`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('gen fail');
+        const buf = Buffer.from(await res.arrayBuffer());
+        const stamp = Date.now();
+        const inp = path.join(os.tmpdir(), `attp_${stamp}.png`);
+        const out = path.join(os.tmpdir(), `attp_${stamp}.webp`);
+        fs.writeFileSync(inp, buf);
+        await run('ffmpeg', ['-y', '-i', inp, '-vf', 'scale=512:512', '-c:v', 'libwebp', '-quality', '80', out]);
+        await ctx.sendSticker(fs.readFileSync(out), false);
+        [inp, out].forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
+      } catch { await reply('❌ ATTP banane me error aaya.'); }
+      break;
+    }
     default: await reply('❓ Unknown tool command');
   }
 };
 
 module.exports = {
-  commands: ['weather', 'translate', 'tr', 'qr', 'shorturl', 'short', 'calc', 'wiki', 'time', 'ip', 'base64', 'hash', 'password', 'currency', 'news', 'joke2', 'quote2'],
+  commands: [
+    'weather', 'wthr', 'translate', 'tr', 'qr', 'shorturl', 'short', 'calc', 'wiki', 'time', 'clock',
+    'ip', 'base64', 'hash', 'password', 'currency', 'news', 'joke2', 'quote2',
+    'moon', 'type', 'spinner', 'loading', 'cd', 'rocket', 'chumi', 'fing', 'nikal', 'nppm', 'attp',
+  ],
   category: '🧰 TOOLS',
   handler,
 };
