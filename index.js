@@ -58,6 +58,12 @@ app.get('/health', (req, res) => {
   res.json({ ok: true, bot: config.BOT_NAME, version: config.BOT_VERSION, status: s.status, connected: s.connected, uptime: s.uptime, sessions: s.connectedCount });
 });
 
+// Build marker — lets us confirm which code is actually live (deploy check).
+const BUILD = process.env.BUILD_MARKER || 'watchdog+lastUpdate';
+app.get('/api/version', (req, res) => {
+  res.json({ ok: true, bot: config.BOT_NAME, version: config.BOT_VERSION, build: BUILD, node: process.version, pid: process.pid, uptime: bot.getStatus().uptime });
+});
+
 app.get('/api/status', (req, res) => {
   res.json({ ok: true, ...bot.getStatus() });
 });
