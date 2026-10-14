@@ -358,6 +358,52 @@ const fun = require('../plugins/fun');
     ok('groupstatus with no text/media errors', /Text do|reply karo/i.test(g2._sent[0]?.text || ''), g2._sent[0]?.text);
   }
 
+  console.log('\n=== .reset + interactive re-prompt ===');
+  {
+    const settings = require('../plugins/settings');
+    const config = require('../config');
+
+    // non-owner blocked
+    const r0 = mockCtx({ command: 'reset', arg: 'all' });
+    r0.isOwner = false;
+    await settings.handler(r0);
+    ok('reset blocked for non-owner', /owner/i.test(r0._sent[0]?.text || ''), r0._sent[0]?.text);
+
+    // usage with no arg
+    const r1 = mockCtx({ command: 'reset' });
+    r1.isOwner = true;
+    await settings.handler(r1);
+    ok('reset shows usage', /reset all/i.test(r1._sent[0]?.text || ''), r1._sent[0]?.text);
+
+    // reset single key
+    config.MODE = 'private';
+    const r2 = mockCtx({ command: 'reset', arg: 'MODE' });
+    r2.isOwner = true;
+    await settings.handler(r2);
+    ok('reset MODE restores default', config.MODE === 'public', config.MODE);
+
+    // reset all
+    config.PREFIX = '!'; config.MODE = 'private';
+    const r3 = mockCtx({ command: 'reset', arg: 'all' });
+    r3.isOwner = true;
+    await settings.handler(r3);
+    ok('reset all restores defaults', config.PREFIX === '.' && config.MODE === 'public', `${config.PREFIX} ${config.MODE}`);
+
+    // unknown key
+    const r4 = mockCtx({ command: 'reset', arg: 'NOPE' });
+    r4.isOwner = true;
+    await settings.handler(r4);
+    ok('reset unknown key errors', /Unknown/i.test(r4._sent[0]?.text || ''), r4._sent[0]?.text);
+
+    // interactive out-of-range re-prompt
+    const interactions = require('../lib/interactions');
+    interactions.set('12345@g.us', '923001234567@s.whatsapp.net', 'choice', { options: [{ result: 'A' }, { result: 'B' }] });
+    const ic = mockCtx({ command: null, text: '9' });
+    const consumed = await interactions.handle(ic);
+    ok('out-of-range choice is consumed + re-prompts', consumed === true && /1.*2|darmiyan/i.test(ic._sent[0]?.text || ''), ic._sent[0]?.text);
+    interactions.clear('12345@g.us', '923001234567@s.whatsapp.net');
+  }
+
   console.log(`\n=== RESULT: ${pass} passed, ${fail} failed ===\n`);
   process.exit(fail ? 1 : 0);
 })();

@@ -195,6 +195,23 @@ const handler = async (ctx) => {
       await reply(`✅ Default font ab *${key}* hy.\nPreview: ${fonts.applyDefault('SAQIB-MD')}`);
       break;
     }
+    case 'reset': {
+      if (!ctx.isOwner) return reply('\ud83d\udd12 Ye command sirf *owner* ke liye hai.');
+      const what = String(arg || '').trim();
+      if (!what) {
+        return reply(`\u267b\ufe0f *Reset*\n\n\u25aa\ufe0f ${config.PREFIX}reset all \u2014 sab settings default par\n\u25aa\ufe0f ${config.PREFIX}reset <key> \u2014 ek setting reset\n\n_Keys:_ ${settings.KEYS.join(', ')}`);
+      }
+      if (what.toLowerCase() === 'all') {
+        settings.reset();
+        await reply('\u267b\ufe0f Sab settings default par reset ho gayi.');
+        return;
+      }
+      const key = what.toUpperCase();
+      if (!settings.KEYS.includes(key)) return reply(`\u274c Unknown setting "${what}".\n_Keys:_ ${settings.KEYS.join(', ')}`);
+      settings.reset(key);
+      await reply(`\u267b\ufe0f *${key}* default par reset ho gayi.`);
+      break;
+    }
     case 'settings':
       await reply(
         `⚙️ *${config.BOT_NAME} Settings*\n\n` +
@@ -216,7 +233,7 @@ module.exports = {
     'setwelcome', 'setgoodbye', 'statusemoji', 'reactemojis', 'owneremojis', 'delpath',
     'autoread', 'autotyping', 'recording', 'statusview', 'statuslike', 'administration',
     'mentionreply', 'welcome', 'goodbye', 'antilink', 'antistatus', 'setonline',
-    'botdp', 'privacy', 'getprivacy', 'groupsprivacy', 'sudo', 'delsudo', 'listsudo', 'setfont', 'settings',
+    'botdp', 'privacy', 'getprivacy', 'groupsprivacy', 'sudo', 'delsudo', 'listsudo', 'setfont', 'reset', 'settings',
   ],
   category: '⚙️ SETTINGS',
   handler,
