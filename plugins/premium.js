@@ -140,9 +140,16 @@ const handler = async (ctx) => {
   const { command, reply, arg } = ctx;
 
   // ---- toggles ----
+  // Supports explicit args: `.antidelete on` -> ON, `.antidelete off` -> OFF.
+  // With no arg it flips the current state.
   if (TOGGLES[command]) {
     const key = TOGGLES[command];
-    config[key] = !config[key];
+    const a = String(arg || '').trim().toLowerCase();
+    const ON = ['on', 'true', '1', 'enable', 'enabled', 'yes', 'haan', 'han'];
+    const OFF = ['off', 'false', '0', 'disable', 'disabled', 'no', 'nahi', 'na'];
+    if (ON.includes(a)) config[key] = true;
+    else if (OFF.includes(a)) config[key] = false;
+    else config[key] = !config[key];
     settings.save();
     await reply(`✅ *${command.toUpperCase()}* ab *${config[key] ? 'ON 🟢' : 'OFF 🔴'}* hy.`);
     return;
