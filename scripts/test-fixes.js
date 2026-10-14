@@ -27,6 +27,15 @@ function mockCtx({ command, arg = '', quotedParticipant = null, senderNum = '923
       ? { key: { remoteJid: '12345@g.us', id: 'Q1', participant: quotedParticipant }, message: { conversation: 'hi' } }
       : null,
     isOwner: false,
+    sock: {
+      user: { id: '923001234567:1@s.whatsapp.net' },
+      sendMessage: async (jid, content) => ({ key: { id: 'x' }, jid, content }),
+      groupLeave: () => Promise.resolve(), groupFetchAllParticipating: async () => ({}),
+      updateBlockStatus: () => Promise.resolve(), updateProfilePicture: () => Promise.resolve(),
+      updateProfileStatus: () => Promise.resolve(), updateProfileName: () => Promise.resolve(),
+      fetchStatus: async () => ({ status: 'busy' }), fetchBlocklist: async () => [],
+      copyNForward: () => Promise.resolve(), relayMessage: () => Promise.resolve(),
+    },
     reply: (txt, extra = {}) => { sent.push({ type: 'reply', text: String(txt), ...extra }); return Promise.resolve(); },
     send: (jid, content, opts = {}) => { sent.push({ type: 'send', jid, content, opts }); return Promise.resolve(); },
     react: () => Promise.resolve(),

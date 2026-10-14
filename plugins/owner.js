@@ -95,7 +95,9 @@ const handler = async (ctx) => {
     }
     case 'leave': {
       await reply('👋 Bot ja raha hy... Allah Hafiz!');
-      setTimeout(() => sock.groupLeave(ctx.from).catch(() => {}), 1500);
+      setTimeout(() => {
+        try { Promise.resolve(sock.groupLeave(ctx.from)).catch(() => {}); } catch { /* ignore */ }
+      }, 1500);
       break;
     }
     case 'fullpp': case 'setpp': {
