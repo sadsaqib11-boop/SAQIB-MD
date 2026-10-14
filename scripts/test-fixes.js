@@ -169,6 +169,25 @@ const fun = require('../plugins/fun');
     ok('tts starts a search', /TikTok Search|engine/i.test(c3._sent[0]?.text || ''), `got ${c3._sent[0]?.text}`);
   }
 
+  console.log('\n=== fonts (no "?" / replacement chars) ===');
+  {
+    const fonts = require('../plugins/fonts');
+    let out = [];
+    const fctx = (cmd, arg) => ({ command: cmd, arg, reply: (t) => { out.push(t); return Promise.resolve(); } });
+
+    let allGood = true;
+    for (let i = 1; i <= 105; i++) { out = []; await fonts.handler(fctx(`font${i}`, 'SAQIB Md 123')); if ((out[0] || '').includes('\uFFFD')) allGood = false; }
+    ok('all 105 fonts free of replacement chars', allGood);
+
+    out = []; await fonts.handler(fctx('font1', 'SAQIB'));
+    ok('font1 renders bold S correctly', (out[0] || '').startsWith('\u{1D412}'), out[0]);
+
+    out = []; await fonts.handler(fctx('mono', 'SAQIB'));
+    ok('named "mono" font works', (out[0] || '').length > 0 && !(out[0] || '').includes('\uFFFD'), out[0]);
+
+    ok('applyDefault() uses Mono by default', fonts.applyDefault('A') === fonts.style('A', 12));
+  }
+
   console.log(`\n=== RESULT: ${pass} passed, ${fail} failed ===\n`);
   process.exit(fail ? 1 : 0);
 })();

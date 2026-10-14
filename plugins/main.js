@@ -12,6 +12,7 @@ const path = require('path');
 const fs = require('fs');
 const { getJSON, formatDuration } = require('../lib/helpers');
 const { msgStore, aiCache } = require('../lib/cache');
+const fonts = require('./fonts');
 
 const startAt = Date.now();
 
@@ -56,8 +57,11 @@ function findCategory(query) {
 }
 
 function header() {
+  // Render the bot name in the configured default font (default: Mono).
+  let name = config.BOT_NAME;
+  try { name = fonts.applyDefault(config.BOT_NAME); } catch { /* keep plain */ }
   return (
-    `╭─❖ *${config.BOT_NAME}* ❖─╮\n` +
+    `╭─❖ *${name}* ❖─╮\n` +
     `│ 🤖 Bot: ${config.BOT_NAME} v${config.BOT_VERSION}\n` +
     `│ 👑 Owner: ${config.OWNER_NAME}\n` +
     `│ 📅 ${new Date().toLocaleString('en-PK', { timeZone: config.TIMEZONE })}\n` +

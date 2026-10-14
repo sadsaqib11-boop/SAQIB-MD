@@ -153,6 +153,19 @@ const handler = async (ctx) => {
     case 'listsudo':
       await reply(`👑 *Sudo users:*\n${config.SUDO.length ? config.SUDO.map((n) => `+${n}`).join('\n') : '(koi nahi)'}`);
       break;
+    case 'setfont': {
+      const fonts = require('./fonts');
+      const key = String(arg || '').toLowerCase().trim();
+      if (!key) {
+        return reply(`ℹ️ Default font: *${config.DEFAULT_FONT}*\n❓ ${config.PREFIX}setfont <name>\nAvailable: ${Object.keys(fonts.NAMED).join(', ')}`);
+      }
+      if (fonts.NAMED[key] === undefined && !/^font\d+$/.test(key)) {
+        return reply(`❌ Unknown font "${key}".\nAvailable: ${Object.keys(fonts.NAMED).join(', ')}`);
+      }
+      config.DEFAULT_FONT = key; settings.save();
+      await reply(`✅ Default font ab *${key}* hy.\nPreview: ${fonts.applyDefault('SAQIB-MD')}`);
+      break;
+    }
     case 'settings':
       await reply(
         `⚙️ *${config.BOT_NAME} Settings*\n\n` +
@@ -174,7 +187,7 @@ module.exports = {
     'setwelcome', 'setgoodbye', 'statusemoji', 'reactemojis', 'owneremojis', 'delpath',
     'autoread', 'autotyping', 'recording', 'statusview', 'statuslike', 'administration',
     'mentionreply', 'welcome', 'goodbye', 'antilink', 'antistatus', 'setonline',
-    'botdp', 'privacy', 'getprivacy', 'groupsprivacy', 'sudo', 'delsudo', 'listsudo', 'settings',
+    'botdp', 'privacy', 'getprivacy', 'groupsprivacy', 'sudo', 'delsudo', 'listsudo', 'setfont', 'settings',
   ],
   category: '⚙️ SETTINGS',
   handler,

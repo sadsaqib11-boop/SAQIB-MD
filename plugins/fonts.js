@@ -9,12 +9,20 @@ const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const a = 'abcdefghijklmnopqrstuvwxyz';
 const N = '0123456789';
 
-// helper: build a mapper from two source strings + two target strings
+// helper: build a mapper from two source strings + two target strings.
+// IMPORTANT: we iterate by *code point* ([...str]) — NOT by UTF-16 code unit.
+// The styled alphabets (𝐀, 𝘼, 𝙈, …) live outside the BMP, so `dstUpper[i]`
+// would slice a surrogate pair in half and produce `` ("?") — the exact bug
+// that made every math-style font look broken.
 function mapper(srcUpper, srcLower, dstUpper, dstLower, srcNum, dstNum) {
   const map = {};
-  for (let i = 0; i < srcUpper.length; i++) map[srcUpper[i]] = dstUpper[i];
-  for (let i = 0; i < srcLower.length; i++) map[srcLower[i]] = dstLower[i];
-  if (srcNum && dstNum) for (let i = 0; i < srcNum.length; i++) map[srcNum[i]] = dstNum[i];
+  const su = [...srcUpper], sl = [...srcLower], du = [...dstUpper], dl = [...dstLower];
+  for (let i = 0; i < su.length; i++) map[su[i]] = du[i];
+  for (let i = 0; i < sl.length; i++) map[sl[i]] = dl[i];
+  if (srcNum && dstNum) {
+    const sn = [...srcNum], dn = [...dstNum];
+    for (let i = 0; i < sn.length; i++) map[sn[i]] = dn[i];
+  }
   return (s) => [...s].map((c) => map[c] || c).join('');
 }
 
@@ -43,14 +51,14 @@ const TRANSFORMS = [
   mapper(A, a, '🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃🅄🅅🅆🅇🅈🅉', '🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃🅄🅅🅆🅇🅈🅉'),
   mapper(A, a, '🅰🅱🅲🅳🅴🅵🅶🅷🅸🅹🅺🅻🅼🅽🅾🅿🆀🆁🆂🆃🆄🆅🆆🆇🆈🆉', '🅰🅱🅲🅳🅴🅵🅶🅷🅸🅹🅺🅻🅼🅽🅾🅿🆀🆁🆂🆃🆄🆅🆆🆇🆈🆉'),
   mapper(A, a, '⒜⒝⒞⒟⒠⒡⒢⒣⒤⒥⒦⒧⒨⒩⒪⒫⒬⒭⒮⒯⒰⒱⒲⒳⒴⒵', '⒜⒝⒞⒟⒠⒡⒢⒣⒤⒥⒦⒧⒨⒩⒪⒫⒬⒭⒮⒯⒰⒱⒲⒳⒴⒵'),
-  mapper(A, a, '🇦🇧🇨🇩🇪🇫🇬🇭🇮🇯🇰🇱🇲🇳🇴🇵🇶🇷🇸🇹🇺🇻🇼🇽🇾🇿', '🇦🇧🇨🇩🇪🇫🇬🇭🇮🇯🇰🇱🇲🇳🇴🇵🇶🇷🇸🇹🇺🇻🇼🇽🇾🇿'),
+  (s) => comb(s, '\u0336'), // strikethrough
   mapper(A, a, 'ΛBᄃDΣFGΉIJKᒪMПӨPQЯƧTЦVЩXYZ', 'ΛbᄃdΣfgΉijklmпӨpqяƧtцvщxyz'),
   mapper(A, a, 'АБСДЕФГНИЈКЛМНОПКРСТУВШХУЗ', 'абсдефгнијклмнопкрстувшхуз'),
   mapper(A, a, 'ȺƁȻƊɆƑǤǶƗɈꝀȽM₦Ø₱ɊɌ₴ŦɄV₩ӾɎƵ', 'ⱥƀȼɗɇƒǥɦɨɉꝁɬɱƞøᵽɋɍʂŧʉⱴⱳӿɏƶ'),
   mapper(A, a, 'ȦƁĊÐȨƑƓĦƗĴƘĿMŊØƤɊŘŞŦɄVŴXŶƵ', 'ȧƀċðȩƒɠħɨĵƙŀɱŋøƥɋřşŧʉⱱⱳӿɏƶ'),
   mapper(A, a, '卂乃匚ᗪ乇千Ꮆ卄丨ﾌҜㄥ爪几ㄖ卩Ɋ尺丂ㄒㄩᐯ山乂ㄚ乙', '卂乃匚ᗪ乇千Ꮆ卄丨ﾌҜㄥ爪几ㄖ卩ɋ尺丂ㄒㄩᐯ山乂ㄚ乙'),
   mapper(A, a, 'αв¢∂єƒgнιנкℓмησρqяѕтυνωχуz', 'αв¢∂єƒgнιנкℓмησρqяѕтυνωχуz'),
-  mapper(A, a, 'ᏗᏰፈᎴᏋᎦᎶᏂᎥᏠᏦᏝᎷᏁᎧᎮᎤᏒᏕᏖᏬᏉᏇጀᎩፚ', 'ᏗᏰፈᎴᏋᎦᎶᏂᎥᏠᏦᏝᎷᏁᎧᎮᎤᏒᏕᏖᏬᏉᏇጀᎩፚ'),
+  (s) => comb(s, '\u0332'), // underline
 ];
 
 // Decorations applied to the plain text for the higher-numbered fonts
@@ -69,13 +77,43 @@ function style(text, idx) {
   return out;
 }
 
+// Named aliases → transform index (so users don't have to remember numbers).
+// `mono` (monospace) is the bot's DEFAULT font.
+const NAMED = {
+  mono: 12, monospace: 12, code: 12,
+  bold: 0, italic: 1, bolditalic: 2,
+  script: 3, boldscript: 4, fraktur: 5, doublestruck: 6, boldfraktur: 7,
+  sans: 8, sansbold: 9, sansitalic: 10, sansbolditalic: 11,
+  fullwidth: 13, smallcaps: 14, superscript: 15,
+  circled: 16, negativesquared: 17, negativecircled: 18, squared: 19, parenthesized: 20,
+  strikethrough: 21, cyrillic: 23, fancy: 24, greek: 28, underline: 29,
+};
+
+/** Resolve a font command (font<N> or a name) to a transform index, or -1. */
+function idxFor(command) {
+  const c = String(command || '').toLowerCase();
+  if (NAMED[c] !== undefined) return NAMED[c];
+  const n = parseInt(c.replace(/[^0-9]/g, ''), 10);
+  return Number.isFinite(n) && n >= 1 ? n - 1 : -1;
+}
+
+/** Apply the configured default font (config.DEFAULT_FONT, default 'mono'). */
+function applyDefault(text) {
+  const idx = NAMED[String(config.DEFAULT_FONT || 'mono').toLowerCase()];
+  return style(String(text), idx === undefined ? 12 : idx);
+}
+
 const handler = async (ctx) => {
   const { command, reply, arg } = ctx;
-  const idx = parseInt(command.replace(/[^0-9]/g, ''), 10) - 1;
+  const idx = idxFor(command);
+  if (idx < 0) return reply('❓ Unknown font.');
   if (!arg) return reply(`❌ Text do. Example: ${config.PREFIX}${command} SAQIB-MD`);
   await reply(style(arg, idx));
 };
 
-const commands = Array.from({ length: TOTAL }, (_, i) => `font${i + 1}`);
+const commands = [
+  ...Array.from({ length: TOTAL }, (_, i) => `font${i + 1}`),
+  ...Object.keys(NAMED),
+];
 
-module.exports = { commands, category: '🔠 FONTS', handler };
+module.exports = { commands, category: '🔠 FONTS', handler, style, applyDefault, NAMED };
