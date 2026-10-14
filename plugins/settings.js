@@ -111,7 +111,7 @@ const handler = async (ctx) => {
       config.ANTILINK = !config.ANTILINK; settings.save();
       await reply(`✅ Anti-link: *${config.ANTILINK ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'autostatus': case 'antistatus':
+    case 'antistatus':
       config.AUTOSTATUS = !config.AUTOSTATUS; settings.save();
       await reply(`✅ Auto-status: *${config.AUTOSTATUS ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
@@ -173,7 +173,7 @@ module.exports = {
     'mode', 'prefix', 'setprefix', 'botname', 'ownername', 'ownernumber', 'description', 'stickername',
     'setwelcome', 'setgoodbye', 'statusemoji', 'reactemojis', 'owneremojis', 'delpath',
     'autoread', 'autotyping', 'recording', 'statusview', 'statuslike', 'administration',
-    'mentionreply', 'welcome', 'goodbye', 'antilink', 'autostatus', 'antistatus', 'setonline',
+    'mentionreply', 'welcome', 'goodbye', 'antilink', 'antistatus', 'setonline',
     'botdp', 'privacy', 'getprivacy', 'groupsprivacy', 'sudo', 'delsudo', 'listsudo', 'settings',
   ],
   category: '⚙️ SETTINGS',
