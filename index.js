@@ -59,9 +59,35 @@ app.get('/health', (req, res) => {
 });
 
 // Build marker — lets us confirm which code is actually live (deploy check).
-const BUILD = process.env.BUILD_MARKER || 'watchdog+lastUpdate';
+const BUILD = process.env.BUILD_MARKER || 'watchdog+lastUpdate+diag';
 app.get('/api/version', (req, res) => {
   res.json({ ok: true, bot: config.BOT_NAME, version: config.BOT_VERSION, build: BUILD, node: process.version, pid: process.pid, uptime: bot.getStatus().uptime });
+});
+
+// Session-dir diagnostic — shows exactly what is stored on the volume so we
+// can tell whether a number is linked (creds.json + registered) or not.
+app.get('/api/session-dir', (req, res) => {
+  const base = path.resolve(config.SESSION_DIR);
+  const entries = [];
+  try {
+    for (const d of fs.readdirSync(base)) {
+      const p = path.join(base, d);
+      let isDir = false;
+      try { isDir = fs.statSync(p).isDirectory(); } catch { /* ignore */ }
+      let hasCreds = false, registered = false, me = null, files = 0;
+      if (isDir) {
+        try { files = fs.readdirSync(p).length; } catch { /* ignore */ }
+        try {
+          const c = JSON.parse(fs.readFileSync(path.join(p, 'creds.json'), 'utf8'));
+          hasCreds = true; registered = !!c.registered; me = c?.me?.id || null;
+        } catch { /* no creds.json */ }
+      }
+      entries.push({ name: d, isDir, files, hasCreds, registered, me });
+    }
+  } catch (e) {
+    return res.json({ ok: false, dir: base, error: e?.message || String(e) });
+  }
+  res.json({ ok: true, dir: base, entries });
 });
 
 app.get('/api/status', (req, res) => {
