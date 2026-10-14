@@ -1,1 +1,329 @@
-LyoqCiAqIElTTEFNSUMg4oCUIERlZW4gY29tbWFuZHMgKFF1cmFuLCBoYWRpdGgsIHByYXllciwgZHVhcywgemFrYXTigKYpCiAqIEFsbCBkYXRhIGZyb20gZnJlZSBwdWJsaWMgQVBJcyAoYWxxdXJhbi5jbG91ZCwgYWxhZGhhbiwgaGFkaXRoLWFwaSBDRE4pLgogKi8KY29uc3QgY29uZmlnID0gcmVxdWlyZSgnLi4vY29uZmlnJyk7CmNvbnN0IHsgZ2V0SlNPTiwgZ2V0VGV4dCwgcGljaywgcmFuZEludCB9ID0gcmVxdWlyZSgnLi4vbGliL2hlbHBlcnMnKTsKCmNvbnN0IFAgPSAoKSA9PiBjb25maWcuUFJFRklYOwpjb25zdCBjbGVhbiA9IChzKSA9PiBTdHJpbmcocyB8fCAnJykucmVwbGFjZSgvXHMrL2csICcgJykudHJpbSgpOwoKLyoqCiAqIFByYXllciB0aW1pbmdzIGZyb20gYWxhZGhhbiwgYnV0IG5ldmVyIGxldCBhIGZsYWt5L2VtcHR5IEFQSSByZXNwb25zZSBjcmFzaCBhCiAqIGNvbW1hbmQuIFJldHVybnMgdGhlIHRpbWluZ3Mgb2JqZWN0LCBvciBudWxsIHdoZW4gdGhlIGxvb2t1cCBmYWlscy4KICovCmFzeW5jIGZ1bmN0aW9uIHNhZmVUaW1pbmdzKGNpdHkpIHsKICB0cnkgewogICAgY29uc3QgZCA9IGF3YWl0IGdldEpTT04oYGh0dHBzOi8vYXBpLmFsYWRoYW4uY29tL3YxL3RpbWluZ3NCeUNpdHk/Y2l0eT0ke2VuY29kZVVSSUNvbXBvbmVudChjaXR5KX0mY291bnRyeT1QSyZtZXRob2Q9MWAsIHt9LCAxNTAwMCk7CiAgICBjb25zdCB0ID0gZD8uZGF0YT8udGltaW5nczsKICAgIHJldHVybiB0ICYmIHQuRmFqciA/IHQgOiBudWxsOwogIH0gY2F0Y2ggeyByZXR1cm4gbnVsbDsgfQp9CgovKiAtLS0tIGhhZGl0aDogZmF3YXphaG1lZDAvaGFkaXRoLWFwaSBvbiBqc0RlbGl2ciAtLS0tICovCmNvbnN0IEhBRElUSF9CT09LUyA9IFsnYnVraGFyaScsICdtdXNsaW0nLCAnYWJ1ZGF3dWQnLCAndGlybWlkaGknLCAnbmFzYWknLCAnaWJubWFqYWgnXTsKYXN5bmMgZnVuY3Rpb24gcmFuZG9tSGFkaXRoKGJvb2spIHsKICBjb25zdCBiID0gSEFESVRIX0JPT0tTLmluY2x1ZGVzKGJvb2spID8gYm9vayA6IHBpY2soSEFESVRIX0JPT0tTKTsKICBjb25zdCBzZWMgPSByYW5kSW50KDEsIDQwKTsKICBjb25zdCBkID0gYXdhaXQgZ2V0SlNPTihgaHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doL2Zhd2F6YWhtZWQwL2hhZGl0aC1hcGlAMS9lZGl0aW9ucy9lbmctJHtifS9zZWN0aW9ucy8ke3NlY30uanNvbmApOwogIGNvbnN0IGxpc3QgPSBkPy5oYWRpdGhzIHx8IFtdOwogIGlmICghbGlzdC5sZW5ndGgpIHRocm93IG5ldyBFcnJvcignZW1wdHknKTsKICBjb25zdCBoID0gcGljayhsaXN0KTsKICByZXR1cm4geyBib29rOiBkPy5tZXRhZGF0YT8ubmFtZSB8fCBiLCBubzogaC5oYWRpdGhudW1iZXIsIHRleHQ6IGNsZWFuKGgudGV4dCkgfTsKfQoKLyogLS0tLSBxdXJhbiAtLS0tICovCmFzeW5jIGZ1bmN0aW9uIGF5YWgocmVmKSB7CiAgY29uc3QgZCA9IGF3YWl0IGdldEpTT04oYGh0dHBzOi8vYXBpLmFscXVyYW4uY2xvdWQvdjEvYXlhaC8ke2VuY29kZVVSSUNvbXBvbmVudChyZWYpfS9lZGl0aW9ucy9xdXJhbi11dGhtYW5pLGVuLnNhaGloLHVyLmphbGFuZGhyeWApOwogIGNvbnN0IFthciwgZW4sIHVyXSA9IGQuZGF0YTsKICByZXR1cm4geyBhcjogYXIudGV4dCwgZW46IGVuLnRleHQsIHVyOiB1ci50ZXh0LCByZWY6IGAke2FyLnN1cmFoLmVuZ2xpc2hOYW1lfSAke2FyLm51bWJlckluU3VyYWh9OiR7YXIuc3VyYWgubnVtYmVyfWAgfTsKfQoKY29uc3QgS0FBQkEgPSAnaHR0cHM6Ly91cGxvYWQud2lraW1lZGlhLm9yZy93aWtpcGVkaWEvY29tbW9ucy90aHVtYi9lL2UwL0thYWJhX01hc2ppZF9IYXJhYW1fTWFra2FoLmpwZy82NDBweC1LYWFiYV9NYXNqaWRfSGFyYWFtX01ha2thaC5qcGcnOwpjb25zdCBNQURJTkFIID0gJ2h0dHBzOi8vdXBsb2FkLndpa2ltZWRpYS5vcmcvd2lraXBlZGlhL2NvbW1vbnMvdGh1bWIvNi82Yi9BbC1NYXNqaWRfYW4tTmFiYXdpLmpwZy82NDBweC1BbC1NYXNqaWRfYW4tTmFiYXdpLmpwZyc7Cgpjb25zdCBBWktBUiA9IFsKICBbJ1N1YmhhbkFsbGFoJywgJ9iz2Y/YqNmS2K3Zjtin2YbZjiDYp9mE2YTZkdmw2YcnLCAnQWxsYWggcGFrIGhhaSDigJQgMzN4J10sCiAgWydBbGhhbWR1bGlsbGFoJywgJ9in2Y7ZhNmS2K3ZjtmF2ZLYr9mPINmE2ZDZhNmR2bDZhycsICdTYWIgdGFyZWVmIEFsbGFoIGtlIGxpeWUg4oCUIDMzeCddLAogIFsnQWxsYWh1IEFrYmFyJywgJ9in2Y7ZhNmE2ZHZsNmH2Y8g2KPZjtmD2ZLYqNmO2LEnLCAnQWxsYWggc2FiIHNlIGJhcmEg4oCUIDM0eCddLAogIFsnTGEgaWxhaGEgaWxsYWxsYWgnLCAn2YTZjtinINil2ZDZhNmw2YfZjiDYpdmQ2YTZjtmR2Kcg2KfZhNmE2ZHZsNmHJywgJ0FsbGFoIGtlIHNpd2Ega29pIGliYWRhdCBrZSBsYWlxIG5haGknXSwKICBbJ0FzdGFnaGZpcnVsbGFoJywgJ9ij2Y7Ys9mS2KrZjti62ZLZgdmQ2LHZjyDYp9mE2YTZkdmw2YcnLCAnQWxsYWggc2UgbWFhZmkgbWFuZ28g4oCUIDEwMHgnXSwKICBbJ0xhIGhhd2xhIHdhIGxhIHF1d3dhdGEgaWxsYSBiaWxsYWgnLCAn2YTZjtinINit2Y7ZiNmS2YTZjiDZiNmO2YTZjtinINmC2Y/ZiNmO2ZHYqdmOINil2ZDZhNmO2ZHYpyDYqNmQ2KfZhNmE2ZHZsNmHJywgJ1RhYWthdCBzaXJmIEFsbGFoIHNlIGhhaSddLApdOwpjb25zdCBEVUEgPSB7CiAgc2FicjogJ9ix2Y7YqNmO2ZHZhtmO2Kcg2KPZjtmB2ZLYsdmQ2LrZkiDYudmO2YTZjtmK2ZLZhtmO2Kcg2LXZjtio2ZLYsdmL2Kcg2YjZjtir2Y7YqNmQ2ZHYqtmSINij2Y7ZgtmS2K/Zjtin2YXZjtmG2Y7Yp1xuX+KAnUFleSBoYW1hcmUgUmFiISBodW0gcGFyIHNhYnIgbmF6aWwgZmFybWEgYXVyIGhhbWFyZSBxYWRhbSBzYWFiaXQgcmFraC7igJxfICgyOjI1MCknLAogIHNodWtyOiAn2YjZjtil2ZDYsNmSINiq2Y7Yo9mO2LDZjtmR2YbZjiDYsdmO2KjZj9mR2YPZj9mF2ZIg2YTZjtim2ZDZhiDYtNmO2YPZjtix2ZLYqtmP2YXZkiDZhNmO2KPZjtiy2ZDZitiv2Y7ZhtmO2ZHZg9mP2YXZklxuX+KAnUFnYXIgdHVtIHNodWtyIGthcm9nZSB0byBtYWluIHR1bWhlIGF1ciB6eWFkYSBkdW5nYS7igJxfICgxNDo3KScsCiAgbmF6YXI6ICfYo9mO2LnZj9mI2LDZjyDYqNmQ2YPZjtmE2ZDZhdmO2KfYqtmQINin2YTZhNmR2bDZh9mQINin2YTYqtmO2ZHYp9mF2Y7Zkdin2KrZkCDZhdmQ2YbZkiDZg9mP2YTZkNmRINi02Y7ZitmS2LfZjtin2YbZjSDZiNmO2YfZjtin2YXZjtmR2KnZjSDZiNmO2YXZkNmG2ZIg2YPZj9mE2ZDZkSDYudmO2YrZktmG2Y0g2YTZjtin2YXZjtmR2KnZjVxuX05hemFyIGtlIGxpeWUgeWUgZHVhIHBhcmhvIChCdWtoYXJpKS5fJywKICB0YXdiYWg6ICfYsdmO2KjZkNmRINin2LrZktmB2ZDYsdmSINmE2ZDZiiDZiNmO2KrZj9io2ZIg2LnZjtmE2Y7ZitmO2ZEg2KXZkNmG2Y7ZkdmD2Y4g2KPZjtmG2ZLYqtmOINin2YTYqtmO2ZHZiNmO2ZHYp9io2Y8g2KfZhNix2Y7Zkdit2ZDZitmF2Y9cbl/igJ1BZXkgbWVyZSBSYWIhIG11amhlIGJha2hzaCBkZSBhdXIgbWVyaSB0YXdiYWggcXVib29sIGZhcm1hLuKAnF8nLAogIHNhZmFyOiAn2LPZj9io2ZLYrdmO2KfZhtmOINin2YTZjtmR2LDZkNmKINiz2Y7YrtmO2ZHYsdmOINmE2Y7ZhtmO2Kcg2YfZjtiw2Y7YpyDZiNmO2YXZjtinINmD2Y/ZhtmO2ZHYpyDZhNmO2YfZjyDZhdmP2YLZktix2ZDZhtmQ2YrZhtmOXG5fU2FmYXIga2kgZHVhIOKAlCBzYWZhciBzaHVydSBrYXJ0ZSB3YXF0IHBhcmhvLl8nLAogIGtoYW5hOiAn2KjZkNiz2ZLZhdmQINin2YTZhNmR2bDZh9mQINmI2Y7YudmO2YTZjtmJINio2Y7YsdmO2YPZjtip2ZAg2KfZhNmE2ZHZsNmH2ZBcbl9LaGFuYSBzaHVydSBrYXJ0ZSB3YXF0Ll8nLAogIHNvbmE6ICfYp9mE2YTZkdmw2YfZj9mF2Y7ZkSDYqNmQ2KfYs9mS2YXZkNmD2Y4g2KPZjtmF2Y/ZiNiq2Y8g2YjZjtij2Y7YrdmS2YrZjtinXG5fU29uZSBzZSBwZWhsZS5fJywKICB1dGhuYTogJ9in2YTZktit2Y7ZhdmS2K/ZjyDZhNmQ2YTZkdmw2YfZkCDYp9mE2Y7Zkdiw2ZDZiiDYo9mO2K3ZktmK2Y7Yp9mG2Y7YpyDYqNmO2LnZktiv2Y4g2YXZjtinINij2Y7ZhdmO2KfYqtmO2YbZjtinINmI2Y7YpdmQ2YTZjtmK2ZLZh9mQINin2YTZhtmP2ZHYtNmP2YjYsdmPXG5fTmVlbmQgc2UgdXRobmUgcGFyLl8nLAogIGlzdGlraGFyYTogJ9in2YTZhNmR2bDZh9mP2YXZjtmRINil2ZDZhtmQ2ZHZiiDYo9mO2LPZktiq2Y7YrtmQ2YrYsdmP2YPZjiDYqNmQ2LnZkNmE2ZLZhdmQ2YPZjiDZiNmO2KPZjtiz2ZLYqtmO2YLZktiv2ZDYsdmP2YPZjiDYqNmQ2YLZj9iv2ZLYsdmO2KrZkNmD2Y5cbl9Jc3Rpa2hhcmEga2kgZHVhIOKAlCBuYW1heiBrZSBiYWFkIHBhcmhvLCBwaGlyIGRpbCBraSB0YXJhZiBkZWtoby5fJywKICBqdW1tYWg6ICfYp9mE2YTZkdmw2YfZj9mF2Y7ZkSDYo9mO2LXZktmE2ZDYrdmSINmE2ZDZiiDYr9mQ2YrZhtmQ2Yog2KfZhNmO2ZHYsNmQ2Yog2YfZj9mI2Y4g2LnZkNi12ZLZhdmO2KnZjyDYo9mO2YXZktix2ZDZilxuX0p1bW1haCBrZSBkaW4ga2FzcmF0IHNlIGR1cm9vZCBwYXJobyBhdXIgeWUgZHVhIGthcm8uXycsCn07CmNvbnN0IEtBTElNQSA9IFsKICBbJzFzdCBLYWxpbWEgKFRheXlhYiknLCAn2YTZjtinINil2ZDZhNmw2YfZjiDYpdmQ2YTZjtmR2Kcg2KfZhNmE2ZHZsNmH2Y8g2YXZj9it2Y7ZhdmO2ZHYr9mMINix2Y7Ys9mP2YjZhNmPINin2YTZhNmR2bDZh9mQJ10sCiAgWycybmQgS2FsaW1hIChTaGFoYWRhdCknLCAn2KPZjti02ZLZh9mO2K/ZjyDYo9mO2YbZkiDZhNmO2Kcg2KXZkNmE2bDZh9mOINil2ZDZhNmO2ZHYpyDYp9mE2YTZkdmw2YfZjyDZiNmO2KPZjti02ZLZh9mO2K/ZjyDYo9mO2YbZjtmRINmF2Y/YrdmO2YXZjtmR2K/Zi9inINi52Y7YqNmS2K/Zj9mH2Y8g2YjZjtix2Y7Ys9mP2YjZhNmP2YfZjyddLAogIFsnM3JkIEthbGltYSAoVGFtamVlZCknLCAn2LPZj9io2ZLYrdmO2KfZhtmOINin2YTZhNmR2bDZh9mQINmI2Y7Yp9mE2ZLYrdmO2YXZktiv2Y8g2YTZkNmE2ZHZsNmH2ZAg2YjZjtmE2Y7YpyDYpdmQ2YTZsNmH2Y4g2KXZkNmE2Y7ZkdinINin2YTZhNmR2bDZh9mPINmI2Y7Yp9mE2YTZkdmw2YfZjyDYo9mO2YPZktio2Y7YsdmPJ10sCiAgWyc0dGggS2FsaW1hIChUYXdoZWVkKScsICfZhNmO2Kcg2KXZkNmE2bDZh9mOINil2ZDZhNmO2ZHYpyDYp9mE2YTZkdmw2YfZjyDZiNmO2K3Zktiv2Y7Zh9mPINmE2Y7YpyDYtNmO2LHZkNmK2YPZjiDZhNmO2YfZjyDZhNmO2YfZjyDYp9mE2ZLZhdmP2YTZktmD2Y8g2YjZjtmE2Y7Zh9mPINin2YTZktit2Y7ZhdmS2K/ZjyddLAogIFsnNXRoIEthbGltYSAoSXN0aWdoZmFyKScsICfYo9mO2LPZktiq2Y7YutmS2YHZkNix2Y8g2KfZhNmE2ZHZsNmH2Y4g2LHZjtio2ZDZkdmKINmF2ZDZhtmSINmD2Y/ZhNmQ2ZEg2LDZjtmG2ZLYqNmNINmI2Y7Yo9mO2KrZj9mI2KjZjyDYpdmQ2YTZjtmK2ZLZh9mQJ10sCiAgWyc2dGggS2FsaW1hIChSYWRkLWUtS3VmciknLCAn2KfZhNmE2ZHZsNmH2Y/ZhdmO2ZEg2KXZkNmG2ZDZkdmKINij2Y7YudmP2YjYsNmPINio2ZDZg9mOINmF2ZDZhtmSINij2Y7ZhtmSINij2Y/YtNmS2LHZkNmD2Y4g2KjZkNmD2Y4g2LTZjtmK2ZLYptmL2KcnXSwKXTsKY29uc3QgSVNMQU1JQ19RID0gWwogIFsnUXVyYW4gbWUga2l0bmkgc3VyYWggaGFpbj8nLCAnMTE0J10sCiAgWydTYWIgc2UgbGFtYmkgc3VyYWgga2F1bnNpIGhhaT8nLCAnQWwtQmFxYXJhaCAoMiknXSwKICBbJ05hbWF6IG1lIGtpdG5pIHJha2F0cyBmYXJ6IGhhaW4gKDUgd2FxdCBtaWxha2FyKT8nLCAnMTcnXSwKICBbJ1BlaGxlIGtoYWxpZmEga2F1biB0aGF5PycsICdBYnUgQmFrciBTaWRkaXF1ZSAoUkEpJ10sCiAgWydRdXJhbiBraXMgbWFoaW5lIG1lIG5hemlsIGhvbmEgc2h1cnUgaHVhPycsICdSYW1hZGFuJ10sCiAgWydTYWIgc2UgcGVobGkgbWFzamlkIGthdW5zaSBoYWk/JywgJ01hc2ppZCBhbC1IYXJhbSAoTWFra2FoKSddLAogIFsnWmFrYXQga2l0bmUgcGVyY2VudCBoYWk/JywgJzIuNSUgKDQwIG1lIDEpJ10sCiAgWydIYWpqIGtpcyBtYWhpbmUgbWUgaG90YSBoYWk/JywgJ1ppbC1IaWpqYWgnXSwKXTsKCmNvbnN0IGhhbmRsZXIgPSBhc3luYyAoY3R4KSA9PiB7CiAgY29uc3QgeyBjb21tYW5kLCByZXBseSwgYXJnIH0gPSBjdHg7CgogIHN3aXRjaCAoY29tbWFuZCkgewogICAgLyogLS0tLS0tLS0tLS0tLS0tLSBRVVJBTiAtLS0tLS0tLS0tLS0tLS0tICovCiAgICBjYXNlICdheWF0JzogewogICAgICBjb25zdCBkID0gYXdhaXQgZ2V0SlNPTignaHR0cHM6Ly9hcGkucXVyYW4uY29tL2FwaS92NC92ZXJzZXMvcmFuZG9tP3RyYW5zbGF0aW9ucz0xNTgmZmllbGRzPXRleHRfdXRobWFuaScpOwogICAgICBjb25zdCB2ID0gZC52ZXJzZTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5OWICpBeWFoIG9mIHRoZSBkYXkqXG5cbiR7di50ZXh0X3V0aG1hbml9XG5cbl8ke2NsZWFuKHYudHJhbnNsYXRpb25zPy5bMF0/LnRleHQpfV9cblxu4oCUICR7di52ZXJzZV9rZXl9YCk7CiAgICB9CiAgICBjYXNlICdxdXJhbic6IGNhc2UgJ3RhZnNpcic6IHsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg4p2MIFN1cmFoOmF5YWggZG8uIEV4YW1wbGU6ICR7UCgpfXF1cmFuIDI6MjU1YCk7CiAgICAgIGNvbnN0IHJlZiA9IGFyZy50cmltKCkucmVwbGFjZSgnLScsICc6Jyk7CiAgICAgIGNvbnN0IGEgPSBhd2FpdCBheWFoKHJlZik7CiAgICAgIGNvbnN0IGhlYWQgPSBjb21tYW5kID09PSAndGFmc2lyJyA/IGDwn5OaICpUYWZzaXIg4oCUICR7YS5yZWZ9KmAgOiBg8J+TliAqJHthLnJlZn0qYDsKICAgICAgcmV0dXJuIHJlcGx5KGAke2hlYWR9XG5cbiR7YS5hcn1cblxu8J+HrPCfh6cgJHthLmVufVxuXG7wn4e18J+HsCAke2EudXJ9YCk7CiAgICB9CiAgICBjYXNlICdzdXJhaCc6IHsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg4p2MIFN1cmFoIG51bWJlciBkbyAoMS0xMTQpLiBFeGFtcGxlOiAke1AoKX1zdXJhaCAzNmApOwogICAgICBjb25zdCBuID0gcGFyc2VJbnQoYXJnLCAxMCk7CiAgICAgIGlmICghKG4gPj0gMSAmJiBuIDw9IDExNCkpIHJldHVybiByZXBseSgn4p2MIFN1cmFoIG51bWJlciAxIHNlIDExNCBrZSBkYXJtaXlhbiBoby4nKTsKICAgICAgY29uc3QgZCA9IGF3YWl0IGdldEpTT04oYGh0dHBzOi8vYXBpLmFscXVyYW4uY2xvdWQvdjEvc3VyYWgvJHtufS9lZGl0aW9ucy9xdXJhbi11dGhtYW5pLHVyLmphbGFuZGhyeWApOwogICAgICBjb25zdCBbYXIsIHVyXSA9IGQuZGF0YTsKICAgICAgY29uc3QgYXlhaHMgPSBhci5heWFocy5zbGljZSgwLCA1KTsKICAgICAgY29uc3QgYm9keSA9IGF5YWhzLm1hcCgoeCkgPT4gYCR7eC5udW1iZXJJblN1cmFofS4gJHt4LnRleHR9YCkuam9pbignXG5cbicpOwogICAgICBhd2FpdCByZXBseShg8J+TliAqU3VyYWggJHthci5lbmdsaXNoTmFtZX0gKCR7YXIubmFtZX0pKlxuJHthci5udW1iZXJPZkF5YWhzfSBheWFocyDigJQgTWFra2kvTWFkYW5pOiAke2FyLnJldmVsYXRpb25UeXBlfVxuXG4ke2JvZHl9XG5cbl/igKZiYXFpICR7TWF0aC5tYXgoMCwgYXIubnVtYmVyT2ZBeWFocyAtIDUpfSBheWFocy5fXG7wn4e18J+HsCAke2NsZWFuKHVyLmF5YWhzWzBdLnRleHQpfWApOwogICAgICBicmVhazsKICAgIH0KICAgIGNhc2UgJ3F1cmFuc2VhcmNoJzogY2FzZSAncXNlYXJjaCc6IHsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg4p2MIExhZnogZG8uIEV4YW1wbGU6ICR7UCgpfXF1cmFuc2VhcmNoIHNhYnJgKTsKICAgICAgY29uc3QgZCA9IGF3YWl0IGdldEpTT04oYGh0dHBzOi8vYXBpLnF1cmFuLmNvbS9hcGkvdjQvc2VhcmNoP3E9JHtlbmNvZGVVUklDb21wb25lbnQoYXJnKX0mc2l6ZT0zJmxhbmd1YWdlPWVuYCk7CiAgICAgIGNvbnN0IHIgPSBkLnNlYXJjaD8ucmVzdWx0cyB8fCBbXTsKICAgICAgaWYgKCFyLmxlbmd0aCkgcmV0dXJuIHJlcGx5KCfinYwgS3VjaCBuYWhpIG1pbGEuJyk7CiAgICAgIHJldHVybiByZXBseShg8J+UjiAqUXVyYW4gc2VhcmNoIOKAlCDigJwke2FyZ33igJ0qXG5cbmAgKyByLm1hcCgoeCkgPT4gYPCfk5YgKiR7eC52ZXJzZV9rZXl9KlxuJHtjbGVhbih4LnRleHQpfVxuXyR7Y2xlYW4oeC50cmFuc2xhdGlvbnM/LlswXT8udGV4dCl9X2ApLmpvaW4oJ1xuXG4nKSk7CiAgICB9CiAgICBjYXNlICdxYXVkaW8nOiB7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYOKdjCBTdXJhaCB5YSBzdXJhaDpheWFoIGRvLiBFeGFtcGxlOiAke1AoKX1xYXVkaW8gMzZgKTsKICAgICAgY29uc3QgcmVmID0gYXJnLnRyaW0oKS5yZXBsYWNlKCctJywgJzonKTsKICAgICAgY29uc3QgdXJsID0gcmVmLmluY2x1ZGVzKCc6JykKICAgICAgICA/IChhd2FpdCBnZXRKU09OKGBodHRwczovL2FwaS5hbHF1cmFuLmNsb3VkL3YxL2F5YWgvJHtlbmNvZGVVUklDb21wb25lbnQocmVmKX0vYXIuYWxhZmFzeWApKS5kYXRhLmF1ZGlvCiAgICAgICAgOiAoYXdhaXQgZ2V0SlNPTihgaHR0cHM6Ly9hcGkuYWxxdXJhbi5jbG91ZC92MS9zdXJhaC8ke3BhcnNlSW50KHJlZiwgMTApfS9hci5hbGFmYXN5YCkpLmRhdGEuYXlhaHNbMF0uYXVkaW87CiAgICAgIGlmICghdXJsKSByZXR1cm4gcmVwbHkoJ+KdjCBBdWRpbyBuYWhpIG1pbGEuJyk7CiAgICAgIGF3YWl0IGN0eC5zZW5kKGN0eC5mcm9tLCB7IGF1ZGlvOiB7IHVybCB9LCBtaW1ldHlwZTogJ2F1ZGlvL21wZWcnLCBwdHQ6IGZhbHNlIH0sIHsgcXVvdGVkOiBjdHgubSB9KTsKICAgICAgYnJlYWs7CiAgICB9CgogICAgLyogLS0tLS0tLS0tLS0tLS0tLSBIQURJVEggLS0tLS0tLS0tLS0tLS0tLSAqLwogICAgY2FzZSAnaGFkaXRoJzogewogICAgICBjb25zdCBoID0gYXdhaXQgcmFuZG9tSGFkaXRoKGFyZyA/IGFyZy50b0xvd2VyQ2FzZSgpIDogbnVsbCk7CiAgICAgIHJldHVybiByZXBseShg8J+TnCAqJHtoLmJvb2t9IOKAlCBIYWRpdGggIyR7aC5ub30qXG5cbiR7aC50ZXh0fWApOwogICAgfQogICAgY2FzZSAnc2FoYWJhJzogewogICAgICBjb25zdCBuYW1lcyA9IFsnQWJ1IEJha3IgU2lkZGlxdWUgKFJBKScsICdVbWFyIEZhcm9vcSAoUkEpJywgJ1VzbWFuIEdoYW5pIChSQSknLCAnQWxpIChSQSknLCAnQmlsYWwgKFJBKScsICdTYWxtYW4gRmFyc2kgKFJBKScsICdLaGFsaWQgYmluIFdhbGVlZCAoUkEpJywgJ0F5ZXNoYSAoUkEpJywgJ0ZhdGltYSAoUkEpJywgJ0hhbXphIChSQSknXTsKICAgICAgY29uc3Qgd2hvID0gcGljayhuYW1lcyk7CiAgICAgIGNvbnN0IGggPSBhd2FpdCByYW5kb21IYWRpdGgoJ2J1a2hhcmknKTsKICAgICAgcmV0dXJuIHJlcGx5KGDirZAgKiR7d2hvfSpcblxu8J+TnCAke2guYm9va30gIyR7aC5ub31cbiR7aC50ZXh0fWApOwogICAgfQoKICAgIC8qIC0tLS0tLS0tLS0tLS0tLS0gUFJBWUVSIC8gVElNRSAtLS0tLS0tLS0tLS0tLS0tICovCiAgICBjYXNlICdzYWxhaHRpbWVyJzogY2FzZSAnbmFtYXonOiB7CiAgICAgIGNvbnN0IGNpdHkgPSBhcmcgfHwgJ0thcmFjaGknOwogICAgICBjb25zdCB0ID0gYXdhaXQgc2FmZVRpbWluZ3MoY2l0eSk7CiAgICAgIGlmICghdCkgcmV0dXJuIHJlcGx5KGDinYwgKiR7Y2l0eX0qIGtlIHRpbWluZ3MgbmFoaSBtaWwgc2FrZSDigJQgQVBJIG1hc2xhIGh5LiBUaG9yaSBkZXIgYmFhZCB0cnkga2Fyby5gKTsKICAgICAgY29uc3Qgbm93ID0gbmV3IERhdGUoKTsKICAgICAgY29uc3QgaGhtbSA9IChzKSA9PiB7IGNvbnN0IFtoLCBtXSA9IHMuc3BsaXQoJzonKS5tYXAoTnVtYmVyKTsgY29uc3QgeCA9IG5ldyBEYXRlKG5vdyk7IHguc2V0SG91cnMoaCwgbSwgMCwgMCk7IHJldHVybiB4OyB9OwogICAgICBjb25zdCBuZXh0ID0gT2JqZWN0LmVudHJpZXMoeyBGYWpyOiB0LkZhanIsIERodWhyOiB0LkRodWhyLCBBc3I6IHQuQXNyLCBNYWdocmliOiB0Lk1hZ2hyaWIsIElzaGE6IHQuSXNoYSB9KQogICAgICAgIC5tYXAoKFtrLCB2XSkgPT4gW2ssIGhobW0odildKS5zb3J0KChhLCBiKSA9PiBhWzFdIC0gYlsxXSkKICAgICAgICAuZmluZCgoWywgZHRdKSA9PiBkdCA+IG5vdyk7CiAgICAgIGNvbnN0IG1pbnMgPSBuZXh0ID8gTWF0aC5yb3VuZCgobmV4dFsxXSAtIG5vdykgLyA2MDAwMCkgOiBudWxsOwogICAgICByZXR1cm4gcmVwbHkoYPCflYwgKk5hbWF6IHRpbWluZ3Mg4oCUICR7Y2l0eX0qXG5cbvCfjIUgRmFqcjogJHt0LkZhanJ9XG7imIDvuI8gRGh1aHI6ICR7dC5EaHVocn1cbvCfjKTvuI8gQXNyOiAke3QuQXNyfVxu8J+MhyBNYWdocmliOiAke3QuTWFnaHJpYn1cbvCfjJkgSXNoYTogJHt0LklzaGF9XG5cbuKPsyBBZ2xpIG5hbWF6OiAqJHtuZXh0ID8gbmV4dFswXSA6ICfigJQnfSoke21pbnMgIT09IG51bGwgPyBgICgke01hdGguZmxvb3IobWlucyAvIDYwKX1oICR7bWlucyAlIDYwfW0gYmFhZClgIDogJyd9YCk7CiAgICB9CiAgICBjYXNlICdpbXNhayc6IGNhc2UgJ3NlaHJpJzogewogICAgICBjb25zdCBjaXR5ID0gYXJnIHx8ICdLYXJhY2hpJzsKICAgICAgY29uc3QgdCA9IGF3YWl0IHNhZmVUaW1pbmdzKGNpdHkpOwogICAgICBpZiAoIXQpIHJldHVybiByZXBseShg4p2MICoke2NpdHl9KiBrZSB0aW1pbmdzIG5haGkgbWlsIHNha2Ug4oCUIEFQSSBtYXNsYSBoeS4gVGhvcmkgZGVyIGJhYWQgdHJ5IGthcm8uYCk7CiAgICAgIHJldHVybiByZXBseShg8J+MmSAqU2VocmkgLyBJZnRhciDigJQgJHtjaXR5fSpcblxu8J+MhSBTZWhyaSAoRmFqcik6ICR7dC5GYWpyfVxu8J+MhyBJZnRhciAoTWFnaHJpYik6ICR7dC5NYWdocmlifVxuXG5fQWxsYWggaGFtYXJlIHJvemUgcXVib29sIGZhcm1heWUuX2ApOwogICAgfQogICAgY2FzZSAndGFoYWpqdWQnOiB7CiAgICAgIGNvbnN0IGNpdHkgPSBhcmcgfHwgJ0thcmFjaGknOwogICAgICBjb25zdCB0ID0gYXdhaXQgc2FmZVRpbWluZ3MoY2l0eSk7CiAgICAgIGlmICghdCkgcmV0dXJuIHJlcGx5KGDinYwgKiR7Y2l0eX0qIGtlIHRpbWluZ3MgbmFoaSBtaWwgc2FrZSDigJQgQVBJIG1hc2xhIGh5LiBUaG9yaSBkZXIgYmFhZCB0cnkga2Fyby5gKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4yMICpUYWhhamp1ZCDigJQgJHtjaXR5fSpcblxuUmFhdCBrYSBhYWtocmkgaGlzc2EgKEZhanIgc2UgcGVobGUpIOKAlCBiZXN0IHdhcXQ6ICoke3QuRmFqcn0qIHNlIH4xIGdoYW50YSBwZWhsZS5cblxuX05hYmkg77e6IG5lIGZhcm1heWE6IOKAnFJhYXQga2UgYWFraHJpIGhpc3NlIG1lIEFsbGFoIGJhbmRvbiBraSBkdWEgcXVib29sIGZhcm1hdGEgaGFpLuKAnV9gKTsKICAgIH0KICAgIGNhc2UgJ2hpanJpJzogewogICAgICBsZXQgZDsgdHJ5IHsgZCA9IGF3YWl0IGdldEpTT04oJ2h0dHBzOi8vYXBpLmFsYWRoYW4uY29tL3YxL2dUb0gnLCB7fSwgMTUwMDApOyB9IGNhdGNoIHsgZCA9IG51bGw7IH0KICAgICAgY29uc3QgaCA9IGQ/LmRhdGE/LmhpanJpOwogICAgICBpZiAoIWgpIHJldHVybiByZXBseSgn4p2MIEhpanJpIGRhdGUgbmFoaSBtaWwgc2FraSDigJQgQVBJIG1hc2xhIGh5LiBUaG9yaSBkZXIgYmFhZCB0cnkga2Fyby4nKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4yZICpIaWpyaSBkYXRlKlxuXG4ke2guZGF5fSAke2gubW9udGguZW59ICR7aC55ZWFyfSBBSFxuXygke2gud2Vla2RheS5lbn0pX1xuXG5NaWxhZGk6ICR7ZC5kYXRhLmdyZWdvcmlhbi5kYXRlfWApOwogICAgfQogICAgY2FzZSAncWlibGEnOiB7CiAgICAgIGNvbnN0IGNpdHkgPSBhcmcgfHwgJ0thcmFjaGknOwogICAgICBjb25zdCBnID0gYXdhaXQgZ2V0SlNPTihgaHR0cHM6Ly9nZW9jb2RpbmctYXBpLm9wZW4tbWV0ZW8uY29tL3YxL3NlYXJjaD9uYW1lPSR7ZW5jb2RlVVJJQ29tcG9uZW50KGNpdHkpfSZjb3VudD0xYCkuY2F0Y2goKCkgPT4gbnVsbCk7CiAgICAgIGNvbnN0IGMgPSBnPy5yZXN1bHRzPy5bMF07CiAgICAgIGlmICghYykgcmV0dXJuIHJlcGx5KCfinYwgQ2l0eSBuYWhpIG1pbGkuJyk7CiAgICAgIGNvbnN0IGQgPSBhd2FpdCBnZXRKU09OKGBodHRwczovL2FwaS5hbGFkaGFuLmNvbS92MS9xaWJsYS8ke2MubGF0aXR1ZGV9LyR7Yy5sb25naXR1ZGV9YCwge30sIDE1MDAwKS5jYXRjaCgoKSA9PiBudWxsKTsKICAgICAgY29uc3QgZGlyID0gZD8uZGF0YT8uZGlyZWN0aW9uOwogICAgICBpZiAoZGlyID09IG51bGwpIHJldHVybiByZXBseSgn4p2MIFFpYmxhIGRpcmVjdGlvbiBuYWhpIG1pbCBzYWtpIOKAlCBBUEkgbWFzbGEgaHkuIFRob3JpIGRlciBiYWFkIHRyeSBrYXJvLicpOwogICAgICByZXR1cm4gcmVwbHkoYPCfp60gKlFpYmxhIGRpcmVjdGlvbiDigJQgJHtjLm5hbWV9KlxuXG7wn5OQICoke051bWJlcihkaXIpLnRvRml4ZWQoMSl9wrAqIGZyb20gTm9ydGhcbl8oY29tcGFzcyBhcHAgbWUgaXMgYW5nbGUgcGFyIHNldCBrYXJvKV9gKTsKICAgIH0KICAgIGNhc2UgJ2R1YSc6IHsKICAgICAgY29uc3Qga2V5ID0gKGFyZyB8fCAnJykudG9Mb3dlckNhc2UoKS50cmltKCk7CiAgICAgIGlmIChrZXkgJiYgRFVBW2tleV0pIHJldHVybiByZXBseShg8J+ksiAqRHVhIOKAlCAke2tleX0qXG5cbiR7RFVBW2tleV19YCk7CiAgICAgIHJldHVybiByZXBseShg8J+ksiAqRHVhaW4qXG5cbmAgKyBPYmplY3Qua2V5cyhEVUEpLm1hcCgoaykgPT4gYOKAoiAke1AoKX1kdWEgJHtrfWApLmpvaW4oJ1xuJykpOwogICAgfQogICAgY2FzZSAnYXprYXInOiB7CiAgICAgIGNvbnN0IGEgPSBwaWNrKEFaS0FSKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5O/ICpaaWtyKlxuXG4ke2FbMV19XG4qJHthWzBdfSpcbl8ke2FbMl19X2ApOwogICAgfQogICAgY2FzZSAnYXNtYSc6IHsKICAgICAgY29uc3QgZCA9IGF3YWl0IGdldEpTT04oJ2h0dHBzOi8vYXBpLmFsYWRoYW4uY29tL3YxL2FzbWFBbEh1c25hJywge30sIDE1MDAwKS5jYXRjaCgoKSA9PiBudWxsKTsKICAgICAgY29uc3QgbGlzdCA9IGQ/LmRhdGE7CiAgICAgIGlmICghQXJyYXkuaXNBcnJheShsaXN0KSB8fCAhbGlzdC5sZW5ndGgpIHJldHVybiByZXBseSgn4p2MIEFzbWEtdWwtSHVzbmEgbGlzdCBuYWhpIG1pbCBzYWtpIOKAlCBBUEkgbWFzbGEgaHkuJyk7CiAgICAgIGlmIChhcmcpIHsKICAgICAgICBjb25zdCBuID0gcGFyc2VJbnQoYXJnLCAxMCk7CiAgICAgICAgY29uc3QgYSA9IGxpc3QuZmluZCgoeCkgPT4gTnVtYmVyKHgubnVtYmVyKSA9PT0gbikgfHwgcGljayhsaXN0KTsKICAgICAgICByZXR1cm4gcmVwbHkoYOKcqCAqJHthLnRyYW5zbGl0ZXJhdGlvbn0qXG5cbiR7YS5uYW1lfVxuXG5fJHthLmVuPy5tZWFuaW5nIHx8ICcnfV9gKTsKICAgICAgfQogICAgICByZXR1cm4gcmVwbHkoYOKcqCAqQWxsYWgga2UgOTkgbmFhbSpcblxuYCArIGxpc3Quc2xpY2UoMCwgMjApLm1hcCgoeCkgPT4gYCR7eC5udW1iZXJ9LiAke3gudHJhbnNsaXRlcmF0aW9ufWApLmpvaW4oJ1xuJykgKyBgXG5cbl8ke1AoKX1hc21hIDxudW1iZXI+IOKAlCBwb29yYSBuYWFtICsgbWF0bGFiX2ApOwogICAgfQogICAgY2FzZSAna2FsaW1hJzogewogICAgICBjb25zdCBrID0gYXJnID8gS0FMSU1BLmZpbmQoKHgpID0+IHhbMF0udG9Mb3dlckNhc2UoKS5pbmNsdWRlcyhhcmcudG9Mb3dlckNhc2UoKSkpIDogcGljayhLQUxJTUEpOwogICAgICBjb25zdCBpdGVtID0gayB8fCBLQUxJTUFbMF07CiAgICAgIHJldHVybiByZXBseShg8J+ViyAqJHtpdGVtWzBdfSpcblxuJHtpdGVtWzFdfWApOwogICAgfQogICAgY2FzZSAnZHVyb29kJzogewogICAgICByZXR1cm4gcmVwbHkoYO+3uiAqRHVyb29kKlxuXG7Yp9mE2YTZkdmw2YfZj9mF2Y7ZkSDYtdmO2YTZkNmRINi52Y7ZhNmO2YnZsCDZhdmP2K3ZjtmF2Y7Zkdiv2Y0g2YjZjti52Y7ZhNmO2YnZsCDYotmE2ZAg2YXZj9it2Y7ZhdmO2ZHYr9mNXG5cbl/igJ1BZXkgQWxsYWghIE11aGFtbWFkIO+3uiBhdXIgdW5raSBhYWwgcGFyIHJlaG1hdCBuYXppbCBmYXJtYS7igJxfXG5cbvCfkpogSnVtbWFoIGtlIGRpbiBrYXNyYXQgc2UgcGFyaG8g4oCUIDEwMHgga2Egd2FkYSBoYWkuYCk7CiAgICB9CiAgICBjYXNlICd6aWtyJzogewogICAgICBjb25zdCBhID0gcGljayhBWktBUik7CiAgICAgIHJldHVybiByZXBseShg8J+TvyAqQWFqIGthIHppa3IqXG5cbiR7YVsxXX1cbioke2FbMF19KlxuXyR7YVsyXX1fXG5cbiR7UCgpfXRhc2JpaCDigJQgY291bnRlciBrZSBsaXllYCk7CiAgICB9CiAgICBjYXNlICd0YXNiaWgnOiB7CiAgICAgIGNvbnN0IG4gPSBwYXJzZUludChhcmcsIDEwKSB8fCAzMzsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5O/ICpUYXNiaWggY291bnRlcipcblxuVGFyZ2V0OiAqJHtufXgqXG5cbmAgKyAn4par77iPJy5yZXBlYXQoTWF0aC5taW4obiwgMzMpKSArIGBcblxuX1phYmFuaSBnaW50aSBrYXJvIOKAlCAke1AoKX16aWtyIHNlIHppa3IgZGVraG8uX2ApOwogICAgfQogICAgY2FzZSAna2hhdG1hJzogewogICAgICBjb25zdCBuID0gTWF0aC5taW4ocGFyc2VJbnQoYXJnLCAxMCkgfHwgMCwgNjA0KTsKICAgICAgY29uc3QgcGN0ID0gKChuIC8gNjA0KSAqIDEwMCkudG9GaXhlZCgxKTsKICAgICAgY29uc3QgYmFyID0gJ+KWiCcucmVwZWF0KE1hdGgucm91bmQobiAvIDYwNCAqIDIwKSkgKyAn4paRJy5yZXBlYXQoMjAgLSBNYXRoLnJvdW5kKG4gLyA2MDQgKiAyMCkpOwogICAgICByZXR1cm4gcmVwbHkoYPCfk5YgKlF1cmFuIEtoYXRtYSB0cmFja2VyKlxuXG4ke2Jhcn0gJHtwY3R9JVxuUGFnZXM6ICoke259IC8gNjA0KlxuXG4ke1AoKX1raGF0bWEgPHBhZ2U+IOKAlCB1cGRhdGUga2Fyb2ApOwogICAgfQogICAgY2FzZSAnc3VubmFoJzogewogICAgICBjb25zdCBzID0gcGljayhbCiAgICAgICAgJ01pc3dhayBrYXJuYSDigJQgTmFiaSDvt7ogbmUgZmFybWF5YTog4oCcTWlzd2FrIG11bmgga2kgc2FmYWkgYXVyIFJhYiBraSBraHVzaGkga2EgemFyaXlhIGhhaS7igJ0nLAogICAgICAgICdLaGFuZSBzZSBwZWhsZSBCaXNtaWxsYWgsIGJhYWQgbWUgQWxoYW1kdWxpbGxhaC4nLAogICAgICAgICdEYWF5ZWluIGhhYXRoIHNlIGtoYW5hIGF1ciBwZWVuYS4nLAogICAgICAgICdTb3RlIHdhcXQgd3VkdSBrYXJuYS4nLAogICAgICAgICdTYWxhbSBrbyBhYW0ga2FybmEuJywKICAgICAgICAnQmFpdGgga2FyIHBhbmkgcGVlbmEuJywKICAgICAgICAnSnVtbWFoIGtlIGRpbiBnaHVzbCBrYXJuYSBhdXIgc2FmZWQga2FwcmUgcGVobm5hLicsCiAgICAgICAgJ0tpc2kga2UgZ2hhciBqYWFuZSBzZSBwZWhsZSAzIG1hcnRhYmEgaWphemF0IGxlbmEuJywKICAgICAgXSk7CiAgICAgIHJldHVybiByZXBseShg8J+MnyAqQWFqIGtpIFN1bm5haCpcblxuJHtzfWApOwogICAgfQogICAgY2FzZSAnaXNsYW1pY3EnOiB7CiAgICAgIGNvbnN0IFtxLCBhXSA9IHBpY2soSVNMQU1JQ19RKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5WMICpJc2xhbWljIFF1aXoqXG5cbuKdkyAke3F9XG5cbl9KYXdhYiBzb2NoIGthciBsaWtobywgcGhpciAke1AoKX1pc2xhbWljcSBkb2JhcmEg4oCUIGphd2FiIGFheWVnYS5fXG5cbnx8SmF3YWI6ICR7YX18fGApOwogICAgfQogICAgY2FzZSAnanVtbWFoJzogewogICAgICBjb25zdCB0ID0gYXdhaXQgc2FmZVRpbWluZ3MoYXJnIHx8ICdLYXJhY2hpJyk7CiAgICAgIGlmICghdCkgcmV0dXJuIHJlcGx5KGDinYwgVGltaW5ncyBuYWhpIG1pbCBzYWtlIOKAlCBBUEkgbWFzbGEgaHkuIFRob3JpIGRlciBiYWFkIHRyeSBrYXJvLmApOwogICAgICByZXR1cm4gcmVwbHkoYPCflYwgKkp1bW1haCpcblxuS2h1dGJhaCB3YXF0IChEaHVocik6ICoke3QuRGh1aHJ9KlxuXG7wn5OMIFN1bm5hdGVpbjogZ2h1c2wsIG1pc3dhaywgc2FmZWQga2FwcmUsIGphbGRpIG1hc2ppZCBqYW5hLCBrYXNyYXQgc2UgZHVyb29kLCBTdXJhaCBLYWhmIHBhcmhuYS5cblxuJHtEVUEuanVtbWFofWApOwogICAgfQogICAgY2FzZSAnamFuYXphaCc6IHsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5WK77iPICpOYW1hei1lLUphbmF6YWgqXG5cbuKAoiA0IHRha2JlZXJlaW4g4oCUIGtvaSBydWt1L3NhamRhIG5haGlcbuKAoiAxc3Q6IFN1YmhhbmFrYWxsYWhcbuKAoiAybmQ6IER1cm9vZC1lLUlicmFoaW1cbuKAoiAzcmQ6IE1heXlpdCBrZSBsaXllIGR1YVxu4oCiIDR0aDogU2FsYW1cblxuTWF5eWl0IGtvIHFpYmxhIHJ1a2ggcmFraGEgamF0YSBoYWkuIEphbmF6YWggbmFtYXogZmFyei1lLWtpZmF5YSBoYWkuYCk7CiAgICB9CiAgICBjYXNlICd3dWR1JzogewogICAgICByZXR1cm4gcmVwbHkoYPCfkqcgKld1ZHUga2EgdGFyZWVxYSpcblxuMS4gTml5eWF0ICsgQmlzbWlsbGFoXG4yLiBEb25vIGhhYXRoIDN4IChrYWxhaSB0YWspXG4zLiBNaXN3YWsgLyBtdW5oIDN4XG40LiBOYWFrIDN4XG41LiBNdW5oIDN4XG42LiBEb25vIGhhYXRoIGtvaG5pIHRhayAzeFxuNy4gU2FyIGthIG1hc2FoIDF4XG44LiBLYWFuIDF4XG45LiBEb25vIHBhYW52IHRha2hub24gdGFrIDN4XG5cbkZhcno6IDQgKG11bmgsIGhhYXRoLCBzYXIgbWFzYWgsIHBhYW52KWApOwogICAgfQogICAgY2FzZSAncm96YSc6IHsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4yZICpSb3plIGtlIG1hc2FpbCpcblxu4pyFIFJvemEgdG9kbmUgd2FsZToga2hhbmEsIHBlZW5hLCBqaW1hLCBqYWFuLWJvb2poIGthciBxYWkuXG7inYwgUm96YSBuYSB0b2RuZSB3YWxlOiBiaG9vbCBrYXIga2hhbmEvcGVlbmEsIGtod2FiIG1lIGVodGlsYW0sIG1pc3dhaywga2hvb24gZG9uYXRpb24gKHRob2RhKSwgZ2h1c2wuXG5cblFhemE6IDEgcm96YSA9IDEgcWF6YS4gS2FmZmFyYTogNjAgcm96ZSB5YSA2MCBtaXNrZWVuIGtvIGtoYW5hLmApOwogICAgfQogICAgY2FzZSAnemFrYXQnOiB7CiAgICAgIGNvbnN0IG4gPSBwYXJzZUZsb2F0KFN0cmluZyhhcmcpLnJlcGxhY2UoL1teMC05Ll0vZywgJycpKTsKICAgICAgaWYgKCFuKSByZXR1cm4gcmVwbHkoYOKdjCBSYXFhbSBkby4gRXhhbXBsZTogJHtQKCl9emFrYXQgNTAwMDAwYCk7CiAgICAgIGNvbnN0IHogPSBuICogMC4wMjU7CiAgICAgIHJldHVybiByZXBseShg8J+SsCAqWmFrYXQgY2FsY3VsYXRvcipcblxuQXNzZXRzOiBQS1IgJHtuLnRvTG9jYWxlU3RyaW5nKCl9XG5OaXNhYiBjaGVjazogUEtSICR7KG4gPj0gMTM1MDAwID8gJ+KchSBwb29yYSBodWEnIDogJ+KdjCBwb29yYSBuYWhpIGh1YSAoc2lsdmVyIG5pc2FiIH4xMzVrKScpfVxuXG4qWmFrYXQgKDIuNSUpOiBQS1IgJHt6LnRvTG9jYWxlU3RyaW5nKHVuZGVmaW5lZCwgeyBtYXhpbXVtRnJhY3Rpb25EaWdpdHM6IDIgfSl9KmApOwogICAgfQogICAgY2FzZSAnZml0cmFuYSc6IHsKICAgICAgY29uc3QgcCA9IHBhcnNlRmxvYXQoU3RyaW5nKGFyZykucmVwbGFjZSgvW14wLTkuXS9nLCAnJykpIHx8IDA7CiAgICAgIHJldHVybiByZXBseShg8J+SsCAqRml0cmFuYSpcblxuQWFtIHJhdGU6ICpQS1IgMjUw4oCTMzAwKiBwZXIgcGVyc29uIChhYXRhL2toYWpvb3Iga2UgaGlzYWFiIHNlKS5cbiR7cCA/IGBBYXAga2UgZ2hhciAoJHtwfSBhZnJhYWQpOiAqUEtSICR7KHAgKiAyNzUpLnRvTG9jYWxlU3RyaW5nKCl9KiAoYXZnIDI3NS9wZXJzb24pXG5gIDogJyd9XG5FaWQga2kgbmFtYXogc2UgcGVobGUgYWRhIGthcm5hIHdhamliIGhhaS5gKTsKICAgIH0KICAgIGNhc2UgJ3NhZHFhJzogewogICAgICByZXR1cm4gcmVwbHkoYPCfpLIgKlNhZHFhKlxuXG5OYWJpIO+3ujog4oCcU2FkcWEgYmFsYSBrbyB0YWFsdGEgaGFpIGF1ciB1bWFyIGJhcmhhdGEgaGFpLuKAnVxuXG7igKIgUm96YW5hIHRob3JhIHNhZHFhIGthcm9cbuKAoiBDaGh1cGEga2FyIGRlbmEgYmVodGFyIGhhaVxu4oCiIE11c2liYXQgbWUgc2FkcWEga2Fyb1xuXG4ke1AoKX1maXRyYW5hIOKAlCBmaXRyYW5hIGNhbGN1bGF0b3JgKTsKICAgIH0KICAgIGNhc2UgJ2VpZCc6IHsKICAgICAgbGV0IGQ7IHRyeSB7IGQgPSBhd2FpdCBnZXRKU09OKCdodHRwczovL2FwaS5hbGFkaGFuLmNvbS92MS9nVG9IJywge30sIDE1MDAwKTsgfSBjYXRjaCB7IGQgPSBudWxsOyB9CiAgICAgIGNvbnN0IGcgPSBkPy5kYXRhPy5ncmVnb3JpYW4sIGggPSBkPy5kYXRhPy5oaWpyaTsKICAgICAgaWYgKCFnIHx8ICFoKSByZXR1cm4gcmVwbHkoJ+KdjCBEYXRlIG5haGkgbWlsIHNha2kg4oCUIEFQSSBtYXNsYSBoeS4gVGhvcmkgZGVyIGJhYWQgdHJ5IGthcm8uJyk7CiAgICAgIHJldHVybiByZXBseShg8J+OiSAqRWlkKlxuXG5NaWxhZGk6ICR7Zy5kYXRlfVxuSGlqcmk6ICR7aC5kYXl9ICR7aC5tb250aC5lbn0gJHtoLnllYXJ9XG5cbl9FaWQgTXViYXJhayEg8J+MmV9cblxuJHtQKCl9c2FsYWh0aW1lciDigJQgRWlkIG5hbWF6IGthIHdhcXRgKTsKICAgIH0KICAgIGNhc2UgJ2thYWJhJzogewogICAgICBhd2FpdCBjdHguc2VuZChjdHguZnJvbSwgeyBpbWFnZTogeyB1cmw6IEtBQUJBIH0sIGNhcHRpb246ICfwn5WLICpLYWFiYSDigJQgTWFzamlkIGFsLUhhcmFtLCBNYWtrYWgqJyB9LCB7IHF1b3RlZDogY3R4Lm0gfSk7CiAgICAgIGJyZWFrOwogICAgfQogICAgY2FzZSAnbWFkaW5haCc6IHsKICAgICAgYXdhaXQgY3R4LnNlbmQoY3R4LmZyb20sIHsgaW1hZ2U6IHsgdXJsOiBNQURJTkFIIH0sIGNhcHRpb246ICfwn5WMICpNYXNqaWQgYW4tTmFiYXdpIOKAlCBNYWRpbmFoIE11bmF3d2FyYSonIH0sIHsgcXVvdGVkOiBjdHgubSB9KTsKICAgICAgYnJlYWs7CiAgICB9CiAgICBjYXNlICduYXNoZWVkJzogewogICAgICBjb25zdCBsaXN0ID0gWydUYWxhIEFsIEJhZHJ1IEFsYXluYScsICdNYXVsYSBZYSBTYWxsaScsICdBc3NhbGFtdSBBbGF5a2EnLCAnSGFzYmkgUmFiYmknLCAnQWxsYWggSG9vJ107CiAgICAgIHJldHVybiByZXBseShg8J+OtSAqSXNsYW1pYyBuYXNoZWVkKlxuXG4qJHtwaWNrKGxpc3QpfSpcblxuX1lvdVR1YmUgcGFyIHNlYXJjaCBrYXJvIOKAlCAke1AoKX15dHZpZGVvIDxuYWFtPiBzZSBiaGkgZGwgaG8gc2FrdGEgaGFpLl9gKTsKICAgIH0KICAgIGNhc2UgJ2lzdGlraGFyYSc6IHsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5WMICpJc3Rpa2hhcmEqXG5cbiR7RFVBLmlzdGlraGFyYX1cblxu8J+TjCBUYXJlZXFhOiAyIHJha2F0IG5hZmwgcGFyaG8sIHBoaXIgeWUgZHVhIHBhcmhvLiBKbyBkaWwgbWUgYXNhYW5pIGhvIOKAlCB1c2kgcGFyIGFtYWwga2Fyby4gTmFiaSDvt7ogbmUgZmFybWF5YTog4oCcSm8gaXN0aWtoYXJhIGthcmUgd28ga2FiaGkgbmFhZGltIG5haGkgaG90YS7igJ1gKTsKICAgIH0KICAgIGNhc2UgJ3Rhd2JhaCc6IHJldHVybiByZXBseShg8J+ksiAqVGF3YmFoKlxuXG4ke0RVQS50YXdiYWh9XG5cbl9BbGxhaCBUYXd3YWItby1SYWhlZW0gaGFpIOKAlCBkaWwgc2UgbWFhZmkgbWFuZ28sIHdvIG1hYWYgZmFybWF0YSBoYWkuX2ApOwogICAgY2FzZSAnc2Ficic6IHJldHVybiByZXBseShg8J+MvyAqU2FicipcblxuJHtEVUEuc2Ficn1gKTsKICAgIGNhc2UgJ3NodWtyJzogcmV0dXJuIHJlcGx5KGDwn4y/ICpTaHVrcipcblxuJHtEVUEuc2h1a3J9YCk7CiAgICBjYXNlICduYXphcic6IHJldHVybiByZXBseShg8J+nvyAqTmF6YXIqXG5cbiR7RFVBLm5hemFyfWApOwogICAgY2FzZSAncnVxeWFoJzogewogICAgICByZXR1cm4gcmVwbHkoYPCfqbogKlJ1cXlhaCpcblxu4oCiIFN1cmFoIEZhdGloYSA3eFxu4oCiIEF5YXQtdWwtS3Vyc2kgM3hcbuKAoiBTdXJhaCBGYWxhcSAzeFxu4oCiIFN1cmFoIE5hYXMgM3hcblxuQXBuZSB5YSBraXNpIGtlIHVwYXIgaGFhdGggcmFraCBrYXIgcGFyaG8sIGRhbSBrYXJvLlxuXG4ke0RVQS5uYXphcn1gKTsKICAgIH0KICAgIGNhc2UgJ3VtcmFoJzogewogICAgICByZXR1cm4gcmVwbHkoYPCflYsgKlVtcmFoIGd1aWRlKlxuXG4xLiBJaHJhbSAobWlxYXQgcGFyIG5peXlhdClcbjIuIFRhd2FmIOKAlCA3IGNoYWtrYXJcbjMuIFNhJ2kg4oCUIFNhZmEvTWFyd2EgNyBjaGFra2FyXG40LiBIYWxxL1RhcXNlZXIg4oCUIGJhYWxcblxu8J+TjCBEb2N1bWVudHM6IHBhc3Nwb3J0ICg2KyBtb250aHMpLCB2aXNhLCB0aWNrZXQsIHZhY2NpbmF0aW9uIGNhcmQuXG5fVW1yYWggcGFja2FnZXMga2UgbGl5ZSB0cmF2ZWwgYWdlbnQgc2UgcmFidGEga2Fyby5fYCk7CiAgICB9CiAgICBjYXNlICdoYWpqJzogewogICAgICByZXR1cm4gcmVwbHkoYPCflYsgKkhhamoqXG5cbuKAoiA4IFppbC1IaWpqYWg6IE1pbmFcbuKAoiA5IFppbC1IaWpqYWg6IEFyYWZhaCAoc2FiIHNlIGFoYW0pXG7igKIgMTAgWmlsLUhpamphaDogTXV6ZGFsaWZhaCwgUmFtaSwgUXVyYmFuaSwgSGFscSwgVGF3YWYtdXotWml5YXJhaFxu4oCiIDEx4oCTMTM6IE1pbmEgbWUgUmFtaVxuXG5GYXJ6OiBJaHJhbSwgQXJhZmFoLCBUYXdhZi11ei1aaXlhcmFoLmApOwogICAgfQogICAgY2FzZSAnbW9zcXVlJzogewogICAgICBjb25zdCBjaXR5ID0gYXJnIHx8ICdLYXJhY2hpJzsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5WMICpNYXNqaWQg4oCUICR7Y2l0eX0qXG5cbkdvb2dsZSBNYXBzIHBhciBzZWFyY2gga2FybzogKm1vc3F1ZSBuZWFyICR7Y2l0eX0qXG5cbllhICR7UCgpfW1hcCAke2NpdHl9IG1vc3F1ZSDigJQgbG9jYXRpb24gbGluayBrZSBsaXllLmApOwogICAgfQogICAgY2FzZSAncmFtYWRhbic6IHsKICAgICAgY29uc3QgY2l0eSA9IGFyZyB8fCAnS2FyYWNoaSc7CiAgICAgIGNvbnN0IHQgPSBhd2FpdCBzYWZlVGltaW5ncyhjaXR5KTsKICAgICAgaWYgKCF0KSByZXR1cm4gcmVwbHkoYOKdjCAqJHtjaXR5fSoga2UgdGltaW5ncyBuYWhpIG1pbCBzYWtlIOKAlCBBUEkgbWFzbGEgaHkuIFRob3JpIGRlciBiYWFkIHRyeSBrYXJvLmApOwogICAgICByZXR1cm4gcmVwbHkoYPCfjJkgKlJhbWFkYW4g4oCUICR7Y2l0eX0qXG5cbvCfjIUgU2Vocmk6ICR7dC5GYWpyfVxu8J+MhyBJZnRhcjogJHt0Lk1hZ2hyaWJ9XG5cbl9BbGxhaCBzYWIga2Ugcm96ZSBxdWJvb2wgZmFybWF5ZS5fYCk7CiAgICB9CiAgICBkZWZhdWx0OgogICAgICByZXR1cm4gcmVwbHkoJ+KdkyBVbmtub3duIGlzbGFtaWMgY29tbWFuZCcpOwogIH0KfTsKCm1vZHVsZS5leHBvcnRzID0gewogIGNvbW1hbmRzOiBbCiAgICAnaGFkaXRoJywgJ3FpYmxhJywgJ2FzbWEnLCAnaGlqcmknLCAnYXprYXInLCAndGFzYmloJywgJ2toYXRtYScsICdzYWxhaHRpbWVyJywgJ2F5YXQnLCAnemlrcicsCiAgICAnaXN0aWtoYXJhJywgJ2phbmF6YWgnLCAnd3VkdScsICdpbXNhaycsICdzYWhhYmEnLCAnaXNsYW1pY3EnLCAndGFoYWpqdWQnLCAnanVtbWFoJywgJ2thYWJhJywgJ21hZGluYWgnLAogICAgJ3Rhd2JhaCcsICdzYWJyJywgJ3NodWtyJywgJ25hemFyJywgJ3J1cXlhaCcsICduYXNoZWVkJywgJ2R1cm9vZCcsICdrYWxpbWEnLCAnc3VubmFoJywgJ2ZpdHJhbmEnLAogICAgJ3NhZHFhJywgJ3JvemEnLCAnZWlkJywKICAgIC8vIGV4dHJhcyB0aGF0IGJlbG9uZyBpbiB0aGlzIGZhbWlseQogICAgJ3F1cmFuJywgJ3RhZnNpcicsICdxYXVkaW8nLCAncXVyYW5zZWFyY2gnLCAnZHVhJywgJ25hbWF6JywgJ3NlaHJpJywgJ3pha2F0JywgJ21vc3F1ZScsICdyYW1hZGFuJywKICBdLAogIGNhdGVnb3J5OiAn8J+VjCBJU0xBTUlDJywKICBoYW5kbGVyLAp9Owo=
+/**
+ * ISLAMIC — Deen commands (Quran, hadith, prayer, duas, zakat…)
+ * All data from free public APIs (alquran.cloud, aladhan, hadith-api CDN).
+ */
+const config = require('../config');
+const { getJSON, getText, pick, randInt } = require('../lib/helpers');
+
+const P = () => config.PREFIX;
+const clean = (s) => String(s || '').replace(/\s+/g, ' ').trim();
+
+/**
+ * Prayer timings from aladhan, but never let a flaky/empty API response crash a
+ * command. Returns the timings object, or null when the lookup fails.
+ */
+async function safeTimings(city) {
+  try {
+    const d = await getJSON(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=PK&method=1`, {}, 15000);
+    const t = d?.data?.timings;
+    return t && t.Fajr ? t : null;
+  } catch { return null; }
+}
+
+/* ---- hadith: fawazahmed0/hadith-api on jsDelivr ---- */
+const HADITH_BOOKS = ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah'];
+async function randomHadith(book) {
+  const b = HADITH_BOOKS.includes(book) ? book : pick(HADITH_BOOKS);
+  const sec = randInt(1, 40);
+  const d = await getJSON(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/eng-${b}/sections/${sec}.json`);
+  const list = d?.hadiths || [];
+  if (!list.length) throw new Error('empty');
+  const h = pick(list);
+  return { book: d?.metadata?.name || b, no: h.hadithnumber, text: clean(h.text) };
+}
+
+/* ---- quran ---- */
+async function ayah(ref) {
+  const d = await getJSON(`https://api.alquran.cloud/v1/ayah/${encodeURIComponent(ref)}/editions/quran-uthmani,en.sahih,ur.jalandhry`);
+  const [ar, en, ur] = d.data;
+  return { ar: ar.text, en: en.text, ur: ur.text, ref: `${ar.surah.englishName} ${ar.numberInSurah}:${ar.surah.number}` };
+}
+
+const KAABA = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Kaaba_Masjid_Haraam_Makkah.jpg/640px-Kaaba_Masjid_Haraam_Makkah.jpg';
+const MADINAH = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Al-Masjid_an-Nabawi.jpg/640px-Al-Masjid_an-Nabawi.jpg';
+
+const AZKAR = [
+  ['SubhanAllah', 'سُبْحَانَ اللّٰه', 'Allah pak hai — 33x'],
+  ['Alhamdulillah', 'اَلْحَمْدُ لِلّٰه', 'Sab tareef Allah ke liye — 33x'],
+  ['Allahu Akbar', 'اَللّٰهُ أَكْبَر', 'Allah sab se bara — 34x'],
+  ['La ilaha illallah', 'لَا إِلٰهَ إِلَّا اللّٰه', 'Allah ke siwa koi ibadat ke laiq nahi'],
+  ['Astaghfirullah', 'أَسْتَغْفِرُ اللّٰه', 'Allah se maafi mango — 100x'],
+  ['La hawla wa la quwwata illa billah', 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰه', 'Taakat sirf Allah se hai'],
+];
+const DUA = {
+  sabr: 'رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَثَبِّتْ أَقْدَامَنَا\n_”Aey hamare Rab! hum par sabr nazil farma aur hamare qadam saabit rakh.“_ (2:250)',
+  shukr: 'وَإِذْ تَأَذَّنَ رَبُّكُمْ لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ\n_”Agar tum shukr karoge to main tumhe aur zyada dunga.“_ (14:7)',
+  nazar: 'أَعُوذُ بِكَلِمَاتِ اللّٰهِ التَّامَّاتِ مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ\n_Nazar ke liye ye dua parho (Bukhari)._',
+  tawbah: 'رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ\n_”Aey mere Rab! mujhe bakhsh de aur meri tawbah qubool farma.“_',
+  safar: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ\n_Safar ki dua — safar shuru karte waqt parho._',
+  khana: 'بِسْمِ اللّٰهِ وَعَلَى بَرَكَةِ اللّٰهِ\n_Khana shuru karte waqt._',
+  sona: 'اللّٰهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا\n_Sone se pehle._',
+  uthna: 'الْحَمْدُ لِلّٰهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ\n_Neend se uthne par._',
+  istikhara: 'اللّٰهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ\n_Istikhara ki dua — namaz ke baad parho, phir dil ki taraf dekho._',
+  jummah: 'اللّٰهُمَّ أَصْلِحْ لِي دِينِي الَّذِي هُوَ عِصْمَةُ أَمْرِي\n_Jummah ke din kasrat se durood parho aur ye dua karo._',
+};
+const KALIMA = [
+  ['1st Kalima (Tayyab)', 'لَا إِلٰهَ إِلَّا اللّٰهُ مُحَمَّدٌ رَسُولُ اللّٰهِ'],
+  ['2nd Kalima (Shahadat)', 'أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللّٰهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ'],
+  ['3rd Kalima (Tamjeed)', 'سُبْحَانَ اللّٰهِ وَالْحَمْدُ لِلّٰهِ وَلَا إِلٰهَ إِلَّا اللّٰهُ وَاللّٰهُ أَكْبَرُ'],
+  ['4th Kalima (Tawheed)', 'لَا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيكَ لَهُ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ'],
+  ['5th Kalima (Istighfar)', 'أَسْتَغْفِرُ اللّٰهَ رَبِّي مِنْ كُلِّ ذَنْبٍ وَأَتُوبُ إِلَيْهِ'],
+  ['6th Kalima (Radd-e-Kufr)', 'اللّٰهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ أَنْ أُشْرِكَ بِكَ شَيْئًا'],
+];
+const ISLAMIC_Q = [
+  ['Quran me kitni surah hain?', '114'],
+  ['Sab se lambi surah kaunsi hai?', 'Al-Baqarah (2)'],
+  ['Namaz me kitni rakats farz hain (5 waqt milakar)?', '17'],
+  ['Pehle khalifa kaun thay?', 'Abu Bakr Siddique (RA)'],
+  ['Quran kis mahine me nazil hona shuru hua?', 'Ramadan'],
+  ['Sab se pehli masjid kaunsi hai?', 'Masjid al-Haram (Makkah)'],
+  ['Zakat kitne percent hai?', '2.5% (40 me 1)'],
+  ['Hajj kis mahine me hota hai?', 'Zil-Hijjah'],
+];
+
+const handler = async (ctx) => {
+  const { command, reply, arg } = ctx;
+
+  switch (command) {
+    /* ---------------- QURAN ---------------- */
+    case 'ayat': {
+      const d = await getJSON('https://api.quran.com/api/v4/verses/random?translations=158&fields=text_uthmani');
+      const v = d.verse;
+      return reply(`📖 *Ayah of the day*\n\n${v.text_uthmani}\n\n_${clean(v.translations?.[0]?.text)}_\n\n— ${v.verse_key}`);
+    }
+    case 'quran': case 'tafsir': {
+      if (!arg) return reply(`❌ Surah:ayah do. Example: ${P()}quran 2:255`);
+      const ref = arg.trim().replace('-', ':');
+      const a = await ayah(ref);
+      const head = command === 'tafsir' ? `📚 *Tafsir — ${a.ref}*` : `📖 *${a.ref}*`;
+      return reply(`${head}\n\n${a.ar}\n\n🇬🇧 ${a.en}\n\n🇵🇰 ${a.ur}`);
+    }
+    case 'surah': {
+      if (!arg) return reply(`❌ Surah number do (1-114). Example: ${P()}surah 36`);
+      const n = parseInt(arg, 10);
+      if (!(n >= 1 && n <= 114)) return reply('❌ Surah number 1 se 114 ke darmiyan ho.');
+      const d = await getJSON(`https://api.alquran.cloud/v1/surah/${n}/editions/quran-uthmani,ur.jalandhry`);
+      const [ar, ur] = d.data;
+      const ayahs = ar.ayahs.slice(0, 5);
+      const body = ayahs.map((x) => `${x.numberInSurah}. ${x.text}`).join('\n\n');
+      await reply(`📖 *Surah ${ar.englishName} (${ar.name})*\n${ar.numberOfAyahs} ayahs — Makki/Madani: ${ar.revelationType}\n\n${body}\n\n_…baqi ${Math.max(0, ar.numberOfAyahs - 5)} ayahs._\n🇵🇰 ${clean(ur.ayahs[0].text)}`);
+      break;
+    }
+    case 'quransearch': case 'qsearch': {
+      if (!arg) return reply(`❌ Lafz do. Example: ${P()}quransearch sabr`);
+      const d = await getJSON(`https://api.quran.com/api/v4/search?q=${encodeURIComponent(arg)}&size=3&language=en`);
+      const r = d.search?.results || [];
+      if (!r.length) return reply('❌ Kuch nahi mila.');
+      return reply(`🔎 *Quran search — “${arg}”*\n\n` + r.map((x) => `📖 *${x.verse_key}*\n${clean(x.text)}\n_${clean(x.translations?.[0]?.text)}_`).join('\n\n'));
+    }
+    case 'qaudio': {
+      if (!arg) return reply(`❌ Surah ya surah:ayah do. Example: ${P()}qaudio 36`);
+      const ref = arg.trim().replace('-', ':');
+      const url = ref.includes(':')
+        ? (await getJSON(`https://api.alquran.cloud/v1/ayah/${encodeURIComponent(ref)}/ar.alafasy`)).data.audio
+        : (await getJSON(`https://api.alquran.cloud/v1/surah/${parseInt(ref, 10)}/ar.alafasy`)).data.ayahs[0].audio;
+      if (!url) return reply('❌ Audio nahi mila.');
+      await ctx.send(ctx.from, { audio: { url }, mimetype: 'audio/mpeg', ptt: false }, { quoted: ctx.m });
+      break;
+    }
+
+    /* ---------------- HADITH ---------------- */
+    case 'hadith': {
+      const h = await randomHadith(arg ? arg.toLowerCase() : null);
+      return reply(`📜 *${h.book} — Hadith #${h.no}*\n\n${h.text}`);
+    }
+    case 'sahaba': {
+      const names = ['Abu Bakr Siddique (RA)', 'Umar Farooq (RA)', 'Usman Ghani (RA)', 'Ali (RA)', 'Bilal (RA)', 'Salman Farsi (RA)', 'Khalid bin Waleed (RA)', 'Ayesha (RA)', 'Fatima (RA)', 'Hamza (RA)'];
+      const who = pick(names);
+      const h = await randomHadith('bukhari');
+      return reply(`⭐ *${who}*\n\n📜 ${h.book} #${h.no}\n${h.text}`);
+    }
+
+    /* ---------------- PRAYER / TIME ---------------- */
+    case 'salahtimer': case 'namaz': {
+      const city = arg || 'Karachi';
+      const t = await safeTimings(city);
+      if (!t) return reply(`❌ *${city}* ke timings nahi mil sake — API masla hy. Thori der baad try karo.`);
+      const now = new Date();
+      const hhmm = (s) => { const [h, m] = s.split(':').map(Number); const x = new Date(now); x.setHours(h, m, 0, 0); return x; };
+      const next = Object.entries({ Fajr: t.Fajr, Dhuhr: t.Dhuhr, Asr: t.Asr, Maghrib: t.Maghrib, Isha: t.Isha })
+        .map(([k, v]) => [k, hhmm(v)]).sort((a, b) => a[1] - b[1])
+        .find(([, dt]) => dt > now);
+      const mins = next ? Math.round((next[1] - now) / 60000) : null;
+      return reply(`🕌 *Namaz timings — ${city}*\n\n🌅 Fajr: ${t.Fajr}\n☀️ Dhuhr: ${t.Dhuhr}\n🌤️ Asr: ${t.Asr}\n🌇 Maghrib: ${t.Maghrib}\n🌙 Isha: ${t.Isha}\n\n⏳ Agli namaz: *${next ? next[0] : '—'}*${mins !== null ? ` (${Math.floor(mins / 60)}h ${mins % 60}m baad)` : ''}`);
+    }
+    case 'imsak': case 'sehri': {
+      const city = arg || 'Karachi';
+      const t = await safeTimings(city);
+      if (!t) return reply(`❌ *${city}* ke timings nahi mil sake — API masla hy. Thori der baad try karo.`);
+      return reply(`🌙 *Sehri / Iftar — ${city}*\n\n🌅 Sehri (Fajr): ${t.Fajr}\n🌇 Iftar (Maghrib): ${t.Maghrib}\n\n_Allah hamare roze qubool farmaye._`);
+    }
+    case 'tahajjud': {
+      const city = arg || 'Karachi';
+      const t = await safeTimings(city);
+      if (!t) return reply(`❌ *${city}* ke timings nahi mil sake — API masla hy. Thori der baad try karo.`);
+      return reply(`🌌 *Tahajjud — ${city}*\n\nRaat ka aakhri hissa (Fajr se pehle) — best waqt: *${t.Fajr}* se ~1 ghanta pehle.\n\n_Nabi ﷺ ne farmaya: “Raat ke aakhri hisse me Allah bandon ki dua qubool farmata hai.”_`);
+    }
+    case 'hijri': {
+      let d; try { d = await getJSON('https://api.aladhan.com/v1/gToH', {}, 15000); } catch { d = null; }
+      const h = d?.data?.hijri;
+      if (!h) return reply('❌ Hijri date nahi mil saki — API masla hy. Thori der baad try karo.');
+      return reply(`🌙 *Hijri date*\n\n${h.day} ${h.month.en} ${h.year} AH\n_(${h.weekday.en})_\n\nMiladi: ${d.data.gregorian.date}`);
+    }
+    case 'qibla': {
+      const city = arg || 'Karachi';
+      const g = await getJSON(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`).catch(() => null);
+      const c = g?.results?.[0];
+      if (!c) return reply('❌ City nahi mili.');
+      const d = await getJSON(`https://api.aladhan.com/v1/qibla/${c.latitude}/${c.longitude}`, {}, 15000).catch(() => null);
+      const dir = d?.data?.direction;
+      if (dir == null) return reply('❌ Qibla direction nahi mil saki — API masla hy. Thori der baad try karo.');
+      return reply(`🧭 *Qibla direction — ${c.name}*\n\n📐 *${Number(dir).toFixed(1)}°* from North\n_(compass app me is angle par set karo)_`);
+    }
+    case 'dua': {
+      const key = (arg || '').toLowerCase().trim();
+      if (key && DUA[key]) return reply(`🤲 *Dua — ${key}*\n\n${DUA[key]}`);
+      return reply(`🤲 *Duain*\n\n` + Object.keys(DUA).map((k) => `• ${P()}dua ${k}`).join('\n'));
+    }
+    case 'azkar': {
+      const a = pick(AZKAR);
+      return reply(`📿 *Zikr*\n\n${a[1]}\n*${a[0]}*\n_${a[2]}_`);
+    }
+    case 'asma': {
+      const d = await getJSON('https://api.aladhan.com/v1/asmaAlHusna', {}, 15000).catch(() => null);
+      const list = d?.data;
+      if (!Array.isArray(list) || !list.length) return reply('❌ Asma-ul-Husna list nahi mil saki — API masla hy.');
+      if (arg) {
+        const n = parseInt(arg, 10);
+        const a = list.find((x) => Number(x.number) === n) || pick(list);
+        return reply(`✨ *${a.transliteration}*\n\n${a.name}\n\n_${a.en?.meaning || ''}_`);
+      }
+      return reply(`✨ *Allah ke 99 naam*\n\n` + list.slice(0, 20).map((x) => `${x.number}. ${x.transliteration}`).join('\n') + `\n\n_${P()}asma <number> — poora naam + matlab_`);
+    }
+    case 'kalima': {
+      const k = arg ? KALIMA.find((x) => x[0].toLowerCase().includes(arg.toLowerCase())) : pick(KALIMA);
+      const item = k || KALIMA[0];
+      return reply(`🕋 *${item[0]}*\n\n${item[1]}`);
+    }
+    case 'durood': {
+      return reply(`ﷺ *Durood*\n\nاللّٰهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ\n\n_”Aey Allah! Muhammad ﷺ aur unki aal par rehmat nazil farma.“_\n\n💚 Jummah ke din kasrat se parho — 100x ka wada hai.`);
+    }
+    case 'zikr': {
+      const a = pick(AZKAR);
+      return reply(`📿 *Aaj ka zikr*\n\n${a[1]}\n*${a[0]}*\n_${a[2]}_\n\n${P()}tasbih — counter ke liye`);
+    }
+    case 'tasbih': {
+      const n = parseInt(arg, 10) || 33;
+      return reply(`📿 *Tasbih counter*\n\nTarget: *${n}x*\n\n` + '▫️'.repeat(Math.min(n, 33)) + `\n\n_Zabani ginti karo — ${P()}zikr se zikr dekho._`);
+    }
+    case 'khatma': {
+      const n = Math.min(parseInt(arg, 10) || 0, 604);
+      const pct = ((n / 604) * 100).toFixed(1);
+      const bar = '█'.repeat(Math.round(n / 604 * 20)) + '░'.repeat(20 - Math.round(n / 604 * 20));
+      return reply(`📖 *Quran Khatma tracker*\n\n${bar} ${pct}%\nPages: *${n} / 604*\n\n${P()}khatma <page> — update karo`);
+    }
+    case 'sunnah': {
+      const s = pick([
+        'Miswak karna — Nabi ﷺ ne farmaya: “Miswak munh ki safai aur Rab ki khushi ka zariya hai.”',
+        'Khane se pehle Bismillah, baad me Alhamdulillah.',
+        'Daayein haath se khana aur peena.',
+        'Sote waqt wudu karna.',
+        'Salam ko aam karna.',
+        'Baith kar pani peena.',
+        'Jummah ke din ghusl karna aur safed kapre pehnna.',
+        'Kisi ke ghar jaane se pehle 3 martaba ijazat lena.',
+      ]);
+      return reply(`🌟 *Aaj ki Sunnah*\n\n${s}`);
+    }
+    case 'islamicq': {
+      const [q, a] = pick(ISLAMIC_Q);
+      return reply(`🕌 *Islamic Quiz*\n\n❓ ${q}\n\n_Jawab soch kar likho, phir ${P()}islamicq dobara — jawab aayega._\n\n||Jawab: ${a}||`);
+    }
+    case 'jummah': {
+      const t = await safeTimings(arg || 'Karachi');
+      if (!t) return reply(`❌ Timings nahi mil sake — API masla hy. Thori der baad try karo.`);
+      return reply(`🕌 *Jummah*\n\nKhutbah waqt (Dhuhr): *${t.Dhuhr}*\n\n📌 Sunnatein: ghusl, miswak, safed kapre, jaldi masjid jana, kasrat se durood, Surah Kahf parhna.\n\n${DUA.jummah}`);
+    }
+    case 'janazah': {
+      return reply(`🕊️ *Namaz-e-Janazah*\n\n• 4 takbeerein — koi ruku/sajda nahi\n• 1st: Subhanakallah\n• 2nd: Durood-e-Ibrahim\n• 3rd: Mayyit ke liye dua\n• 4th: Salam\n\nMayyit ko qibla rukh rakha jata hai. Janazah namaz farz-e-kifaya hai.`);
+    }
+    case 'wudu': {
+      return reply(`💧 *Wudu ka tareeqa*\n\n1. Niyyat + Bismillah\n2. Dono haath 3x (kalai tak)\n3. Miswak / munh 3x\n4. Naak 3x\n5. Munh 3x\n6. Dono haath kohni tak 3x\n7. Sar ka masah 1x\n8. Kaan 1x\n9. Dono paanv takhnon tak 3x\n\nFarz: 4 (munh, haath, sar masah, paanv)`);
+    }
+    case 'roza': {
+      return reply(`🌙 *Roze ke masail*\n\n✅ Roza todne wale: khana, peena, jima, jaan-boojh kar qai.\n❌ Roza na todne wale: bhool kar khana/peena, khwab me ehtilam, miswak, khoon donation (thoda), ghusl.\n\nQaza: 1 roza = 1 qaza. Kaffara: 60 roze ya 60 miskeen ko khana.`);
+    }
+    case 'zakat': {
+      const n = parseFloat(String(arg).replace(/[^0-9.]/g, ''));
+      if (!n) return reply(`❌ Raqam do. Example: ${P()}zakat 500000`);
+      const z = n * 0.025;
+      return reply(`💰 *Zakat calculator*\n\nAssets: PKR ${n.toLocaleString()}\nNisab check: PKR ${(n >= 135000 ? '✅ poora hua' : '❌ poora nahi hua (silver nisab ~135k)')}\n\n*Zakat (2.5%): PKR ${z.toLocaleString(undefined, { maximumFractionDigits: 2 })}*`);
+    }
+    case 'fitrana': {
+      const p = parseFloat(String(arg).replace(/[^0-9.]/g, '')) || 0;
+      return reply(`💰 *Fitrana*\n\nAam rate: *PKR 250–300* per person (aata/khajoor ke hisaab se).\n${p ? `Aap ke ghar (${p} afraad): *PKR ${(p * 275).toLocaleString()}* (avg 275/person)\n` : ''}\nEid ki namaz se pehle ada karna wajib hai.`);
+    }
+    case 'sadqa': {
+      return reply(`🤲 *Sadqa*\n\nNabi ﷺ: “Sadqa bala ko taalta hai aur umar barhata hai.”\n\n• Rozana thora sadqa karo\n• Chhupa kar dena behtar hai\n• Musibat me sadqa karo\n\n${P()}fitrana — fitrana calculator`);
+    }
+    case 'eid': {
+      let d; try { d = await getJSON('https://api.aladhan.com/v1/gToH', {}, 15000); } catch { d = null; }
+      const g = d?.data?.gregorian, h = d?.data?.hijri;
+      if (!g || !h) return reply('❌ Date nahi mil saki — API masla hy. Thori der baad try karo.');
+      return reply(`🎉 *Eid*\n\nMiladi: ${g.date}\nHijri: ${h.day} ${h.month.en} ${h.year}\n\n_Eid Mubarak! 🌙_\n\n${P()}salahtimer — Eid namaz ka waqt`);
+    }
+    case 'kaaba': {
+      await ctx.send(ctx.from, { image: { url: KAABA }, caption: '🕋 *Kaaba — Masjid al-Haram, Makkah*' }, { quoted: ctx.m });
+      break;
+    }
+    case 'madinah': {
+      await ctx.send(ctx.from, { image: { url: MADINAH }, caption: '🕌 *Masjid an-Nabawi — Madinah Munawwara*' }, { quoted: ctx.m });
+      break;
+    }
+    case 'nasheed': {
+      const list = ['Tala Al Badru Alayna', 'Maula Ya Salli', 'Assalamu Alayka', 'Hasbi Rabbi', 'Allah Hoo'];
+      return reply(`🎵 *Islamic nasheed*\n\n*${pick(list)}*\n\n_YouTube par search karo — ${P()}ytvideo <naam> se bhi dl ho sakta hai._`);
+    }
+    case 'istikhara': {
+      return reply(`🕌 *Istikhara*\n\n${DUA.istikhara}\n\n📌 Tareeqa: 2 rakat nafl parho, phir ye dua parho. Jo dil me asaani ho — usi par amal karo. Nabi ﷺ ne farmaya: “Jo istikhara kare wo kabhi naadim nahi hota.”`);
+    }
+    case 'tawbah': return reply(`🤲 *Tawbah*\n\n${DUA.tawbah}\n\n_Allah Tawwab-o-Raheem hai — dil se maafi mango, wo maaf farmata hai._`);
+    case 'sabr': return reply(`🌿 *Sabr*\n\n${DUA.sabr}`);
+    case 'shukr': return reply(`🌿 *Shukr*\n\n${DUA.shukr}`);
+    case 'nazar': return reply(`🧿 *Nazar*\n\n${DUA.nazar}`);
+    case 'ruqyah': {
+      return reply(`🩺 *Ruqyah*\n\n• Surah Fatiha 7x\n• Ayat-ul-Kursi 3x\n• Surah Falaq 3x\n• Surah Naas 3x\n\nApne ya kisi ke upar haath rakh kar parho, dam karo.\n\n${DUA.nazar}`);
+    }
+    case 'umrah': {
+      return reply(`🕋 *Umrah guide*\n\n1. Ihram (miqat par niyyat)\n2. Tawaf — 7 chakkar\n3. Sa'i — Safa/Marwa 7 chakkar\n4. Halq/Taqseer — baal\n\n📌 Documents: passport (6+ months), visa, ticket, vaccination card.\n_Umrah packages ke liye travel agent se rabta karo._`);
+    }
+    case 'hajj': {
+      return reply(`🕋 *Hajj*\n\n• 8 Zil-Hijjah: Mina\n• 9 Zil-Hijjah: Arafah (sab se aham)\n• 10 Zil-Hijjah: Muzdalifah, Rami, Qurbani, Halq, Tawaf-uz-Ziyarah\n• 11–13: Mina me Rami\n\nFarz: Ihram, Arafah, Tawaf-uz-Ziyarah.`);
+    }
+    case 'mosque': {
+      const city = arg || 'Karachi';
+      return reply(`🕌 *Masjid — ${city}*\n\nGoogle Maps par search karo: *mosque near ${city}*\n\nYa ${P()}map ${city} mosque — location link ke liye.`);
+    }
+    case 'ramadan': {
+      const city = arg || 'Karachi';
+      const t = await safeTimings(city);
+      if (!t) return reply(`❌ *${city}* ke timings nahi mil sake — API masla hy. Thori der baad try karo.`);
+      return reply(`🌙 *Ramadan — ${city}*\n\n🌅 Sehri: ${t.Fajr}\n🌇 Iftar: ${t.Maghrib}\n\n_Allah sab ke roze qubool farmaye._`);
+    }
+    default:
+      return reply('❓ Unknown islamic command');
+  }
+};
+
+module.exports = {
+  commands: [
+    'hadith', 'qibla', 'asma', 'hijri', 'azkar', 'tasbih', 'khatma', 'salahtimer', 'ayat', 'zikr',
+    'istikhara', 'janazah', 'wudu', 'imsak', 'sahaba', 'islamicq', 'tahajjud', 'jummah', 'kaaba', 'madinah',
+    'tawbah', 'sabr', 'shukr', 'nazar', 'ruqyah', 'nasheed', 'durood', 'kalima', 'sunnah', 'fitrana',
+    'sadqa', 'roza', 'eid',
+    // extras that belong in this family
+    'quran', 'tafsir', 'qaudio', 'quransearch', 'dua', 'namaz', 'sehri', 'zakat', 'mosque', 'ramadan',
+  ],
+  category: '🕌 ISLAMIC',
+  handler,
+};

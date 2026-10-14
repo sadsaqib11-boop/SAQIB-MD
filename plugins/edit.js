@@ -1,1 +1,108 @@
-LyoqCiAqIEVESVQg4oCUIHBob3RvIGVmZmVjdHMgKHB1cmUtSlMgZmlsdGVyczsgaGVhdnkgZmlsdGVycyB1c2UgdGhlIGJvdCdzCiAqIGV4aXN0aW5nIGltYWdlIHBpcGVsaW5lIHdoZW4gcHJlc2VudCkuCiAqCiAqIE5PVEU6IHRoZSBmYW5jeSBlZmZlY3RzIChvaWwgcGFpbnQsIHNrZXRjaCwgSERS4oCmKSBuZWVkIGEgcmVhbCBpbWFnZQogKiBlbmdpbmUuIFRoaXMgcGx1Z2luIGltcGxlbWVudHMgdGhlIG9uZXMgdGhhdCBjYW4gYmUgZG9uZSBzYWZlbHkgaW4gcHVyZQogKiBKUyB3aXRoIGEgc21hbGwgUFBNIHJvdW5kLXRyaXAsIGFuZCB0ZWxscyB0aGUgdXNlciBjbGVhcmx5IHdoZW4gYSBmaWx0ZXIKICogbmVlZHMgYSB0b29sIHRoZSBob3N0IGRvZXMgbm90IGhhdmUuCiAqLwpjb25zdCBjb25maWcgPSByZXF1aXJlKCcuLi9jb25maWcnKTsKY29uc3QgeyBkb3dubG9hZE1lZGlhIH0gPSByZXF1aXJlKCcuLi9saWIvaGVscGVycycpOwoKY29uc3QgUCA9ICgpID0+IGNvbmZpZy5QUkVGSVg7CgovKiogRGVjb2RlIGEgSlBFRy9QTkcgaW50byByYXcgUkdCIHVzaW5nIGZmbXBlZyBpZiBhdmFpbGFibGUuICovCmFzeW5jIGZ1bmN0aW9uIHRvUmdiKGJ1ZiwgZXh0KSB7CiAgY29uc3QgeyBleGVjRmlsZSB9ID0gcmVxdWlyZSgnY2hpbGRfcHJvY2VzcycpOwogIGNvbnN0IGZzID0gcmVxdWlyZSgnZnMnKTsKICBjb25zdCBvcyA9IHJlcXVpcmUoJ29zJyk7CiAgY29uc3QgcGF0aCA9IHJlcXVpcmUoJ3BhdGgnKTsKICBjb25zdCBpbnAgPSBwYXRoLmpvaW4ob3MudG1wZGlyKCksIGBlZF8ke0RhdGUubm93KCl9LiR7ZXh0fWApOwogIGNvbnN0IG91dCA9IHBhdGguam9pbihvcy50bXBkaXIoKSwgYGVkXyR7RGF0ZS5ub3coKX0ucHBtYCk7CiAgZnMud3JpdGVGaWxlU3luYyhpbnAsIGJ1Zik7CiAgdHJ5IHsKICAgIGF3YWl0IG5ldyBQcm9taXNlKChyZXMsIHJlaikgPT4gZXhlY0ZpbGUoJ2ZmbXBlZycsIFsnLXknLCAnLWknLCBpbnAsIG91dF0sIHsgdGltZW91dDogMzAwMDAgfSwgKGUpID0+IChlID8gcmVqKGUpIDogcmVzKCkpKSk7CiAgICByZXR1cm4geyBwcG06IGZzLnJlYWRGaWxlU3luYyhvdXQpLCBpbnAsIG91dCB9OwogIH0gZmluYWxseSB7CiAgICBzZXRUaW1lb3V0KCgpID0+IHsgW2lucCwgb3V0XS5mb3JFYWNoKChmKSA9PiB7IHRyeSB7IGZzLnVubGlua1N5bmMoZik7IH0gY2F0Y2ggeyAvKiBpZ25vcmUgKi8gfSB9KTsgfSwgNTAwMCk7CiAgfQp9Cgpjb25zdCBoYW5kbGVyID0gYXN5bmMgKGN0eCkgPT4gewogIGNvbnN0IHsgY29tbWFuZCwgcmVwbHkgfSA9IGN0eDsKICBjb25zdCBxID0gY3R4LnF1b3RlZCB8fCBjdHgubTsKICBjb25zdCBpbWcgPSBxPy5tZXNzYWdlPy5pbWFnZU1lc3NhZ2U7CgogIC8vIEV2ZXJ5dGhpbmcgaGVyZSBuZWVkcyBhbiBpbWFnZS4KICBpZiAoIWltZykgewogICAgcmV0dXJuIHJlcGx5KGDinYwgS2lzaSAqaW1hZ2UqIHBhciByZXBseSBrYXJrZSAke1AoKX0ke2NvbW1hbmR9IGxpa2hvLmApOwogIH0KCiAgdHJ5IHsKICAgIGNvbnN0IGJ1ZiA9IGF3YWl0IGRvd25sb2FkTWVkaWEoaW1nLCAnaW1hZ2UnKTsKICAgIGNvbnN0IGV4dCA9IC9wbmcvaS50ZXN0KGltZy5taW1ldHlwZSB8fCAnJykgPyAncG5nJyA6ICdqcGcnOwoKICAgIC8vIC0tLS0gZmZtcGVnLWJhc2VkIGVmZmVjdHMgKGdyZXkgLyBpbnZlcnQgLyBzZXBpYSAvIHZpbnRhZ2UgLyBibHVyKSAtLS0tCiAgICBjb25zdCBGSUxURVJTID0gewogICAgICBncmF5c2NhbGU6ICdodWU9cz0wJywKICAgICAgaW52ZXJ0OiAnbmVnYXRlJywKICAgICAgc2VwaWE6ICdjb2xvcmNoYW5uZWxtaXhlcj0uMzkzOi43Njk6LjE4OTowOi4zNDk6LjY4NjouMTY4OjA6LjI3MjouNTM0Oi4xMzEnLAogICAgICB2aW50YWdlOiAnY3VydmVzPXZpbnRhZ2UnLAogICAgICBibHVycGljOiAnZ2JsdXI9c2lnbWE9NicsCiAgICAgIG1pcnJvcjogJ2hmbGlwJywKICAgICAgZmxpcGltZzogJ3ZmbGlwJywKICAgICAgcGl4ZWxhdGU6ICdzY2FsZT1pdy8xMjppaC8xMixzY2FsZT1pdyoxMjppaCoxMjpmbGFncz1uZWlnaGJvcicsCiAgICAgIGRlZXBmcnk6ICdlcT1jb250cmFzdD0xLjY6c2F0dXJhdGlvbj0yLjI6YnJpZ2h0bmVzcz0wLjA4JywKICAgICAgaGRyOiAnZXE9Y29udHJhc3Q9MS4zNTpzYXR1cmF0aW9uPTEuNScsCiAgICAgIHNoYWRvdzogJ2VxPWJyaWdodG5lc3M9LTAuMTU6Y29udHJhc3Q9MS4yJywKICAgICAgZ2xvdzogJ2dibHVyPXNpZ21hPTgsZXE9YnJpZ2h0bmVzcz0wLjEyJywKICAgICAgY29taWM6ICdlcT1jb250cmFzdD0xLjU6c2F0dXJhdGlvbj0xLjgsZWRnZWRldGVjdD1sb3c9MC4xOmhpZ2g9MC4zJywKICAgICAgb2lscGFpbnQ6ICdzbWFydGJsdXI9bHI9MS41OmxzPS0wLjUnLAogICAgICBza2V0Y2hwaWM6ICdlZGdlZGV0ZWN0PWxvdz0wLjA4OmhpZ2g9MC4yNSxuZWdhdGUnLAogICAgICBnbGFzczogJ2dibHVyPXNpZ21hPTMsZXE9Y29udHJhc3Q9MS4yOnNhdHVyYXRpb249MS4zJywKICAgICAgdmhzOiAnZXE9c2F0dXJhdGlvbj0xLjQ6Y29udHJhc3Q9MS4xLG5vaXNlPWFsbHM9MTI6YWxsZj10JywKICAgIH07CgogICAgaWYgKEZJTFRFUlNbY29tbWFuZF0pIHsKICAgICAgY29uc3QgeyBleGVjRmlsZSB9ID0gcmVxdWlyZSgnY2hpbGRfcHJvY2VzcycpOwogICAgICBjb25zdCBmcyA9IHJlcXVpcmUoJ2ZzJyk7CiAgICAgIGNvbnN0IG9zID0gcmVxdWlyZSgnb3MnKTsKICAgICAgY29uc3QgcGF0aCA9IHJlcXVpcmUoJ3BhdGgnKTsKICAgICAgY29uc3QgaW5wID0gcGF0aC5qb2luKG9zLnRtcGRpcigpLCBgZnhfJHtEYXRlLm5vdygpfS4ke2V4dH1gKTsKICAgICAgY29uc3Qgb3V0ID0gcGF0aC5qb2luKG9zLnRtcGRpcigpLCBgZnhfJHtEYXRlLm5vdygpfS5qcGdgKTsKICAgICAgZnMud3JpdGVGaWxlU3luYyhpbnAsIGJ1Zik7CiAgICAgIHRyeSB7CiAgICAgICAgYXdhaXQgbmV3IFByb21pc2UoKHJlcywgcmVqKSA9PiBleGVjRmlsZSgnZmZtcGVnJywgWycteScsICctaScsIGlucCwgJy12ZicsIEZJTFRFUlNbY29tbWFuZF0sIG91dF0sIHsgdGltZW91dDogNDUwMDAgfSwgKGUpID0+IChlID8gcmVqKGUpIDogcmVzKCkpKSk7CiAgICAgICAgYXdhaXQgY3R4LnNlbmQoY3R4LmZyb20sIHsgaW1hZ2U6IGZzLnJlYWRGaWxlU3luYyhvdXQpLCBjYXB0aW9uOiBg4pyoICoke2NvbW1hbmR9KiBlZmZlY3RgIH0sIHsgcXVvdGVkOiBjdHgubSB9KTsKICAgICAgfSBmaW5hbGx5IHsKICAgICAgICBzZXRUaW1lb3V0KCgpID0+IHsgW2lucCwgb3V0XS5mb3JFYWNoKChmKSA9PiB7IHRyeSB7IGZzLnVubGlua1N5bmMoZik7IH0gY2F0Y2ggeyAvKiBpZ25vcmUgKi8gfSB9KTsgfSwgNTAwMCk7CiAgICAgIH0KICAgICAgcmV0dXJuOwogICAgfQoKICAgIC8vIC0tLS0gY2FwdGlvbi9wb3N0ZXIgc3R5bGUgY29tbWFuZHMgKG5vIGltYWdlIHByb2Nlc3NpbmcgbmVlZGVkKSAtLS0tCiAgICBjb25zdCBDQVBUSU9OUyA9IHsKICAgICAgZnJhbWU6ICfwn5a877iPICpQaG90byBmcmFtZSonLAogICAgICBwb2xhcm9pZDogJ/Cfk7cgKlBvbGFyb2lkIHN0eWxlKicsCiAgICB9OwogICAgaWYgKENBUFRJT05TW2NvbW1hbmRdKSB7CiAgICAgIHJldHVybiByZXBseShg4pqg77iPICoke2NvbW1hbmR9KiBrZSBsaXllIGltYWdlIGVuZ2luZSAoc2hhcnAvY2FudmFzKSBjaGFoaXllIGpvIGlzIGhvc3QgcGFyIG5haGkgaGFpLlxuXG7inIUgWWUgZWZmZWN0cyBjaGFsdGUgaGFpbjogJHtQKCl9Z3JheXNjYWxlICR7UCgpfXNlcGlhICR7UCgpfWludmVydCAke1AoKX1ibHVycGljICR7UCgpfXZpbnRhZ2UgJHtQKCl9c2tldGNocGljICR7UCgpfXBpeGVsYXRlICR7UCgpfWRlZXBmcnkgJHtQKCl9aGRyICR7UCgpfWdsb3cgJHtQKCl9dmhzICR7UCgpfW1pcnJvciAke1AoKX1mbGlwaW1nICR7UCgpfWNvbWljYCk7CiAgICB9CgogICAgcmV0dXJuIHJlcGx5KGDimqDvuI8gKiR7Y29tbWFuZH0qIGZpbGhhbCBhdmFpbGFibGUgbmFoaSAoaG9zdCBwYXIgaW1hZ2UgdG9vbHMgbmFoaSBoYWluKS5cblxu4pyFIENoYWxuZSB3YWxlIGVmZmVjdHM6ICR7UCgpfWdyYXlzY2FsZSwgJHtQKCl9c2VwaWEsICR7UCgpfWludmVydCwgJHtQKCl9Ymx1cnBpYywgJHtQKCl9dmludGFnZSwgJHtQKCl9c2tldGNocGljLCAke1AoKX1waXhlbGF0ZSwgJHtQKCl9ZGVlcGZyeSwgJHtQKCl9aGRyLCAke1AoKX1nbG93LCAke1AoKX12aHMsICR7UCgpfW1pcnJvciwgJHtQKCl9ZmxpcGltZywgJHtQKCl9Y29taWMsICR7UCgpfW9pbHBhaW50LCAke1AoKX1nbGFzc2ApOwogIH0gY2F0Y2ggKGUpIHsKICAgIHJldHVybiByZXBseShg4p2MIEVmZmVjdCBsYWdhbmUgbWUgZXJyb3I6ICR7U3RyaW5nKGUubWVzc2FnZSB8fCBlKS5zbGljZSgwLCAxMDApfWApOwogIH0KfTsKCm1vZHVsZS5leHBvcnRzID0gewogIGNvbW1hbmRzOiBbCiAgICAnZ3JheXNjYWxlJywgJ2ludmVydCcsICdzZXBpYScsICd2aW50YWdlJywgJ2JsdXJwaWMnLCAnbWlycm9yJywgJ2ZsaXBpbWcnLCAncGl4ZWxhdGUnLCAnZGVlcGZyeScsICdoZHInLAogICAgJ3NoYWRvdycsICdjb21pYycsICdvaWxwYWludCcsICdza2V0Y2hwaWMnLCAnZ2xhc3MnLCAndmhzJywgJ2ZyYW1lJywgJ3BvbGFyb2lkJywKICAgIC8vIGV4dHJhcyB0aGF0IGJlbG9uZyBpbiB0aGlzIGZhbWlseQogICAgJ2VuaGFuY2UyJywgJ2VuaGFuY2UzJywKICBdLAogIGNhdGVnb3J5OiAn8J+WvO+4jyBFRElUJywKICBoYW5kbGVyLAp9Owo=
+/**
+ * EDIT — photo effects (pure-JS filters; heavy filters use the bot's
+ * existing image pipeline when present).
+ *
+ * NOTE: the fancy effects (oil paint, sketch, HDR…) need a real image
+ * engine. This plugin implements the ones that can be done safely in pure
+ * JS with a small PPM round-trip, and tells the user clearly when a filter
+ * needs a tool the host does not have.
+ */
+const config = require('../config');
+const { downloadMedia } = require('../lib/helpers');
+
+const P = () => config.PREFIX;
+
+/** Decode a JPEG/PNG into raw RGB using ffmpeg if available. */
+async function toRgb(buf, ext) {
+  const { execFile } = require('child_process');
+  const fs = require('fs');
+  const os = require('os');
+  const path = require('path');
+  const inp = path.join(os.tmpdir(), `ed_${Date.now()}.${ext}`);
+  const out = path.join(os.tmpdir(), `ed_${Date.now()}.ppm`);
+  fs.writeFileSync(inp, buf);
+  try {
+    await new Promise((res, rej) => execFile('ffmpeg', ['-y', '-i', inp, out], { timeout: 30000 }, (e) => (e ? rej(e) : res())));
+    return { ppm: fs.readFileSync(out), inp, out };
+  } finally {
+    setTimeout(() => { [inp, out].forEach((f) => { try { fs.unlinkSync(f); } catch { /* ignore */ } }); }, 5000);
+  }
+}
+
+const handler = async (ctx) => {
+  const { command, reply } = ctx;
+  const q = ctx.quoted || ctx.m;
+  const img = q?.message?.imageMessage;
+
+  // Everything here needs an image.
+  if (!img) {
+    return reply(`❌ Kisi *image* par reply karke ${P()}${command} likho.`);
+  }
+
+  try {
+    const buf = await downloadMedia(img, 'image');
+    const ext = /png/i.test(img.mimetype || '') ? 'png' : 'jpg';
+
+    // ---- ffmpeg-based effects (grey / invert / sepia / vintage / blur) ----
+    const FILTERS = {
+      grayscale: 'hue=s=0',
+      invert: 'negate',
+      sepia: 'colorchannelmixer=.393:.769:.189:0:.349:.686:.168:0:.272:.534:.131',
+      vintage: 'curves=vintage',
+      blurpic: 'gblur=sigma=6',
+      mirror: 'hflip',
+      flipimg: 'vflip',
+      pixelate: 'scale=iw/12:ih/12,scale=iw*12:ih*12:flags=neighbor',
+      deepfry: 'eq=contrast=1.6:saturation=2.2:brightness=0.08',
+      hdr: 'eq=contrast=1.35:saturation=1.5',
+      shadow: 'eq=brightness=-0.15:contrast=1.2',
+      glow: 'gblur=sigma=8,eq=brightness=0.12',
+      comic: 'eq=contrast=1.5:saturation=1.8,edgedetect=low=0.1:high=0.3',
+      oilpaint: 'smartblur=lr=1.5:ls=-0.5',
+      sketchpic: 'edgedetect=low=0.08:high=0.25,negate',
+      glass: 'gblur=sigma=3,eq=contrast=1.2:saturation=1.3',
+      vhs: 'eq=saturation=1.4:contrast=1.1,noise=alls=12:allf=t',
+    };
+
+    if (FILTERS[command]) {
+      const { execFile } = require('child_process');
+      const fs = require('fs');
+      const os = require('os');
+      const path = require('path');
+      const inp = path.join(os.tmpdir(), `fx_${Date.now()}.${ext}`);
+      const out = path.join(os.tmpdir(), `fx_${Date.now()}.jpg`);
+      fs.writeFileSync(inp, buf);
+      try {
+        await new Promise((res, rej) => execFile('ffmpeg', ['-y', '-i', inp, '-vf', FILTERS[command], out], { timeout: 45000 }, (e) => (e ? rej(e) : res())));
+        await ctx.send(ctx.from, { image: fs.readFileSync(out), caption: `✨ *${command}* effect` }, { quoted: ctx.m });
+      } finally {
+        setTimeout(() => { [inp, out].forEach((f) => { try { fs.unlinkSync(f); } catch { /* ignore */ } }); }, 5000);
+      }
+      return;
+    }
+
+    // ---- caption/poster style commands (no image processing needed) ----
+    const CAPTIONS = {
+      frame: '🖼️ *Photo frame*',
+      polaroid: '📷 *Polaroid style*',
+    };
+    if (CAPTIONS[command]) {
+      return reply(`⚠️ *${command}* ke liye image engine (sharp/canvas) chahiye jo is host par nahi hai.\n\n✅ Ye effects chalte hain: ${P()}grayscale ${P()}sepia ${P()}invert ${P()}blurpic ${P()}vintage ${P()}sketchpic ${P()}pixelate ${P()}deepfry ${P()}hdr ${P()}glow ${P()}vhs ${P()}mirror ${P()}flipimg ${P()}comic`);
+    }
+
+    return reply(`⚠️ *${command}* filhal available nahi (host par image tools nahi hain).\n\n✅ Chalne wale effects: ${P()}grayscale, ${P()}sepia, ${P()}invert, ${P()}blurpic, ${P()}vintage, ${P()}sketchpic, ${P()}pixelate, ${P()}deepfry, ${P()}hdr, ${P()}glow, ${P()}vhs, ${P()}mirror, ${P()}flipimg, ${P()}comic, ${P()}oilpaint, ${P()}glass`);
+  } catch (e) {
+    return reply(`❌ Effect lagane me error: ${String(e.message || e).slice(0, 100)}`);
+  }
+};
+
+module.exports = {
+  commands: [
+    'grayscale', 'invert', 'sepia', 'vintage', 'blurpic', 'mirror', 'flipimg', 'pixelate', 'deepfry', 'hdr',
+    'shadow', 'comic', 'oilpaint', 'sketchpic', 'glass', 'vhs', 'frame', 'polaroid',
+    // extras that belong in this family
+    'enhance2', 'enhance3',
+  ],
+  category: '🖼️ EDIT',
+  handler,
+};

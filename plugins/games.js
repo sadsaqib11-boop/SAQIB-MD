@@ -1,1 +1,282 @@
-LyoqCiAqIEdBTUVTIOKAlCBtaW5pIGdhbWVzICYgZ3JvdXAgZnVuIChzdGF0ZSBrZXB0IGluIG1lbW9yeSBwZXIgY2hhdCkKICovCmNvbnN0IGNvbmZpZyA9IHJlcXVpcmUoJy4uL2NvbmZpZycpOwpjb25zdCB7IHBpY2ssIHJhbmRJbnQgfSA9IHJlcXVpcmUoJy4uL2xpYi9oZWxwZXJzJyk7Cgpjb25zdCBQID0gKCkgPT4gY29uZmlnLlBSRUZJWDsKCi8qIC0tLS0tLS0tLS0tLS0tLS0gc2hhcmVkIHN0YXRlIC0tLS0tLS0tLS0tLS0tLS0gKi8KY29uc3Qgc2NvcmVzID0gbmV3IE1hcCgpOyAgIC8vIHVzZXIgLT4gcG9pbnRzCmNvbnN0IHdhbGxldHMgPSBuZXcgTWFwKCk7ICAvLyB1c2VyIC0+IGNvaW5zCmNvbnN0IGdhbWVzID0gbmV3IE1hcCgpOyAgICAvLyBjaGF0SWQgLT4gYWN0aXZlIGdhbWUKY29uc3QgcGV0cyA9IG5ldyBNYXAoKTsgICAgIC8vIHVzZXIgLT4gcGV0CmNvbnN0IGZhcm1zID0gbmV3IE1hcCgpOyAgICAvLyB1c2VyIC0+IHtwbGFudGVkLCBzdGFnZX0KCmNvbnN0IHBvaW50cyA9ICh1KSA9PiBzY29yZXMuZ2V0KHUpIHx8IDA7CmNvbnN0IGFkZFBvaW50cyA9ICh1LCBuKSA9PiB7IHNjb3Jlcy5zZXQodSwgcG9pbnRzKHUpICsgbik7IHJldHVybiBzY29yZXMuZ2V0KHUpOyB9Owpjb25zdCBjb2lucyA9ICh1KSA9PiB3YWxsZXRzLmdldCh1KSB8fCAwOwpjb25zdCBhZGRDb2lucyA9ICh1LCBuKSA9PiB7IHdhbGxldHMuc2V0KHUsIE1hdGgubWF4KDAsIGNvaW5zKHUpICsgbikpOyByZXR1cm4gd2FsbGV0cy5nZXQodSk7IH07Cgpjb25zdCBRVUlaID0gWwogIFsnUGFraXN0YW4ga2EgcWF1bWkgcGhvb2w/JywgWydDaGFtYmVsaScsICdHdWxhYicsICdTdXJham11a2hpJywgJ0thbWFsJ10sIDBdLAogIFsnU2FiIHNlIGJhcmEgc2F5eWFyYT8nLCBbJ01hbmdhbCcsICdNdXNodGVyaScsICdadWhhbCcsICdaYW1lZW4nXSwgMV0sCiAgWydQYW5pIGthIGNoZW1pY2FsIGZvcm11bGE/JywgWydDTzInLCAnSDJPJywgJ08yJywgJ05hQ2wnXSwgMV0sCiAgWydRdXJhbiBtZSBraXRuaSBzdXJhaCBoYWluPycsIFsnMTAwJywgJzExMCcsICcxMTQnLCAnMTIwJ10sIDJdLAogIFsnU2FiIHNlIHRleiBqYW53YXI/JywgWydTaGVyJywgJ0NoZWV0YWgnLCAnR2hvcmEnLCAnSGlyYW4nXSwgMV0sCiAgWydQYWtpc3RhbiBraXMgc2FhbCBhemFhZCBodWE/JywgWycxOTQ1JywgJzE5NDYnLCAnMTk0NycsICcxOTQ4J10sIDJdLAogIFsnRHVuaXlhIGthIHNhYiBzZSBiYXJhIHNhbXVuZGFyPycsIFsnQXRsYW50aWMnLCAnSW5kaWFuJywgJ0FyY3RpYycsICdQYWNpZmljJ10sIDNdLAogIFsnSW5zYWFuIGtlIGtpdG5lIGRhYW50IGhvdGUgaGFpbiAoYWR1bHQpPycsIFsnMjgnLCAnMzAnLCAnMzInLCAnMzQnXSwgMl0sCl07CmNvbnN0IFRSVVRIID0gWydTYWIgc2UgenlhZGEga2lzIHNlIGRhciBsYWd0YSBoYWk/JywgJ0Fha2hyaSBqaG9vdCBrYWIgYm9sYSB0aGE/JywgJ1NhYiBzZSBidXJpIGFhZGF0IGt5YSBoYWk/JywgJ0tpc2kga28gc2VjcmV0bHkgcGFzYW5kIGthcnRlIGhvPycsICdQaG9uZSBtZSBzYWIgc2UgZW1iYXJyYXNzaW5nIHBob3RvIGt5YSBoYWk/J107CmNvbnN0IERBUkUgPSBbJ0Fwbmkgc2FiIHNlIGJ1cmkgc2VsZmllIGJoZWpvJywgJ1ZvaWNlIG5vdGUgbWUgZ2FhbmEgZ2FvJywgJ0tpc2kga28gMyBjb21wbGltZW50cyBkbycsICdBcG5hIHNlYXJjaCBoaXN0b3J5IGthIHBlaGxhIGxhZnogYmF0YW8nLCAnMTAgc2Vjb25kIHRhayBjaGVla2hlaW4gbWFhcm8nXTsKY29uc3QgTkhJRSA9IFsnTmV2ZXIgaGF2ZSBJIGV2ZXIuLi4gamhvb3QgYm9sYSBoby4nLCAnTmV2ZXIgaGF2ZSBJIGV2ZXIuLi4gY2xhc3MgbWUgc295YSBoby4nLCAnTmV2ZXIgaGF2ZSBJIGV2ZXIuLi4ga2lzaSBrYSBtZXNzYWdlIGlnbm9yZSBraXlhIGhvLicsICdOZXZlciBoYXZlIEkgZXZlci4uLiBleGFtIG1lIGNoZWF0aW5nIGtpIGhvLicsICdOZXZlciBoYXZlIEkgZXZlci4uLiByYWF0IDMgYmFqZSB0YWsgcGhvbmUgY2hhbGF5YSBoby4nXTsKY29uc3QgUEFSQU5PSUEgPSBbJ0FnYXIgdHVtaGUgMjQgZ2hhbnRlIGtlIGxpeWUgaW52aXNpYmxlIGhvbmUga2EgbWF1cWEgbWlsZSB0byBreWEga2FydGU/JywgJ1R1bWhhcmUgYmFyZSBtZSBreWEgYWZ3YWggcGhlbGF5aSBnYXlpPycsICdLaXMgY2hlZXoga2UgbGl5ZSB0dW0gamhvb3QgYm9sdGUgaG8/J107CmNvbnN0IENBUElUQUxTID0gW1snUGFraXN0YW4nLCAnSXNsYW1hYmFkJ10sIFsnSW5kaWEnLCAnTmV3IERlbGhpJ10sIFsnQ2hpbmEnLCAnQmVpamluZyddLCBbJ1R1cmtleScsICdBbmthcmEnXSwgWydKYXBhbicsICdUb2t5byddLCBbJ0VneXB0JywgJ0NhaXJvJ10sIFsnSXJhbicsICdUZWhyYW4nXSwgWydTYXVkaSBBcmFiaWEnLCAnUml5YWRoJ11dOwpjb25zdCBGTEFHUyA9IFtbJ/Cfh7Xwn4ewJywgJ1Bha2lzdGFuJ10sIFsn8J+HrvCfh7MnLCAnSW5kaWEnXSwgWyfwn4e58J+HtycsICdUdXJrZXknXSwgWyfwn4ev8J+HtScsICdKYXBhbiddLCBbJ/Cfh6jwn4ezJywgJ0NoaW5hJ10sIFsn8J+HuPCfh6YnLCAnU2F1ZGkgQXJhYmlhJ10sIFsn8J+HrPCfh6cnLCAnVW5pdGVkIEtpbmdkb20nXSwgWyfwn4e68J+HuCcsICdVbml0ZWQgU3RhdGVzJ11dOwpjb25zdCBFTU9KSV9TVE9SWSA9IFtbJ/Cfmpfwn5Ko8J+YsfCfj6UnLCAnQ2FyIGFjY2lkZW50J10sIFsn8J+RpuKdpO+4j/Cfkafwn5KNJywgJ0xvdmUgbWFycmlhZ2UnXSwgWyfwn46T8J+TmvCfkqrwn4+GJywgJ1N0dWR5IHN1Y2Nlc3MnXSwgWyfwn42V8J+Yi/CfpKQnLCAnUGl6emEgY3JhdmluZyddXTsKY29uc3QgU09OR1MgPSBbJ1R1bSBIaSBIbycsICdLZXNhcml5YScsICdQYXNvb3JpJywgJ0FmcmVlbiBBZnJlZW4nLCAnRGlsIERpbCBQYWtpc3RhbicsICdKZWUgTGUgWmFyYSddOwoKY29uc3QgaGFuZGxlciA9IGFzeW5jIChjdHgpID0+IHsKICBjb25zdCB7IGNvbW1hbmQsIHJlcGx5LCBhcmcsIHNlbmRlck51bSwgZnJvbSwgaXNHcm91cCwgcHVzaG5hbWUgfSA9IGN0eDsKICBjb25zdCB3aG8gPSBzZW5kZXJOdW0gfHwgcHVzaG5hbWUgfHwgJ3BsYXllcic7CiAgY29uc3QgY2hhdCA9IGZyb20gfHwgJ2NoYXQnOwoKICBzd2l0Y2ggKGNvbW1hbmQpIHsKICAgIC8qIC0tLS0tLS0tLS0tLS0tLS0gc2ltcGxlIGZ1biAtLS0tLS0tLS0tLS0tLS0tICovCiAgICBjYXNlICdwYXJhbm9pYSc6IHJldHVybiByZXBseShg8J+YsyAqUGFyYW5vaWEqXG5cbiR7cGljayhQQVJBTk9JQSl9YCk7CiAgICBjYXNlICduaGllJzogcmV0dXJuIHJlcGx5KGDwn5mKICpOZXZlciBIYXZlIEkgRXZlcipcblxuJHtwaWNrKE5ISUUpfWApOwogICAgY2FzZSAnY291cGxlJzogcmV0dXJuIHJlcGx5KGDwn5KRICpDb3VwbGUgb2YgdGhlIGRheSpcblxuJHtpc0dyb3VwID8gJ0FhaiBrYSBjb3VwbGU6IConICsgcGljayhbJ0FsaSDinaTvuI8gQXllc2hhJywgJ0hhbXphIOKdpO+4jyBaYXJhJywgJ0JpbGFsIOKdpO+4jyBIaW5hJywgJ1VzbWFuIOKdpO+4jyBNYXJ5YW0nXSkgKyAnKicgOiAnWWUgY29tbWFuZCBncm91cCBtZSBtYXphIGRldGkgaGFpIPCfmIQnfWApOwogICAgY2FzZSAnc3BpbnRoZWJvdHRsZSc6IHJldHVybiByZXBseShg8J+NviAqQm90dGxlIGdob29taS4uLipcblxu8J+RiSAke2lzR3JvdXAgPyAnS2lzaSBtZW1iZXIgcGFyIHJ1ayBnYXlpISBSYW5kb20gcGljazogKicgKyAoY3R4Lm1lbnRpb25lZD8uWzBdPy5zcGxpdCgnQCcpWzBdIHx8ICdhYXAnKSArICcqJyA6ICdHcm91cCBtZSB0cnkga2Fybyd9YCk7CiAgICBjYXNlICdzb25nZ3Vlc3MnOiB7CiAgICAgIGlmICghaXNHcm91cCkgcmV0dXJuIHJlcGx5KCfinYwgWWUgZ3JvdXAgZ2FtZSBoYWkuJyk7CiAgICAgIGNvbnN0IHMgPSBwaWNrKFNPTkdTKTsKICAgICAgZ2FtZXMuc2V0KGNoYXQsIHsgdHlwZTogJ3NvbmcnLCBhbnN3ZXI6IHMudG9Mb3dlckNhc2UoKSwgdHJpZXM6IDAgfSk7CiAgICAgIHJldHVybiByZXBseShg8J+OtSAqU29uZyBHdWVzcypcblxuRmlsbS9zb25nIGthIG5hYW0gZ3Vlc3Mga2FybyDigJQgMSBtaW51dGUgbWUgamF3YWIgZG8hXG5cbl9IaW50OiBwZWhsYSBsYWZ6ICIke3Muc3BsaXQoJyAnKVswXX0iX1xuXG5KYXdhYiBsaWtoIGthciBiaGVqby5gKTsKICAgIH0KICAgIGNhc2UgJ2Vtb2ppc3RvcnknOiByZXR1cm4gcmVwbHkoYPCfk7EgKkVtb2ppIFN0b3J5KlxuXG4ke3BpY2soRU1PSklfU1RPUlkpLmpvaW4oJyDihpIgJyl9XG5cbl9TYW1qaG8ga3lhIHNjZW5lIGhhaT9fYCk7CiAgICBjYXNlICdmbGFnZ3Vlc3MnOiB7CiAgICAgIGNvbnN0IFtmLCBuXSA9IHBpY2soRkxBR1MpOwogICAgICBnYW1lcy5zZXQoY2hhdCwgeyB0eXBlOiAnZmxhZycsIGFuc3dlcjogbi50b0xvd2VyQ2FzZSgpIH0pOwogICAgICByZXR1cm4gcmVwbHkoYPCfj7PvuI8gKkZsYWcgR3Vlc3MqXG5cbiR7Zn1cblxuS2F1bnNhIG11bGsgaGFpPyBOYWFtIGxpa2hvLmApOwogICAgfQogICAgY2FzZSAnbW92aWVndWVzcyc6IHJldHVybiByZXBseShg8J+OrCAqTW92aWUgR3Vlc3MqXG5cbl8zIGtod2FiLCAxIGphZG9vLCBhdXIgZWsgY2hob3RhIGxhcmthX1xuXG5KYXdhYiBsaWtobyFgKTsKICAgIGNhc2UgJ2FudGFrc2hhcmknOiByZXR1cm4gcmVwbHkoYPCfjrYgKkFudGFrc2hhcmkqXG5cbkFha2hyaSBoYXJmOiAqJHtwaWNrKFsnQScsICdNJywgJ1MnLCAnVCcsICdLJ10pfSpcblxuSXMgaGFyZiBzZSBnYWFuYSBnYWFvIWApOwogICAgY2FzZSAnc3RvcnlnYW1lJzogcmV0dXJuIHJlcGx5KGDwn5OWICpTdG9yeSBHYW1lKlxuXG5QZWhsaSBsaW5lOiAqJHtwaWNrKFsnRWsgcmFhdCwgYW5kaGVyaSBnYWxpIG1lLi4uJywgJ0FpayBjaGhvdGEgZ2FvbiwgYWlrIGJhcmEga2h3YWIuLi4nLCAnQmFyaXNoIHRoaSwgYXVyIHdvIGFrZWxhIHRoYS4uLiddKX0qXG5cbkFiIGhhciBtZW1iZXIgZWsgbGluZSBhZGQga2FyZSFgKTsKICAgIGNhc2UgJ2Ztayc6IHJldHVybiByZXBseShg8J+YhSAqRk1LKlxuXG5Gb3JtYXQ6ICR7UCgpfWZtayBBbGkgfCBBeWVzaGEgfCBCaWxhbFxuXG5fMyBuYWFtIGRvLCBtYXphIGxvLl9gKTsKICAgIGNhc2UgJ21hZmlhJzogcmV0dXJuIHJlcGx5KGDwn5W177iPICpNYWZpYSpcblxuR3JvdXAgbWUga2hlbG86IGhhciBiYW5kYSBETSBtZSByb2xlIGJoZWplZ2EsIHBoaXIgdm90ZSBob2dhLlxuXG5fTW9kZXJhdG9yIGNoYWhpeWUg4oCUICR7UCgpfXN0YXJ0IGJvbG8uX2ApOwogICAgY2FzZSAnc2ltb24nOiByZXR1cm4gcmVwbHkoYPCfjq4gKlNpbW9uIFNheXMqXG5cbvCfn6Lwn5S08J+fofCflLVcblxuU2VxdWVuY2UgeWFhZCBrYXJvOiAq8J+UtCDwn5+hIPCflLQg8J+foipcblxuWWVoaSBiaGVqbyFgKTsKICAgIGNhc2UgJ2hpZ2gtbG93JzogewogICAgICBjb25zdCBuID0gcmFuZEludCgxLCAxMDApOwogICAgICBnYW1lcy5zZXQoY2hhdCwgeyB0eXBlOiAnaGlnaGxvdycsIG4gfSk7CiAgICAgIHJldHVybiByZXBseShg8J+TiCAqSGlnaCBvciBMb3cqXG5cbk1haW5lIDEtMTAwIGthIG51bWJlciBzb2NoYSBoYWkuIEJhdGFvOiAqaGlnaCogKDUwKykgeWEgKmxvdyogKDEtNDkpP2ApOwogICAgfQogICAgY2FzZSAnc2NyYXRjaCc6IHsKICAgICAgY29uc3Qgd2luID0gcmFuZEludCgxLCAxMDApIDw9IDMwOwogICAgICByZXR1cm4gcmVwbHkoYPCfjp/vuI8gKlNjcmF0Y2ggY2FyZCpcblxuJHt3aW4gPyBg8J+OiSAqSkVFVCBHQVlFISogKyR7cmFuZEludCg1MCwgNTAwKX0gY29pbnNgIDogJ/CfmKIgS3VjaCBuYWhpIG1pbGEg4oCUIGRvYmFyYSB0cnkga2FybyEnfWApOwogICAgfQogICAgY2FzZSAnbG90dGVyeSc6IHsKICAgICAgY29uc3QgbnVtcyA9IEFycmF5LmZyb20oeyBsZW5ndGg6IDYgfSwgKCkgPT4gcmFuZEludCgxLCA0OSkpLnNvcnQoKGEsIGIpID0+IGEgLSBiKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn46wICpMb3R0ZXJ5IG51bWJlcnMqXG5cbiR7bnVtcy5qb2luKCcg4oCUICcpfVxuXG5fQWxsYWggaGFmaXohIPCfmIRfYCk7CiAgICB9CiAgICBjYXNlICdsb290JzogY2FzZSAnZGFpbHknOiB7CiAgICAgIGNvbnN0IGxhc3QgPSB3YWxsZXRzLmdldCh3aG8gKyAnX2xhc3QnKSB8fCAwOwogICAgICBjb25zdCBkYXkgPSA4NjQwMDAwMDsKICAgICAgaWYgKERhdGUubm93KCkgLSBsYXN0IDwgZGF5KSB7CiAgICAgICAgY29uc3QgbGVmdCA9IE1hdGguY2VpbCgoZGF5IC0gKERhdGUubm93KCkgLSBsYXN0KSkgLyAzNjAwMDAwKTsKICAgICAgICByZXR1cm4gcmVwbHkoYOKPsyAqRGFpbHkgbG9vdCogcGVobGUgbGUgY2h1a2UgaG8uXG5cbkFiaGkgYmFsYW5jZTogKiR7Y29pbnMod2hvKX0gY29pbnMqXG5BZ2xhIGxvb3Q6IH4ke2xlZnR9IGdoYW50ZSBiYWFkYCk7CiAgICAgIH0KICAgICAgd2FsbGV0cy5zZXQod2hvICsgJ19sYXN0JywgRGF0ZS5ub3coKSk7CiAgICAgIGNvbnN0IGdvdCA9IHJhbmRJbnQoMTAwLCA1MDApOwogICAgICBhZGRDb2lucyh3aG8sIGdvdCk7CiAgICAgIHJldHVybiByZXBseShg8J+SsCAqRGFpbHkgbG9vdCEqXG5cbiske2dvdH0gY29pbnNcbvCfkrMgQmFsYW5jZTogKiR7Y29pbnMod2hvKX0qYCk7CiAgICB9CiAgICBjYXNlICd3YWxsZXQnOiByZXR1cm4gcmVwbHkoYPCfkZsgKldhbGxldCpcblxuJHtwdXNobmFtZX06ICoke2NvaW5zKHdobyl9IGNvaW5zKlxuXG4ke1AoKX1sb290IOKAlCBkYWlseSBjb2luc1xuJHtQKCl9c2hvcCDigJQgaXRlbXMgZGVraG9gKTsKICAgIGNhc2UgJ3Nob3AnOiByZXR1cm4gcmVwbHkoYPCfm5IgKlNob3AqXG5cbvCfjoEgR2lmdCDigJQgMjAwIGNvaW5zXG7wn42VIFBpenphIOKAlCAzMDAgY29pbnNcbvCfko4gRGlhbW9uZCDigJQgMTAwMCBjb2luc1xu8J+RkSBWSVAg4oCUIDUwMDAgY29pbnNcblxuXyhXYWxsZXQgc3lzdGVtIGRlbW8gaGFpIOKAlCByZWFsIGl0ZW1zIG5haGkuKV9gKTsKICAgIGNhc2UgJ2hlaXN0JzogewogICAgICBjb25zdCB3aW4gPSByYW5kSW50KDEsIDEwMCkgPD0gNDU7CiAgICAgIGNvbnN0IGFtdCA9IHJhbmRJbnQoMTAwLCA4MDApOwogICAgICBpZiAod2luKSB7IGFkZENvaW5zKHdobywgYW10KTsgcmV0dXJuIHJlcGx5KGDwn5W177iPICpIZWlzdCBzdWNjZXNzZnVsISpcblxuKyR7YW10fSBjb2luc1xu8J+SsyBCYWxhbmNlOiAqJHtjb2lucyh3aG8pfSpgKTsgfQogICAgICBhZGRDb2lucyh3aG8sIC0yMDApOwogICAgICByZXR1cm4gcmVwbHkoYPCfmqggKkhlaXN0IGZhaWwhKlxuXG5Qb2xpY2UgbmUgcGFrYWQgbGl5YSDigJQgMjAwIGNvaW5zIGthIGp1cm1hbmEuXG7wn5KzIEJhbGFuY2U6ICoke2NvaW5zKHdobyl9KmApOwogICAgfQogICAgY2FzZSAnZmlzaCc6IHJldHVybiByZXBseShg8J+OoyAqRmlzaGluZypcblxuQWFwIG5lIHBha3JhOiAqJHtwaWNrKFsnUm9odSDwn5CfJywgJ1N1cm1haSDwn5CgJywgJ1BvbWZyZXQg8J+QoScsICdQdXJhbmEgam9vdGEg8J+lviddKX0qXG5cbiR7UCgpfWZpc2gg4oCUIGRvYmFyYWApOwogICAgY2FzZSAnaHVudCc6IHJldHVybiByZXBseShg8J+PuSAqSHVudGluZypcblxuU2hpa2FhcjogKiR7cGljayhbJ0toYXJnb3NoIPCfkIcnLCAnVGVldGFyIPCfkKYnLCAnSGlyYW4g8J+mjCcsICdLdWNoIG5haGkg8J+YhSddKX0qYCk7CiAgICBjYXNlICdtaW5lJzogewogICAgICBjb25zdCBmb3VuZCA9IHBpY2soWydLb3lsYSDwn6qoJywgJ0xvaGEg4puT77iPJywgJ1NvbmEg8J+lhycsICdIZWVyYSDwn5KOJywgJ0t1Y2ggbmFoaSDwn5Wz77iPJ10pOwogICAgICByZXR1cm4gcmVwbHkoYOKbj++4jyAqTWluaW5nKlxuXG5NaWxhOiAqJHtmb3VuZH0qYCk7CiAgICB9CiAgICBjYXNlICdmYXJtJzogewogICAgICBjb25zdCBmID0gZmFybXMuZ2V0KHdobykgfHwgeyBzdGFnZTogMCB9OwogICAgICBmLnN0YWdlID0gTWF0aC5taW4oNSwgZi5zdGFnZSArIDEpOwogICAgICBmYXJtcy5zZXQod2hvLCBmKTsKICAgICAgY29uc3Qgc3RhZ2VzID0gWyfwn4yxIEJlZWogYm95YScsICfwn4y/IENoaG90YSBwYXVkaGEnLCAn8J+MviBCYXJoYSBodWEnLCAn8J+MviBQYWsgZ2F5YSDigJQga2FhdG8hJywgJ+KchSBLYXRhIGxpeWEhJ107CiAgICAgIHJldHVybiByZXBseShg8J+MviAqRmFybSpcblxuJHtzdGFnZXNbTWF0aC5taW4oZi5zdGFnZSwgNCldfVxuXG5TdGFnZTogJHtmLnN0YWdlfS80YCk7CiAgICB9CiAgICBjYXNlICdwZXRzJzogewogICAgICBjb25zdCBwID0gcGV0cy5nZXQod2hvKSB8fCB7IG5hbWU6IHBpY2soWydCaWxsdScsICdTaGVydScsICdNb3R1JywgJ0Nob3R1J10pLCBodW5nZXI6IDUwLCBoYXBweTogNTAgfTsKICAgICAgcGV0cy5zZXQod2hvLCBwKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5C+ICpBYXAga2EgcGV0KlxuXG5OYWFtOiAqJHtwLm5hbWV9Klxu8J+NliBCaG9va2g6ICR7cC5odW5nZXJ9JVxu8J+YiiBLaHVzaGk6ICR7cC5oYXBweX0lXG5cbl8ke1AoKX1wZXRzIOKAlCBkb2JhcmEgZGVraG5lIGtlIGxpeWVfYCk7CiAgICB9CgogICAgLyogLS0tLS0tLS0tLS0tLS0tLSByZWFsIGdhbWVzIC0tLS0tLS0tLS0tLS0tLS0gKi8KICAgIGNhc2UgJ2NhcGl0YWxzJzogewogICAgICBjb25zdCBbY291bnRyeSwgY2l0eV0gPSBwaWNrKENBUElUQUxTKTsKICAgICAgZ2FtZXMuc2V0KGNoYXQsIHsgdHlwZTogJ2NhcGl0YWwnLCBhbnN3ZXI6IGNpdHkudG9Mb3dlckNhc2UoKSB9KTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4+b77iPICpDYXBpdGFsIFF1aXoqXG5cbiR7Y291bnRyeX0ga2EgZGFydWwgaHVrdW1hdCAoY2FwaXRhbCkga2F1bnNhIGhhaT9cblxuTmFhbSBsaWtoby5gKTsKICAgIH0KICAgIGNhc2UgJ3RyaXZpYSc6IHsKICAgICAgY29uc3QgW3EsIG9wdHMsIGFuc10gPSBwaWNrKFFVSVopOwogICAgICBnYW1lcy5zZXQoY2hhdCwgeyB0eXBlOiAndHJpdmlhJywgYW5zd2VyOiBvcHRzW2Fuc10udG9Mb3dlckNhc2UoKSB9KTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn6egICpUcml2aWEqXG5cbuKdkyAke3F9XG5cbiR7b3B0cy5tYXAoKG8sIGkpID0+IGAkeydBQkNEJ1tpXX0uICR7b31gKS5qb2luKCdcbicpfVxuXG5fSmF3YWIgeWEgb3B0aW9uIGxldHRlciBsaWtoby5fYCk7CiAgICB9CiAgICBjYXNlICdndWVzcyc6IHsKICAgICAgZ2FtZXMuc2V0KGNoYXQsIHsgdHlwZTogJ2d1ZXNzJywgbjogcmFuZEludCgxLCAxMDApLCB0cmllczogMCB9KTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5SiICpOdW1iZXIgR3Vlc3MqXG5cbjEgc2UgMTAwIGtlIGRhcm1peWFuIG51bWJlciBzb2NoYSBoYWkuXG5HdWVzcyBrYXJvIWApOwogICAgfQogICAgY2FzZSAnaGFuZ21hbic6IHsKICAgICAgY29uc3Qgd29yZHMgPSBbJ2JpcnlhbmknLCAna2FyYWNoaScsICdjcmlja2V0JywgJ2NoYWknLCAnbWFuZ28nLCAncGFraXN0YW4nLCAnbGFob3JlJywgJ21vbnNvb24nXTsKICAgICAgY29uc3QgdyA9IHBpY2sod29yZHMpOwogICAgICBnYW1lcy5zZXQoY2hhdCwgeyB0eXBlOiAnaGFuZ21hbicsIHdvcmQ6IHcsIGd1ZXNzZWQ6IFtdLCBsZWZ0OiA2IH0pOwogICAgICByZXR1cm4gcmVwbHkoYPCfjq8gKkhhbmdtYW4qXG5cbiR7J18gJy5yZXBlYXQody5sZW5ndGgpfVxuXG7inaTvuI8gTGl2ZXM6IDZcblxuRWsgaGFyZiBiaGVqby5gKTsKICAgIH0KICAgIGNhc2UgJ3dvcmRsZSc6IHsKICAgICAgY29uc3Qgd29yZHMgPSBbJ2NoYWknLCAna2l0YWFiJywgJ3BhbmknLCAnZG9zdCcsICdraHVzaCcsICdtZWhuYXQnLCAnZHVueWEnLCAnaWxtJ107CiAgICAgIGNvbnN0IHcgPSBwaWNrKHdvcmRzKTsKICAgICAgZ2FtZXMuc2V0KGNoYXQsIHsgdHlwZTogJ3dvcmRsZScsIHdvcmQ6IHcsIHRyaWVzOiAwIH0pOwogICAgICByZXR1cm4gcmVwbHkoYPCfn6kgKldvcmRsZSpcblxuJHt3Lmxlbmd0aH0gaGFyZiBrYSBsYWZ6IHNvY2hhIGhhaS4gNiB0cmllcy5cblxuUGVobGEgZ3Vlc3MgYmhlam8hYCk7CiAgICB9CiAgICBjYXNlICd3b3JkY2hhaW4nOiB7CiAgICAgIGNvbnN0IGxhc3QgPSBnYW1lcy5nZXQoY2hhdCk/Lmxhc3QgfHwgcGljayhbJ2EnLCAnYicsICdtJywgJ3MnXSk7CiAgICAgIGdhbWVzLnNldChjaGF0LCB7IHR5cGU6ICdjaGFpbicsIGxhc3QgfSk7CiAgICAgIHJldHVybiByZXBseShg8J+UlyAqV29yZCBDaGFpbipcblxuU2h1cnU6ICoke2xhc3R9KlxuXG5BZ2xhIGxhZnogaXMgaGFyZiBzZTogKiR7bGFzdC5zbGljZSgtMSkudG9VcHBlckNhc2UoKX0qYCk7CiAgICB9CiAgICBjYXNlICdtYXRoc3ByaW50JzogewogICAgICBjb25zdCBhID0gcmFuZEludCgxMCwgOTkpLCBiID0gcmFuZEludCgxMCwgOTkpOwogICAgICBnYW1lcy5zZXQoY2hhdCwgeyB0eXBlOiAnbWF0aCcsIGFuc3dlcjogU3RyaW5nKGEgKyBiKSB9KTsKICAgICAgcmV0dXJuIHJlcGx5KGDimqEgKk1hdGggU3ByaW50KlxuXG4ke2F9ICsgJHtifSA9ID9cblxuSmFsZGkgamF3YWIgZG8hYCk7CiAgICB9CiAgICBjYXNlICd0dHQnOiBjYXNlICdycHMnOiBjYXNlICdjaGVzcyc6IGNhc2UgJ3Vubyc6IGNhc2UgJ2Nvbm5lY3Q0JzogY2FzZSAnYmF0dGxlc2hpcCc6IHsKICAgICAgY29uc3QgbmFtZXMgPSB7IHR0dDogJ1RpYy1UYWMtVG9lJywgcnBzOiAnUm9jayBQYXBlciBTY2lzc29ycycsIGNoZXNzOiAnQ2hlc3MnLCB1bm86ICdVbm8nLCBjb25uZWN0NDogJ0Nvbm5lY3QgRm91cicsIGJhdHRsZXNoaXA6ICdCYXR0bGVzaGlwJyB9OwogICAgICBpZiAoY29tbWFuZCA9PT0gJ3JwcycpIHsKICAgICAgICBjb25zdCBtZSA9IHBpY2soWydyb2NrJywgJ3BhcGVyJywgJ3NjaXNzb3JzJ10pOwogICAgICAgIGNvbnN0IHlvdSA9IHBpY2soWydyb2NrJywgJ3BhcGVyJywgJ3NjaXNzb3JzJ10pOwogICAgICAgIGNvbnN0IHdpbiA9IChtZSA9PT0gJ3JvY2snICYmIHlvdSA9PT0gJ3NjaXNzb3JzJykgfHwgKG1lID09PSAncGFwZXInICYmIHlvdSA9PT0gJ3JvY2snKSB8fCAobWUgPT09ICdzY2lzc29ycycgJiYgeW91ID09PSAncGFwZXInKTsKICAgICAgICByZXR1cm4gcmVwbHkoYOKciiAqUm9jayBQYXBlciBTY2lzc29ycypcblxu8J+kliBCb3Q6ICR7bWV9XG7wn5GkIEFhcDogJHt5b3V9XG5cbiR7bWUgPT09IHlvdSA/ICfwn6SdIERyYXchJyA6IHdpbiA/ICfwn5iiIEJvdCBqZWV0IGdheWEhJyA6ICfwn46JIEFhcCBqZWV0IGdheWUhJ31gKTsKICAgICAgfQogICAgICByZXR1cm4gcmVwbHkoYPCfjq4gKiR7bmFtZXNbY29tbWFuZF19KlxuXG5ZZSBnYW1lIGZpbGhhbCB0ZXh0LW1vZGUgbWUgYXZhaWxhYmxlIG5haGkuXG5cbuKchSBLaGVsbmUga2UgbGl5ZTogJHtQKCl9dHJpdmlhLCAke1AoKX1ndWVzcywgJHtQKCl9aGFuZ21hbiwgJHtQKCl9d29yZGxlLCAke1AoKX1ycHMsICR7UCgpfWhpZ2gtbG93YCk7CiAgICB9CiAgICBjYXNlICdibGFja2phY2snOiB7CiAgICAgIGNvbnN0IGNhcmQgPSAoKSA9PiByYW5kSW50KDEsIDExKTsKICAgICAgY29uc3QgeW91ID0gY2FyZCgpICsgY2FyZCgpOwogICAgICBjb25zdCBib3QgPSBjYXJkKCkgKyBjYXJkKCk7CiAgICAgIGNvbnN0IHdpbiA9IHlvdSA8PSAyMSAmJiAoYm90ID4gMjEgfHwgeW91ID4gYm90KTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4OPICpCbGFja2phY2sqXG5cbvCfkaQgQWFwOiAke3lvdX1cbvCfpJYgQm90OiAke2JvdH1cblxuJHt5b3UgPiAyMSA/ICfwn5KlIEJ1c3QhIEFhcCBoYWFyIGdheWUuJyA6IHdpbiA/ICfwn46JIEFhcCBqZWV0IGdheWUhJyA6ICfwn5iiIEJvdCBqZWV0YS4nfWApOwogICAgfQogICAgY2FzZSAnbWVtb3J5JzogewogICAgICBjb25zdCBzZXEgPSBBcnJheS5mcm9tKHsgbGVuZ3RoOiA0IH0sICgpID0+IHBpY2soWyfwn42OJywgJ/CfjYwnLCAn8J+NhycsICfwn42SJ10pKTsKICAgICAgZ2FtZXMuc2V0KGNoYXQsIHsgdHlwZTogJ21lbW9yeScsIGFuc3dlcjogc2VxLmpvaW4oJycpIH0pOwogICAgICByZXR1cm4gcmVwbHkoYPCfp6AgKk1lbW9yeSBHYW1lKlxuXG4ke3NlcS5qb2luKCcgJyl9XG5cbjUgc2Vjb25kIG1lIHlhYWQga2FybywgcGhpciB3b2hpIG9yZGVyIGJoZWpvIWApOwogICAgfQogICAgY2FzZSAnMjA0OCc6IHJldHVybiByZXBseShg8J+OriAqMjA0OCpcblxuVGV4dCBtb2RlIG1lIG5haGkuIE1vYmlsZSBwYXIga2hlbG86IGh0dHBzOi8vcGxheTIwNDguY29gKTsKICAgIGNhc2UgJ3N1ZG9rdSc6IHsKICAgICAgY29uc3QgcHV6ID0gWwogICAgICAgICc1IDMgLiB8IC4gNyAuIHwgLiAuIC4nLAogICAgICAgICc2IC4gLiB8IDEgOSA1IHwgLiAuIC4nLAogICAgICAgICcuIDkgOCB8IC4gLiAuIHwgLiA2IC4nLAogICAgICAgICctLS0tLS0rLS0tLS0tLSstLS0tLS0nLAogICAgICAgICc4IC4gLiB8IC4gNiAuIHwgLiAuIDMnLAogICAgICBdOwogICAgICByZXR1cm4gcmVwbHkoYPCfp6kgKlN1ZG9rdSpcblxuXGBcYFxgXG4ke3B1ei5qb2luKCdcbicpfVxuXGBcYFxgXG5cbl9Db21wbGV0ZSBrYXJvISAoRnVsbCBwdXp6bGU6IHN1ZG9rdS5jb20pX2ApOwogICAgfQogICAgY2FzZSAncXVpemR1ZWwnOiByZXR1cm4gcmVwbHkoYOKalO+4jyAqUXVpeiBEdWVsKlxuXG4ke1AoKX10cml2aWEgc2UgcHJhY3RpY2Uga2FybyDigJQgMXYxIG1vZGUgamFsZCBhYSByYWhhIGhhaSFgKTsKCiAgICAvKiAtLS0tLS0tLS0tLS0tLS0tIHNjb3JlYm9hcmQgLS0tLS0tLS0tLS0tLS0tLSAqLwogICAgY2FzZSAncmFuayc6IHsKICAgICAgY29uc3QgcCA9IHBvaW50cyh3aG8pOwogICAgICBjb25zdCBsdmwgPSBNYXRoLmZsb29yKHAgLyAxMDApICsgMTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4+FICpSYW5rKlxuXG4ke3B1c2huYW1lfVxu4q2QIFBvaW50czogKiR7cH0qXG7wn46W77iPIExldmVsOiAqJHtsdmx9KlxuXG4keyfilrAnLnJlcGVhdChNYXRoLm1pbigxMCwgbHZsKSl9JHsn4paxJy5yZXBlYXQoTWF0aC5tYXgoMCwgMTAgLSBsdmwpKX1gKTsKICAgIH0KICAgIGNhc2UgJ2xlYWRlcmJvYXJkJzogewogICAgICBjb25zdCB0b3AgPSBbLi4uc2NvcmVzLmVudHJpZXMoKV0uc29ydCgoYSwgYikgPT4gYlsxXSAtIGFbMV0pLnNsaWNlKDAsIDUpOwogICAgICBpZiAoIXRvcC5sZW5ndGgpIHJldHVybiByZXBseShg8J+TiiAqTGVhZGVyYm9hcmQqXG5cbkFiaGkga29pIHBvaW50cyBuYWhpLiAke1AoKX10cml2aWEgc2Ugc2h1cnUga2FybyFgKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4+GICpMZWFkZXJib2FyZCpcblxuJHt0b3AubWFwKChbdSwgcF0sIGkpID0+IGAke1sn8J+lhycsICfwn6WIJywgJ/CfpYknLCAnNO+4j+KDoycsICc177iP4oOjJ11baV19ICR7dX0g4oCUICR7cH0gcHRzYCkuam9pbignXG4nKX1gKTsKICAgIH0KICAgIGRlZmF1bHQ6CiAgICAgIHJldHVybiByZXBseSgn4p2TIFVua25vd24gZ2FtZScpOwogIH0KfTsKCi8qKiBBbnN3ZXItY2F0Y2hlcjogaG9va3MgaW50byBldmVyeSBtZXNzYWdlIHRvIHJlc29sdmUgYWN0aXZlIGdhbWVzLiAqLwphc3luYyBmdW5jdGlvbiBvbk1lc3NhZ2UoY3R4KSB7CiAgY29uc3QgeyB0ZXh0LCBmcm9tLCBzZW5kZXJOdW0sIHB1c2huYW1lIH0gPSBjdHg7CiAgaWYgKCF0ZXh0IHx8IHRleHQuc3RhcnRzV2l0aChjb25maWcuUFJFRklYKSkgcmV0dXJuOwogIGNvbnN0IGNoYXQgPSBmcm9tIHx8ICdjaGF0JzsKICBjb25zdCBnID0gZ2FtZXMuZ2V0KGNoYXQpOwogIGlmICghZykgcmV0dXJuOwogIGNvbnN0IHQgPSB0ZXh0LnRyaW0oKS50b0xvd2VyQ2FzZSgpOwogIGNvbnN0IHdobyA9IHNlbmRlck51bSB8fCBwdXNobmFtZSB8fCAncGxheWVyJzsKCiAgaWYgKGcudHlwZSA9PT0gJ3RyaXZpYScgfHwgZy50eXBlID09PSAnZmxhZycgfHwgZy50eXBlID09PSAnY2FwaXRhbCcpIHsKICAgIGlmICh0ID09PSBnLmFuc3dlciB8fCB0ID09PSBnLmFuc3dlclswXSkgewogICAgICBnYW1lcy5kZWxldGUoY2hhdCk7CiAgICAgIGNvbnN0IHAgPSBhZGRQb2ludHMod2hvLCAxMCk7CiAgICAgIGF3YWl0IGN0eC5yZXBseShg4pyFICpTYWhpIGphd2FiISogJHtnLmFuc3dlcn1cblxuKzEwIHBvaW50cyAodG90YWwgJHtwfSlgKTsKICAgIH0KICB9IGVsc2UgaWYgKGcudHlwZSA9PT0gJ2d1ZXNzJykgewogICAgY29uc3QgbiA9IHBhcnNlSW50KHQsIDEwKTsKICAgIGlmIChpc05hTihuKSkgcmV0dXJuOwogICAgZy50cmllcysrOwogICAgaWYgKG4gPT09IGcubikgeyBnYW1lcy5kZWxldGUoY2hhdCk7IGNvbnN0IHAgPSBhZGRQb2ludHMod2hvLCAyMCk7IGF3YWl0IGN0eC5yZXBseShg8J+OiSAqQmlsa3VsIHNhaGkhKiBOdW1iZXIgdGhhICR7Zy5ufS5cbisyMCBwb2ludHMgKHRvdGFsICR7cH0pYCk7IH0KICAgIGVsc2UgaWYgKGcudHJpZXMgPj0gNykgeyBnYW1lcy5kZWxldGUoY2hhdCk7IGF3YWl0IGN0eC5yZXBseShg8J+YhSA3IHRyaWVzIGtoYXRhbSEgTnVtYmVyIHRoYSAqJHtnLm59Ki5gKTsgfQogICAgZWxzZSBhd2FpdCBjdHgucmVwbHkobiA8IGcubiA/ICfirIbvuI8gQmFyYSBudW1iZXIgdHJ5IGthcm8nIDogJ+Ksh++4jyBDaGhvdGEgbnVtYmVyIHRyeSBrYXJvJyk7CiAgfSBlbHNlIGlmIChnLnR5cGUgPT09ICdtYXRoJykgewogICAgaWYgKHQgPT09IGcuYW5zd2VyKSB7IGdhbWVzLmRlbGV0ZShjaGF0KTsgY29uc3QgcCA9IGFkZFBvaW50cyh3aG8sIDUpOyBhd2FpdCBjdHgucmVwbHkoYOKaoSAqU2FoaSEqICs1IHBvaW50cyAodG90YWwgJHtwfSlgKTsgfQogIH0gZWxzZSBpZiAoZy50eXBlID09PSAnaGlnaGxvdycpIHsKICAgIGlmICh0ID09PSAnaGlnaCcgfHwgdCA9PT0gJ2xvdycpIHsKICAgICAgZ2FtZXMuZGVsZXRlKGNoYXQpOwogICAgICBjb25zdCBpc0hpZ2ggPSBnLm4gPj0gNTA7CiAgICAgIGNvbnN0IHdpbiA9ICh0ID09PSAnaGlnaCcpID09PSBpc0hpZ2g7CiAgICAgIGF3YWl0IGN0eC5yZXBseShg8J+UoiBOdW1iZXIgdGhhICoke2cubn0qIOKAlCAke2lzSGlnaCA/ICdISUdIJyA6ICdMT1cnfVxuXG4ke3dpbiA/ICfwn46JIEFhcCBzYWhpIScgOiAn8J+YoiBHYWxhdCEnfWApOwogICAgfQogIH0gZWxzZSBpZiAoZy50eXBlID09PSAnc29uZycpIHsKICAgIGlmIChnLmFuc3dlci5pbmNsdWRlcyh0KSB8fCB0LmluY2x1ZGVzKGcuYW5zd2VyKSkgeyBnYW1lcy5kZWxldGUoY2hhdCk7IGNvbnN0IHAgPSBhZGRQb2ludHMod2hvLCAxNSk7IGF3YWl0IGN0eC5yZXBseShg8J+OtSAqU2FoaSBnYWFuYSEqICR7Zy5hbnN3ZXJ9XG4rMTUgcG9pbnRzICh0b3RhbCAke3B9KWApOyB9CiAgfSBlbHNlIGlmIChnLnR5cGUgPT09ICd3b3JkbGUnKSB7CiAgICBpZiAodC5sZW5ndGggIT09IGcud29yZC5sZW5ndGgpIHJldHVybjsKICAgIGcudHJpZXMrKzsKICAgIGlmICh0ID09PSBnLndvcmQpIHsgZ2FtZXMuZGVsZXRlKGNoYXQpOyBjb25zdCBwID0gYWRkUG9pbnRzKHdobywgMjUpOyBhd2FpdCBjdHgucmVwbHkoYPCfn6kgKldvcmRsZSBzb2x2ZWQhKiAke2cud29yZH1cbisyNSBwb2ludHMgKHRvdGFsICR7cH0pYCk7IH0KICAgIGVsc2UgewogICAgICBjb25zdCBoaW50ID0gdC5zcGxpdCgnJykubWFwKChjLCBpKSA9PiAoYyA9PT0gZy53b3JkW2ldID8gJ/Cfn6knIDogZy53b3JkLmluY2x1ZGVzKGMpID8gJ/Cfn6gnIDogJ+KsnCcpKS5qb2luKCcnKTsKICAgICAgaWYgKGcudHJpZXMgPj0gNikgeyBnYW1lcy5kZWxldGUoY2hhdCk7IGF3YWl0IGN0eC5yZXBseShg8J+YhSBUcmllcyBraGF0YW0hIExhZnogdGhhICoke2cud29yZH0qLmApOyB9CiAgICAgIGVsc2UgYXdhaXQgY3R4LnJlcGx5KGAke2hpbnR9XG5cbl9UcnkgJHtnLnRyaWVzfS82X2ApOwogICAgfQogIH0gZWxzZSBpZiAoZy50eXBlID09PSAnaGFuZ21hbicpIHsKICAgIGNvbnN0IGMgPSB0WzBdOwogICAgaWYgKCEvXlthLXpdJC8udGVzdChjKSkgcmV0dXJuOwogICAgaWYgKGcuZ3Vlc3NlZC5pbmNsdWRlcyhjKSkgcmV0dXJuOwogICAgZy5ndWVzc2VkLnB1c2goYyk7CiAgICBpZiAoIWcud29yZC5pbmNsdWRlcyhjKSkgZy5sZWZ0LS07CiAgICBjb25zdCBzaG93biA9IGcud29yZC5zcGxpdCgnJykubWFwKCh4KSA9PiAoZy5ndWVzc2VkLmluY2x1ZGVzKHgpID8geCA6ICdfJykpLmpvaW4oJyAnKTsKICAgIGlmICghc2hvd24uaW5jbHVkZXMoJ18nKSkgeyBnYW1lcy5kZWxldGUoY2hhdCk7IGNvbnN0IHAgPSBhZGRQb2ludHMod2hvLCAxNSk7IGF3YWl0IGN0eC5yZXBseShg8J+OiSAqV29yZCBtaWwgZ2F5YToqICR7Zy53b3JkfVxuKzE1IHBvaW50cyAodG90YWwgJHtwfSlgKTsgfQogICAgZWxzZSBpZiAoZy5sZWZ0IDw9IDApIHsgZ2FtZXMuZGVsZXRlKGNoYXQpOyBhd2FpdCBjdHgucmVwbHkoYPCfkoAgKkdhbWUgb3ZlciEqIExhZnogdGhhICoke2cud29yZH0qLmApOyB9CiAgICBlbHNlIGF3YWl0IGN0eC5yZXBseShgJHtzaG93bn1cbuKdpO+4jyBMaXZlczogJHtnLmxlZnR9XG5fR3Vlc3NlZDogJHtnLmd1ZXNzZWQuam9pbignLCAnKX1fYCk7CiAgfSBlbHNlIGlmIChnLnR5cGUgPT09ICdtZW1vcnknKSB7CiAgICBpZiAodC5yZXBsYWNlKC9ccy9nLCAnJykgPT09IGcuYW5zd2VyLnJlcGxhY2UoL1xzL2csICcnKSkgeyBnYW1lcy5kZWxldGUoY2hhdCk7IGNvbnN0IHAgPSBhZGRQb2ludHMod2hvLCAxMCk7IGF3YWl0IGN0eC5yZXBseShg8J+noCAqUGVyZmVjdCBtZW1vcnkhKiArMTAgcG9pbnRzICh0b3RhbCAke3B9KWApOyB9CiAgfSBlbHNlIGlmIChnLnR5cGUgPT09ICdjaGFpbicpIHsKICAgIGlmICh0WzBdID09PSBnLmxhc3Quc2xpY2UoLTEpKSB7IGcubGFzdCA9IHQ7IGF3YWl0IGN0eC5yZXBseShg4pyFICoke3R9KiDigJQgYWdsYSBsYWZ6ICoke3Quc2xpY2UoLTEpLnRvVXBwZXJDYXNlKCl9KiBzZSFgKTsgfQogIH0KfQoKbW9kdWxlLmV4cG9ydHMgPSB7CiAgY29tbWFuZHM6IFsKICAgICdwYXJhbm9pYScsICduaGllJywgJ2NvdXBsZScsICdyYW5rJywgJ2xlYWRlcmJvYXJkJywgJ3dhbGxldCcsICdzaG9wJywgJ3RyaXZpYScsICdndWVzcycsICdoYW5nbWFuJywKICAgICdsb3R0ZXJ5JywgJ3NjcmF0Y2gnLCAnbG9vdCcsICdoZWlzdCcsICdmaXNoJywgJ2h1bnQnLCAnbWluZScsICdmYXJtJywgJ3BldHMnLCAnbWF0aHNwcmludCcsICd3b3JkbGUnLAogICAgJ3dvcmRjaGFpbicsICdhbnRha3NoYXJpJywgJ3NvbmdndWVzcycsICdlbW9qaXN0b3J5JywgJ21vdmllZ3Vlc3MnLCAnZmxhZ2d1ZXNzJywgJ2NhcGl0YWxzJywgJ3N0b3J5Z2FtZScsCiAgICAnc3BpbnRoZWJvdHRsZScsICdibGFja2phY2snLCAnaGlnaC1sb3cnLCAnbWVtb3J5JywgJzIwNDgnLCAnc3Vkb2t1JywgJ21hZmlhJywgJ3NpbW9uJywKICAgIC8vIGV4dHJhcyB0aGF0IGJlbG9uZyBpbiB0aGlzIGZhbWlseQogICAgJ2RhaWx5JywgJ3R0dCcsICdycHMnLCAnY2hlc3MnLCAndW5vJywgJ2Nvbm5lY3Q0JywgJ2JhdHRsZXNoaXAnLCAncXVpemR1ZWwnLCAnZm1rJywKICBdLAogIGNhdGVnb3J5OiAn8J+OriBHQU1FUycsCiAgaGFuZGxlciwKICBvbk1lc3NhZ2UsCn07Cg==
+/**
+ * GAMES — mini games & group fun (state kept in memory per chat)
+ */
+const config = require('../config');
+const { pick, randInt } = require('../lib/helpers');
+
+const P = () => config.PREFIX;
+
+/* ---------------- shared state ---------------- */
+const scores = new Map();   // user -> points
+const wallets = new Map();  // user -> coins
+const games = new Map();    // chatId -> active game
+const pets = new Map();     // user -> pet
+const farms = new Map();    // user -> {planted, stage}
+
+const points = (u) => scores.get(u) || 0;
+const addPoints = (u, n) => { scores.set(u, points(u) + n); return scores.get(u); };
+const coins = (u) => wallets.get(u) || 0;
+const addCoins = (u, n) => { wallets.set(u, Math.max(0, coins(u) + n)); return wallets.get(u); };
+
+const QUIZ = [
+  ['Pakistan ka qaumi phool?', ['Chambeli', 'Gulab', 'Surajmukhi', 'Kamal'], 0],
+  ['Sab se bara sayyara?', ['Mangal', 'Mushteri', 'Zuhal', 'Zameen'], 1],
+  ['Pani ka chemical formula?', ['CO2', 'H2O', 'O2', 'NaCl'], 1],
+  ['Quran me kitni surah hain?', ['100', '110', '114', '120'], 2],
+  ['Sab se tez janwar?', ['Sher', 'Cheetah', 'Ghora', 'Hiran'], 1],
+  ['Pakistan kis saal azaad hua?', ['1945', '1946', '1947', '1948'], 2],
+  ['Duniya ka sab se bara samundar?', ['Atlantic', 'Indian', 'Arctic', 'Pacific'], 3],
+  ['Insaan ke kitne daant hote hain (adult)?', ['28', '30', '32', '34'], 2],
+];
+const TRUTH = ['Sab se zyada kis se dar lagta hai?', 'Aakhri jhoot kab bola tha?', 'Sab se buri aadat kya hai?', 'Kisi ko secretly pasand karte ho?', 'Phone me sab se embarrassing photo kya hai?'];
+const DARE = ['Apni sab se buri selfie bhejo', 'Voice note me gaana gao', 'Kisi ko 3 compliments do', 'Apna search history ka pehla lafz batao', '10 second tak cheekhein maaro'];
+const NHIE = ['Never have I ever... jhoot bola ho.', 'Never have I ever... class me soya ho.', 'Never have I ever... kisi ka message ignore kiya ho.', 'Never have I ever... exam me cheating ki ho.', 'Never have I ever... raat 3 baje tak phone chalaya ho.'];
+const PARANOIA = ['Agar tumhe 24 ghante ke liye invisible hone ka mauqa mile to kya karte?', 'Tumhare bare me kya afwah phelayi gayi?', 'Kis cheez ke liye tum jhoot bolte ho?'];
+const CAPITALS = [['Pakistan', 'Islamabad'], ['India', 'New Delhi'], ['China', 'Beijing'], ['Turkey', 'Ankara'], ['Japan', 'Tokyo'], ['Egypt', 'Cairo'], ['Iran', 'Tehran'], ['Saudi Arabia', 'Riyadh']];
+const FLAGS = [['🇵🇰', 'Pakistan'], ['🇮🇳', 'India'], ['🇹🇷', 'Turkey'], ['🇯🇵', 'Japan'], ['🇨🇳', 'China'], ['🇸🇦', 'Saudi Arabia'], ['🇬🇧', 'United Kingdom'], ['🇺🇸', 'United States']];
+const EMOJI_STORY = [['🚗💨😱🏥', 'Car accident'], ['👦❤️👧💍', 'Love marriage'], ['🎓📚💪🏆', 'Study success'], ['🍕😋🤤', 'Pizza craving']];
+const SONGS = ['Tum Hi Ho', 'Kesariya', 'Pasoori', 'Afreen Afreen', 'Dil Dil Pakistan', 'Jee Le Zara'];
+
+const handler = async (ctx) => {
+  const { command, reply, arg, senderNum, from, isGroup, pushname } = ctx;
+  const who = senderNum || pushname || 'player';
+  const chat = from || 'chat';
+
+  switch (command) {
+    /* ---------------- simple fun ---------------- */
+    case 'paranoia': return reply(`😳 *Paranoia*\n\n${pick(PARANOIA)}`);
+    case 'nhie': return reply(`🙊 *Never Have I Ever*\n\n${pick(NHIE)}`);
+    case 'couple': return reply(`💑 *Couple of the day*\n\n${isGroup ? 'Aaj ka couple: *' + pick(['Ali ❤️ Ayesha', 'Hamza ❤️ Zara', 'Bilal ❤️ Hina', 'Usman ❤️ Maryam']) + '*' : 'Ye command group me maza deti hai 😄'}`);
+    case 'spinthebottle': return reply(`🍾 *Bottle ghoomi...*\n\n👉 ${isGroup ? 'Kisi member par ruk gayi! Random pick: *' + (ctx.mentioned?.[0]?.split('@')[0] || 'aap') + '*' : 'Group me try karo'}`);
+    case 'songguess': {
+      if (!isGroup) return reply('❌ Ye group game hai.');
+      const s = pick(SONGS);
+      games.set(chat, { type: 'song', answer: s.toLowerCase(), tries: 0 });
+      return reply(`🎵 *Song Guess*\n\nFilm/song ka naam guess karo — 1 minute me jawab do!\n\n_Hint: pehla lafz "${s.split(' ')[0]}"_\n\nJawab likh kar bhejo.`);
+    }
+    case 'emojistory': return reply(`📱 *Emoji Story*\n\n${pick(EMOJI_STORY).join(' → ')}\n\n_Samjho kya scene hai?_`);
+    case 'flagguess': {
+      const [f, n] = pick(FLAGS);
+      games.set(chat, { type: 'flag', answer: n.toLowerCase() });
+      return reply(`🏳️ *Flag Guess*\n\n${f}\n\nKaunsa mulk hai? Naam likho.`);
+    }
+    case 'movieguess': return reply(`🎬 *Movie Guess*\n\n_3 khwab, 1 jadoo, aur ek chhota larka_\n\nJawab likho!`);
+    case 'antakshari': return reply(`🎶 *Antakshari*\n\nAakhri harf: *${pick(['A', 'M', 'S', 'T', 'K'])}*\n\nIs harf se gaana gaao!`);
+    case 'storygame': return reply(`📖 *Story Game*\n\nPehli line: *${pick(['Ek raat, andheri gali me...', 'Aik chhota gaon, aik bara khwab...', 'Barish thi, aur wo akela tha...'])}*\n\nAb har member ek line add kare!`);
+    case 'fmk': return reply(`😅 *FMK*\n\nFormat: ${P()}fmk Ali | Ayesha | Bilal\n\n_3 naam do, maza lo._`);
+    case 'mafia': return reply(`🕵️ *Mafia*\n\nGroup me khelo: har banda DM me role bhejega, phir vote hoga.\n\n_Moderator chahiye — ${P()}start bolo._`);
+    case 'simon': return reply(`🎮 *Simon Says*\n\n🟢🔴🟡🔵\n\nSequence yaad karo: *🔴 🟡 🔴 🟢*\n\nYehi bhejo!`);
+    case 'high-low': {
+      const n = randInt(1, 100);
+      games.set(chat, { type: 'highlow', n });
+      return reply(`📈 *High or Low*\n\nMaine 1-100 ka number socha hai. Batao: *high* (50+) ya *low* (1-49)?`);
+    }
+    case 'scratch': {
+      const win = randInt(1, 100) <= 30;
+      return reply(`🎟️ *Scratch card*\n\n${win ? `🎉 *JEET GAYE!* +${randInt(50, 500)} coins` : '😢 Kuch nahi mila — dobara try karo!'}`);
+    }
+    case 'lottery': {
+      const nums = Array.from({ length: 6 }, () => randInt(1, 49)).sort((a, b) => a - b);
+      return reply(`🎰 *Lottery numbers*\n\n${nums.join(' — ')}\n\n_Allah hafiz! 😄_`);
+    }
+    case 'loot': case 'daily': {
+      const last = wallets.get(who + '_last') || 0;
+      const day = 86400000;
+      if (Date.now() - last < day) {
+        const left = Math.ceil((day - (Date.now() - last)) / 3600000);
+        return reply(`⏳ *Daily loot* pehle le chuke ho.\n\nAbhi balance: *${coins(who)} coins*\nAgla loot: ~${left} ghante baad`);
+      }
+      wallets.set(who + '_last', Date.now());
+      const got = randInt(100, 500);
+      addCoins(who, got);
+      return reply(`💰 *Daily loot!*\n\n+${got} coins\n💳 Balance: *${coins(who)}*`);
+    }
+    case 'wallet': return reply(`👛 *Wallet*\n\n${pushname}: *${coins(who)} coins*\n\n${P()}loot — daily coins\n${P()}shop — items dekho`);
+    case 'shop': return reply(`🛒 *Shop*\n\n🎁 Gift — 200 coins\n🍕 Pizza — 300 coins\n💎 Diamond — 1000 coins\n👑 VIP — 5000 coins\n\n_(Wallet system demo hai — real items nahi.)_`);
+    case 'heist': {
+      const win = randInt(1, 100) <= 45;
+      const amt = randInt(100, 800);
+      if (win) { addCoins(who, amt); return reply(`🕵️ *Heist successful!*\n\n+${amt} coins\n💳 Balance: *${coins(who)}*`); }
+      addCoins(who, -200);
+      return reply(`🚨 *Heist fail!*\n\nPolice ne pakad liya — 200 coins ka jurmana.\n💳 Balance: *${coins(who)}*`);
+    }
+    case 'fish': return reply(`🎣 *Fishing*\n\nAap ne pakra: *${pick(['Rohu 🐟', 'Surmai 🐠', 'Pomfret 🐡', 'Purana joota 🥾'])}*\n\n${P()}fish — dobara`);
+    case 'hunt': return reply(`🏹 *Hunting*\n\nShikaar: *${pick(['Khargosh 🐇', 'Teetar 🐦', 'Hiran 🦌', 'Kuch nahi 😅'])}*`);
+    case 'mine': {
+      const found = pick(['Koyla 🪨', 'Loha ⛓️', 'Sona 🥇', 'Heera 💎', 'Kuch nahi 🕳️']);
+      return reply(`⛏️ *Mining*\n\nMila: *${found}*`);
+    }
+    case 'farm': {
+      const f = farms.get(who) || { stage: 0 };
+      f.stage = Math.min(5, f.stage + 1);
+      farms.set(who, f);
+      const stages = ['🌱 Beej boya', '🌿 Chhota paudha', '🌾 Barha hua', '🌾 Pak gaya — kaato!', '✅ Kata liya!'];
+      return reply(`🌾 *Farm*\n\n${stages[Math.min(f.stage, 4)]}\n\nStage: ${f.stage}/4`);
+    }
+    case 'pets': {
+      const p = pets.get(who) || { name: pick(['Billu', 'Sheru', 'Motu', 'Chotu']), hunger: 50, happy: 50 };
+      pets.set(who, p);
+      return reply(`🐾 *Aap ka pet*\n\nNaam: *${p.name}*\n🍖 Bhookh: ${p.hunger}%\n😊 Khushi: ${p.happy}%\n\n_${P()}pets — dobara dekhne ke liye_`);
+    }
+
+    /* ---------------- real games ---------------- */
+    case 'capitals': {
+      const [country, city] = pick(CAPITALS);
+      games.set(chat, { type: 'capital', answer: city.toLowerCase() });
+      return reply(`🏛️ *Capital Quiz*\n\n${country} ka darul hukumat (capital) kaunsa hai?\n\nNaam likho.`);
+    }
+    case 'trivia': {
+      const [q, opts, ans] = pick(QUIZ);
+      games.set(chat, { type: 'trivia', answer: opts[ans].toLowerCase() });
+      return reply(`🧠 *Trivia*\n\n❓ ${q}\n\n${opts.map((o, i) => `${'ABCD'[i]}. ${o}`).join('\n')}\n\n_Jawab ya option letter likho._`);
+    }
+    case 'guess': {
+      games.set(chat, { type: 'guess', n: randInt(1, 100), tries: 0 });
+      return reply(`🔢 *Number Guess*\n\n1 se 100 ke darmiyan number socha hai.\nGuess karo!`);
+    }
+    case 'hangman': {
+      const words = ['biryani', 'karachi', 'cricket', 'chai', 'mango', 'pakistan', 'lahore', 'monsoon'];
+      const w = pick(words);
+      games.set(chat, { type: 'hangman', word: w, guessed: [], left: 6 });
+      return reply(`🎯 *Hangman*\n\n${'_ '.repeat(w.length)}\n\n❤️ Lives: 6\n\nEk harf bhejo.`);
+    }
+    case 'wordle': {
+      const words = ['chai', 'kitaab', 'pani', 'dost', 'khush', 'mehnat', 'dunya', 'ilm'];
+      const w = pick(words);
+      games.set(chat, { type: 'wordle', word: w, tries: 0 });
+      return reply(`🟩 *Wordle*\n\n${w.length} harf ka lafz socha hai. 6 tries.\n\nPehla guess bhejo!`);
+    }
+    case 'wordchain': {
+      const last = games.get(chat)?.last || pick(['a', 'b', 'm', 's']);
+      games.set(chat, { type: 'chain', last });
+      return reply(`🔗 *Word Chain*\n\nShuru: *${last}*\n\nAgla lafz is harf se: *${last.slice(-1).toUpperCase()}*`);
+    }
+    case 'mathsprint': {
+      const a = randInt(10, 99), b = randInt(10, 99);
+      games.set(chat, { type: 'math', answer: String(a + b) });
+      return reply(`⚡ *Math Sprint*\n\n${a} + ${b} = ?\n\nJaldi jawab do!`);
+    }
+    case 'ttt': case 'rps': case 'chess': case 'uno': case 'connect4': case 'battleship': {
+      const names = { ttt: 'Tic-Tac-Toe', rps: 'Rock Paper Scissors', chess: 'Chess', uno: 'Uno', connect4: 'Connect Four', battleship: 'Battleship' };
+      if (command === 'rps') {
+        const me = pick(['rock', 'paper', 'scissors']);
+        const you = pick(['rock', 'paper', 'scissors']);
+        const win = (me === 'rock' && you === 'scissors') || (me === 'paper' && you === 'rock') || (me === 'scissors' && you === 'paper');
+        return reply(`✊ *Rock Paper Scissors*\n\n🤖 Bot: ${me}\n👤 Aap: ${you}\n\n${me === you ? '🤝 Draw!' : win ? '😢 Bot jeet gaya!' : '🎉 Aap jeet gaye!'}`);
+      }
+      return reply(`🎮 *${names[command]}*\n\nYe game filhal text-mode me available nahi.\n\n✅ Khelne ke liye: ${P()}trivia, ${P()}guess, ${P()}hangman, ${P()}wordle, ${P()}rps, ${P()}high-low`);
+    }
+    case 'blackjack': {
+      const card = () => randInt(1, 11);
+      const you = card() + card();
+      const bot = card() + card();
+      const win = you <= 21 && (bot > 21 || you > bot);
+      return reply(`🃏 *Blackjack*\n\n👤 Aap: ${you}\n🤖 Bot: ${bot}\n\n${you > 21 ? '💥 Bust! Aap haar gaye.' : win ? '🎉 Aap jeet gaye!' : '😢 Bot jeeta.'}`);
+    }
+    case 'memory': {
+      const seq = Array.from({ length: 4 }, () => pick(['🍎', '🍌', '🍇', '🍒']));
+      games.set(chat, { type: 'memory', answer: seq.join('') });
+      return reply(`🧠 *Memory Game*\n\n${seq.join(' ')}\n\n5 second me yaad karo, phir wohi order bhejo!`);
+    }
+    case '2048': return reply(`🎮 *2048*\n\nText mode me nahi. Mobile par khelo: https://play2048.co`);
+    case 'sudoku': {
+      const puz = [
+        '5 3 . | . 7 . | . . .',
+        '6 . . | 1 9 5 | . . .',
+        '. 9 8 | . . . | . 6 .',
+        '------+-------+------',
+        '8 . . | . 6 . | . . 3',
+      ];
+      return reply(`🧩 *Sudoku*\n\n\`\`\`\n${puz.join('\n')}\n\`\`\`\n\n_Complete karo! (Full puzzle: sudoku.com)_`);
+    }
+    case 'quizduel': return reply(`⚔️ *Quiz Duel*\n\n${P()}trivia se practice karo — 1v1 mode jald aa raha hai!`);
+
+    /* ---------------- scoreboard ---------------- */
+    case 'rank': {
+      const p = points(who);
+      const lvl = Math.floor(p / 100) + 1;
+      return reply(`🏅 *Rank*\n\n${pushname}\n⭐ Points: *${p}*\n🎖️ Level: *${lvl}*\n\n${'▰'.repeat(Math.min(10, lvl))}${'▱'.repeat(Math.max(0, 10 - lvl))}`);
+    }
+    case 'leaderboard': {
+      const top = [...scores.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+      if (!top.length) return reply(`📊 *Leaderboard*\n\nAbhi koi points nahi. ${P()}trivia se shuru karo!`);
+      return reply(`🏆 *Leaderboard*\n\n${top.map(([u, p], i) => `${['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][i]} ${u} — ${p} pts`).join('\n')}`);
+    }
+    default:
+      return reply('❓ Unknown game');
+  }
+};
+
+/** Answer-catcher: hooks into every message to resolve active games. */
+async function onMessage(ctx) {
+  const { text, from, senderNum, pushname } = ctx;
+  if (!text || text.startsWith(config.PREFIX)) return;
+  const chat = from || 'chat';
+  const g = games.get(chat);
+  if (!g) return;
+  const t = text.trim().toLowerCase();
+  const who = senderNum || pushname || 'player';
+
+  if (g.type === 'trivia' || g.type === 'flag' || g.type === 'capital') {
+    if (t === g.answer || t === g.answer[0]) {
+      games.delete(chat);
+      const p = addPoints(who, 10);
+      await ctx.reply(`✅ *Sahi jawab!* ${g.answer}\n\n+10 points (total ${p})`);
+    }
+  } else if (g.type === 'guess') {
+    const n = parseInt(t, 10);
+    if (isNaN(n)) return;
+    g.tries++;
+    if (n === g.n) { games.delete(chat); const p = addPoints(who, 20); await ctx.reply(`🎉 *Bilkul sahi!* Number tha ${g.n}.\n+20 points (total ${p})`); }
+    else if (g.tries >= 7) { games.delete(chat); await ctx.reply(`😅 7 tries khatam! Number tha *${g.n}*.`); }
+    else await ctx.reply(n < g.n ? '⬆️ Bara number try karo' : '⬇️ Chhota number try karo');
+  } else if (g.type === 'math') {
+    if (t === g.answer) { games.delete(chat); const p = addPoints(who, 5); await ctx.reply(`⚡ *Sahi!* +5 points (total ${p})`); }
+  } else if (g.type === 'highlow') {
+    if (t === 'high' || t === 'low') {
+      games.delete(chat);
+      const isHigh = g.n >= 50;
+      const win = (t === 'high') === isHigh;
+      await ctx.reply(`🔢 Number tha *${g.n}* — ${isHigh ? 'HIGH' : 'LOW'}\n\n${win ? '🎉 Aap sahi!' : '😢 Galat!'}`);
+    }
+  } else if (g.type === 'song') {
+    if (g.answer.includes(t) || t.includes(g.answer)) { games.delete(chat); const p = addPoints(who, 15); await ctx.reply(`🎵 *Sahi gaana!* ${g.answer}\n+15 points (total ${p})`); }
+  } else if (g.type === 'wordle') {
+    if (t.length !== g.word.length) return;
+    g.tries++;
+    if (t === g.word) { games.delete(chat); const p = addPoints(who, 25); await ctx.reply(`🟩 *Wordle solved!* ${g.word}\n+25 points (total ${p})`); }
+    else {
+      const hint = t.split('').map((c, i) => (c === g.word[i] ? '🟩' : g.word.includes(c) ? '🟨' : '⬜')).join('');
+      if (g.tries >= 6) { games.delete(chat); await ctx.reply(`😅 Tries khatam! Lafz tha *${g.word}*.`); }
+      else await ctx.reply(`${hint}\n\n_Try ${g.tries}/6_`);
+    }
+  } else if (g.type === 'hangman') {
+    const c = t[0];
+    if (!/^[a-z]$/.test(c)) return;
+    if (g.guessed.includes(c)) return;
+    g.guessed.push(c);
+    if (!g.word.includes(c)) g.left--;
+    const shown = g.word.split('').map((x) => (g.guessed.includes(x) ? x : '_')).join(' ');
+    if (!shown.includes('_')) { games.delete(chat); const p = addPoints(who, 15); await ctx.reply(`🎉 *Word mil gaya:* ${g.word}\n+15 points (total ${p})`); }
+    else if (g.left <= 0) { games.delete(chat); await ctx.reply(`💀 *Game over!* Lafz tha *${g.word}*.`); }
+    else await ctx.reply(`${shown}\n❤️ Lives: ${g.left}\n_Guessed: ${g.guessed.join(', ')}_`);
+  } else if (g.type === 'memory') {
+    if (t.replace(/\s/g, '') === g.answer.replace(/\s/g, '')) { games.delete(chat); const p = addPoints(who, 10); await ctx.reply(`🧠 *Perfect memory!* +10 points (total ${p})`); }
+  } else if (g.type === 'chain') {
+    if (t[0] === g.last.slice(-1)) { g.last = t; await ctx.reply(`✅ *${t}* — agla lafz *${t.slice(-1).toUpperCase()}* se!`); }
+  }
+}
+
+module.exports = {
+  commands: [
+    'paranoia', 'nhie', 'couple', 'rank', 'leaderboard', 'wallet', 'shop', 'trivia', 'guess', 'hangman',
+    'lottery', 'scratch', 'loot', 'heist', 'fish', 'hunt', 'mine', 'farm', 'pets', 'mathsprint', 'wordle',
+    'wordchain', 'antakshari', 'songguess', 'emojistory', 'movieguess', 'flagguess', 'capitals', 'storygame',
+    'spinthebottle', 'blackjack', 'high-low', 'memory', '2048', 'sudoku', 'mafia', 'simon',
+    // extras that belong in this family
+    'daily', 'ttt', 'rps', 'chess', 'uno', 'connect4', 'battleship', 'quizduel', 'fmk',
+  ],
+  category: '🎮 GAMES',
+  handler,
+  onMessage,
+};

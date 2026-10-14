@@ -1,1 +1,268 @@
-LyoqCiAqIEdST1VQMiDigJQgZ3JvdXAgYWRtaW5pc3RyYXRpb24gJiBtb2RlcmF0aW9uCiAqLwpjb25zdCBjb25maWcgPSByZXF1aXJlKCcuLi9jb25maWcnKTsKY29uc3QgeyBwaWNrLCByYW5kSW50IH0gPSByZXF1aXJlKCcuLi9saWIvaGVscGVycycpOwoKY29uc3QgUCA9ICgpID0+IGNvbmZpZy5QUkVGSVg7CgovKiBwZXItZ3JvdXAgc2V0dGluZ3MgKyBhY3Rpdml0eSAobWVtb3J5IG9ubHkpICovCmNvbnN0IHNldHRpbmdzID0gbmV3IE1hcCgpOyAgIC8vIGdyb3VwSWQgLT4geyBhbnRpd29yZDpbXSwgYW50aWxpbms6Ym9vbCwgcnVsZXM6JycsIC4uLiB9CmNvbnN0IGFjdGl2aXR5ID0gbmV3IE1hcCgpOyAgIC8vIGdyb3VwSWQgLT4gTWFwKHVzZXIgLT4gY291bnQpCmNvbnN0IGFkbWluTG9nID0gbmV3IE1hcCgpOyAgIC8vIGdyb3VwSWQgLT4gW2xpbmVzXQpjb25zdCBtdXRlZCA9IG5ldyBTZXQoKTsgICAgICAvLyBncm91cElkCmNvbnN0IGJvdHMgPSBuZXcgU2V0KCk7ICAgICAgIC8vIGdyb3VwSWQgLT4gYW50aWJvdCBvbgoKY29uc3QgZ2V0UyA9IChnKSA9PiB7IGlmICghc2V0dGluZ3MuaGFzKGcpKSBzZXR0aW5ncy5zZXQoZywgeyBhbnRpd29yZDogW10sIGFudGlsaW5rOiBmYWxzZSwgcnVsZXM6ICcnLCBhbnRpc3RpY2tlcjogZmFsc2UsIGFudGlhdWRpbzogZmFsc2UsIGFudGl2aWRlbzogZmFsc2UsIGF1dG9yZXBseToge30gfSk7IHJldHVybiBzZXR0aW5ncy5nZXQoZyk7IH07CmNvbnN0IGxvZ0l0ID0gKGcsIGxpbmUpID0+IHsgY29uc3QgbCA9IGFkbWluTG9nLmdldChnKSB8fCBbXTsgbC5wdXNoKGBbJHtuZXcgRGF0ZSgpLnRvTG9jYWxlVGltZVN0cmluZygnZW4tUEsnLCB7IHRpbWVab25lOiAnQXNpYS9LYXJhY2hpJyB9KX1dICR7bGluZX1gKTsgYWRtaW5Mb2cuc2V0KGcsIGwuc2xpY2UoLTUwKSk7IH07Cgpjb25zdCBoYW5kbGVyID0gYXN5bmMgKGN0eCkgPT4gewogIGNvbnN0IHsgY29tbWFuZCwgcmVwbHksIGFyZywgZnJvbSwgaXNHcm91cCwgaXNPd25lciwgaXNBZG1pbiwgc2VuZGVyTnVtLCBwdXNobmFtZSwgbWVudGlvbmVkIH0gPSBjdHg7CiAgY29uc3QgZyA9IGZyb20gfHwgJ2dyb3VwJzsKCiAgLy8gRXZlcnl0aGluZyBoZXJlIGlzIGdyb3VwLW9ubHkuCiAgY29uc3QgR1JPVVBfT05MWSA9IFsncGljaycsICdhbnRpd29yZCcsICdhbnRpc3RpY2tlcicsICdncm91cHJ1bGVzJywgJ2Fic2VuJywgJ2luYWN0aXZlJywgJ29wZW5nYycsICdhbnRpYXVkaW8nLAogICAgJ2FudGl2aWRlbycsICdhbnRpbGlua3N0cmljdCcsICdtdXRlYWxsJywgJ2Fubm91bmNlJywgJ2F1dG9hcHByb3ZlJywgJ2FkbWlubG9nJywgJ3dlbGNvbWVjYXJkJywgJ2dvb2RieWVjYXJkJywKICAgICdhdXRvc3RpY2tlcicsICdhdXRvcmVwbHktZ3JwJywgJ21lbWJlcmNvdW50JywgJ2djcmVwb3J0JywgJ3RvcGNoYXQnLCAnYW50aWJvdCcsICdnY3Byb3RlY3QnLCAnZ2NhdWRpdCcsCiAgICAnYWRtaW5waW5nJywgJ2djc2V0dXAnLCAnYmFja3VwLWdycCcsICdyZXN0b3JlLWdycCcsICdnY2NzdicsICdncnBtb29kJywgJ2djaGVscCcsICdncnByZXNldCddOwogIGlmIChHUk9VUF9PTkxZLmluY2x1ZGVzKGNvbW1hbmQpICYmICFpc0dyb3VwKSB7CiAgICByZXR1cm4gcmVwbHkoYOKdjCBZZSBjb21tYW5kIHNpcmYgKmdyb3VwKiBtZSBjaGFsdGkgaGFpLmApOwogIH0KCiAgc3dpdGNoIChjb21tYW5kKSB7CiAgICBjYXNlICdnY2hlbHAnOiBjYXNlICdnY21lbnUnOiB7CiAgICAgIHJldHVybiByZXBseShg8J+RpSAqR1JPVVAgQ09NTUFORFMqXG5cbipNb2RlcmF0aW9uOipcbiR7UCgpfWFudGl3b3JkIGFkZCA8bGFmej5cbiR7UCgpfWFudGlsaW5rc3RyaWN0IG9uL29mZlxuJHtQKCl9YW50aXN0aWNrZXIgb24vb2ZmXG4ke1AoKX1hbnRpYXVkaW8gb24vb2ZmXG4ke1AoKX1hbnRpdmlkZW8gb24vb2ZmXG4ke1AoKX1hbnRpYm90IG9uL29mZlxuJHtQKCl9bXV0ZWFsbCBvbi9vZmZcblxuKkluZm86KlxuJHtQKCl9bWVtYmVyY291bnRcbiR7UCgpfXRvcGNoYXRcbiR7UCgpfWluYWN0aXZlXG4ke1AoKX1hYnNlblxuJHtQKCl9Z2NyZXBvcnRcbiR7UCgpfWdycG1vb2RcbiR7UCgpfWdjYXVkaXRcblxuKlNldHVwOipcbiR7UCgpfWdjc2V0dXBcbiR7UCgpfWdyb3VwcnVsZXMgPHRleHQ+XG4ke1AoKX13ZWxjb21lY2FyZCA8dGV4dD5cbiR7UCgpfWdycHJlc2V0YCk7CiAgICB9CiAgICBjYXNlICdtZW1iZXJjb3VudCc6IHsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5GlICpNZW1iZXIgY291bnQqXG5cbkdyb3VwOiAqJHsoYXdhaXQgY3R4Lmdyb3VwU2l6ZT8uKCkpIHx8ICd1bmtub3duJ30qXG5cbl8oV2hhdHNBcHAgc2UgZXhhY3QgY291bnQgbWlsdGEgaGFpKV9gKTsKICAgIH0KICAgIGNhc2UgJ2dyb3VwcnVsZXMnOiB7CiAgICAgIGNvbnN0IHMgPSBnZXRTKGcpOwogICAgICBpZiAoIWFyZykgcmV0dXJuIHJlcGx5KHMucnVsZXMgPyBg8J+TnCAqR3JvdXAgcnVsZXMqXG5cbiR7cy5ydWxlc31gIDogYOKdjCBLb2kgcnVsZXMgc2V0IG5haGkuICR7UCgpfWdyb3VwcnVsZXMgPHRleHQ+YCk7CiAgICAgIHMucnVsZXMgPSBhcmc7CiAgICAgIGxvZ0l0KGcsIGAke3B1c2huYW1lfSBuZSBydWxlcyB1cGRhdGUga2l5ZWApOwogICAgICByZXR1cm4gcmVwbHkoYOKchSAqR3JvdXAgcnVsZXMgc2V0ISpcblxuJHthcmd9YCk7CiAgICB9CiAgICBjYXNlICdhbnRpd29yZCc6IHsKICAgICAgY29uc3QgcyA9IGdldFMoZyk7CiAgICAgIGNvbnN0IFtzdWIsIC4uLnJlc3RdID0gKGFyZyB8fCAnJykuc3BsaXQoJyAnKTsKICAgICAgaWYgKHN1YiA9PT0gJ2FkZCcgJiYgcmVzdC5sZW5ndGgpIHsKICAgICAgICBzLmFudGl3b3JkLnB1c2gocmVzdC5qb2luKCcgJykudG9Mb3dlckNhc2UoKSk7CiAgICAgICAgcmV0dXJuIHJlcGx5KGDwn5qrICoiJHtyZXN0LmpvaW4oJyAnKX0iKiBibGFja2xpc3QgbWUgYWRkIGhvIGdheWEuXG5cblRvdGFsIGJhbm5lZDogJHtzLmFudGl3b3JkLmxlbmd0aH1gKTsKICAgICAgfQogICAgICBpZiAoc3ViID09PSAncmVtb3ZlJyAmJiByZXN0Lmxlbmd0aCkgewogICAgICAgIHMuYW50aXdvcmQgPSBzLmFudGl3b3JkLmZpbHRlcigodykgPT4gdyAhPT0gcmVzdC5qb2luKCcgJykudG9Mb3dlckNhc2UoKSk7CiAgICAgICAgcmV0dXJuIHJlcGx5KGDinIUgSGF0YSBkaXlhLiBUb3RhbCBiYW5uZWQ6ICR7cy5hbnRpd29yZC5sZW5ndGh9YCk7CiAgICAgIH0KICAgICAgaWYgKHN1YiA9PT0gJ2xpc3QnKSByZXR1cm4gcmVwbHkoYPCfmqsgKkJhbm5lZCB3b3JkcyogKCR7cy5hbnRpd29yZC5sZW5ndGh9KVxuXG4ke3MuYW50aXdvcmQuam9pbignLCAnKSB8fCAn4oCUJ31gKTsKICAgICAgcmV0dXJuIHJlcGx5KGDinYwgRm9ybWF0OiAke1AoKX1hbnRpd29yZCBhZGQgPGxhZno+IHwgcmVtb3ZlIDxsYWZ6PiB8IGxpc3RgKTsKICAgIH0KICAgIGNhc2UgJ2FudGlsaW5rc3RyaWN0JzogY2FzZSAnYW50aWxpbmsnOiB7CiAgICAgIGNvbnN0IHMgPSBnZXRTKGcpOwogICAgICBpZiAoIWFyZykgcmV0dXJuIHJlcGx5KGDwn5SXICpBbnRpLWxpbms6KiAke3MuYW50aWxpbmsgPyAn4pyFIE9OJyA6ICfinYwgT0ZGJ31cblxuJHtQKCl9YW50aWxpbmtzdHJpY3Qgb24vb2ZmYCk7CiAgICAgIHMuYW50aWxpbmsgPSBhcmcgPT09ICdvbic7CiAgICAgIHJldHVybiByZXBseShg8J+UlyAqQW50aS1saW5rICR7cy5hbnRpbGluayA/ICdPTiDinIUnIDogJ09GRiDinYwnfSpgKTsKICAgIH0KICAgIGNhc2UgJ2FudGlzdGlja2VyJzogewogICAgICBjb25zdCBzID0gZ2V0UyhnKTsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg8J+OqCAqQW50aS1zdGlja2VyOiogJHtzLmFudGlzdGlja2VyID8gJ+KchSBPTicgOiAn4p2MIE9GRid9YCk7CiAgICAgIHMuYW50aXN0aWNrZXIgPSBhcmcgPT09ICdvbic7CiAgICAgIHJldHVybiByZXBseShg8J+OqCAqQW50aS1zdGlja2VyICR7cy5hbnRpc3RpY2tlciA/ICdPTiDinIUnIDogJ09GRiDinYwnfSpgKTsKICAgIH0KICAgIGNhc2UgJ2FudGlhdWRpbyc6IHsKICAgICAgY29uc3QgcyA9IGdldFMoZyk7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYPCfjrUgKkFudGktYXVkaW86KiAke3MuYW50aWF1ZGlvID8gJ+KchSBPTicgOiAn4p2MIE9GRid9YCk7CiAgICAgIHMuYW50aWF1ZGlvID0gYXJnID09PSAnb24nOwogICAgICByZXR1cm4gcmVwbHkoYPCfjrUgKkFudGktYXVkaW8gJHtzLmFudGlhdWRpbyA/ICdPTiDinIUnIDogJ09GRiDinYwnfSpgKTsKICAgIH0KICAgIGNhc2UgJ2FudGl2aWRlbyc6IHsKICAgICAgY29uc3QgcyA9IGdldFMoZyk7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYPCfjqwgKkFudGktdmlkZW86KiAke3MuYW50aXZpZGVvID8gJ+KchSBPTicgOiAn4p2MIE9GRid9YCk7CiAgICAgIHMuYW50aXZpZGVvID0gYXJnID09PSAnb24nOwogICAgICByZXR1cm4gcmVwbHkoYPCfjqwgKkFudGktdmlkZW8gJHtzLmFudGl2aWRlbyA/ICdPTiDinIUnIDogJ09GRiDinYwnfSpgKTsKICAgIH0KICAgIGNhc2UgJ2FudGlib3QnOiB7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYPCfpJYgKkFudGktYm90OiogJHtib3RzLmhhcyhnKSA/ICfinIUgT04nIDogJ+KdjCBPRkYnfWApOwogICAgICBpZiAoYXJnID09PSAnb24nKSB7IGJvdHMuYWRkKGcpOyByZXR1cm4gcmVwbHkoJ/CfpJYgKkFudGktYm90IE9OKiDigJQgYm90IGphaXNpIElEcyBiYW4gaG9uZ2kuJyk7IH0KICAgICAgYm90cy5kZWxldGUoZyk7IHJldHVybiByZXBseSgn8J+kliAqQW50aS1ib3QgT0ZGKicpOwogICAgfQogICAgY2FzZSAnbXV0ZWFsbCc6IHsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg8J+UhyAqTXV0ZS1hbGw6KiAke211dGVkLmhhcyhnKSA/ICfinIUgT04nIDogJ+KdjCBPRkYnfVxuXG5fTm90ZTogV2hhdHNBcHAgZ3JvdXAtd2lkZSBtdXRlIGJvdCBrZSBiYXMgbWUgbmFoaSDigJQgeWUgZmxhZyBncm91cCBzZXR0aW5ncyBtZSBzYXZlIGhvdGEgaGFpLl9gKTsKICAgICAgaWYgKGFyZyA9PT0gJ29uJykgeyBtdXRlZC5hZGQoZyk7IGxvZ0l0KGcsIGAke3B1c2huYW1lfSBuZSBtdXRlYWxsIE9OIGtpeWFgKTsgcmV0dXJuIHJlcGx5KCfwn5SHICpNdXRlLWFsbCBPTiogKHNldHRpbmcgc2F2ZWQpJyk7IH0KICAgICAgbXV0ZWQuZGVsZXRlKGcpOyByZXR1cm4gcmVwbHkoJ/CflIogKk11dGUtYWxsIE9GRionKTsKICAgIH0KICAgIGNhc2UgJ2Fubm91bmNlJzogewogICAgICBpZiAoIWFyZykgcmV0dXJuIHJlcGx5KGDinYwgVGV4dCBkby4gRXhhbXBsZTogJHtQKCl9YW5ub3VuY2UgTWVldGluZyA1IGJhamVgKTsKICAgICAgbG9nSXQoZywgYCR7cHVzaG5hbWV9OiBBTk5PVU5DRSDigJQgJHthcmd9YCk7CiAgICAgIHJldHVybiByZXBseShg8J+ToiAqQU5OT1VOQ0VNRU5UKlxuJHsn4pSAJy5yZXBlYXQoMjApfVxuJHthcmd9XG4keyfilIAnLnJlcGVhdCgyMCl9XG5cbl9ieSAke3B1c2huYW1lfV9gKTsKICAgIH0KICAgIGNhc2UgJ2FkbWlubG9nJzogewogICAgICBjb25zdCBsID0gYWRtaW5Mb2cuZ2V0KGcpIHx8IFtdOwogICAgICByZXR1cm4gcmVwbHkoYPCfk4sgKkFkbWluIGxvZyogKGxhc3QgJHtsLmxlbmd0aH0pXG5cbiR7bC5zbGljZSgtMTUpLmpvaW4oJ1xuJykgfHwgJ19LdWNoIG5haGkgaHVhIGFiaGkuXyd9YCk7CiAgICB9CiAgICBjYXNlICd3ZWxjb21lY2FyZCc6IHsKICAgICAgY29uc3QgcyA9IGdldFMoZyk7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYPCfkYsgKldlbGNvbWUgbWVzc2FnZToqXG4ke3Mud2VsY29tZSB8fCAnXyhkZWZhdWx0KV8nfVxuXG5DaGFuZ2U6ICR7UCgpfXdlbGNvbWVjYXJkIDx0ZXh0PlxuX1ZhcmlhYmxlczoge25hbWV9LCB7Z3JvdXB9X2ApOwogICAgICBzLndlbGNvbWUgPSBhcmc7CiAgICAgIHJldHVybiByZXBseShg4pyFIFdlbGNvbWUgbWVzc2FnZSBzZXQhXG5cbiR7YXJnLnJlcGxhY2UoJ3tuYW1lfScsICdBbGknKS5yZXBsYWNlKCd7Z3JvdXB9JywgJ2lzIGdyb3VwJyl9YCk7CiAgICB9CiAgICBjYXNlICdnb29kYnllY2FyZCc6IHsKICAgICAgY29uc3QgcyA9IGdldFMoZyk7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYPCfkYsgKkdvb2RieWUgbWVzc2FnZToqXG4ke3MuZ29vZGJ5ZSB8fCAnXyhkZWZhdWx0KV8nfWApOwogICAgICBzLmdvb2RieWUgPSBhcmc7CiAgICAgIHJldHVybiByZXBseShg4pyFIEdvb2RieWUgbWVzc2FnZSBzZXQhXG5cbiR7YXJnLnJlcGxhY2UoJ3tuYW1lfScsICdBbGknKX1gKTsKICAgIH0KICAgIGNhc2UgJ2F1dG9zdGlja2VyJzogewogICAgICBjb25zdCBzID0gZ2V0UyhnKTsKICAgICAgcy5hdXRvc3RpY2tlciA9ICFzLmF1dG9zdGlja2VyOwogICAgICByZXR1cm4gcmVwbHkoYPCfjqggKkF1dG8tc3RpY2tlciogJHtzLmF1dG9zdGlja2VyID8gJ09OIOKchSDigJQgaGFyIGltYWdlIHN0aWNrZXIgYmFuZWdpJyA6ICdPRkYg4p2MJ31gKTsKICAgIH0KICAgIGNhc2UgJ2F1dG9yZXBseS1ncnAnOiB7CiAgICAgIGNvbnN0IHMgPSBnZXRTKGcpOwogICAgICBjb25zdCBba2V5LCAuLi52YWxdID0gKGFyZyB8fCAnJykuc3BsaXQoJz0nKTsKICAgICAgaWYgKCFrZXkgfHwgIXZhbC5sZW5ndGgpIHJldHVybiByZXBseShg4p2MIEZvcm1hdDogJHtQKCl9YXV0b3JlcGx5LWdycCBoZWxsbz1IaSEgS2Fpc2UgaG8/YCk7CiAgICAgIHMuYXV0b3JlcGx5W2tleS50cmltKCkudG9Mb3dlckNhc2UoKV0gPSB2YWwuam9pbignPScpLnRyaW0oKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn6SWICpBdXRvLXJlcGx5IHNldCpcblxuIiR7a2V5LnRyaW0oKX0iIOKGkiAiJHt2YWwuam9pbignPScpLnRyaW0oKX0iYCk7CiAgICB9CiAgICBjYXNlICdpbmFjdGl2ZSc6IHsKICAgICAgY29uc3QgYWN0ID0gYWN0aXZpdHkuZ2V0KGcpOwogICAgICBpZiAoIWFjdCB8fCAhYWN0LnNpemUpIHJldHVybiByZXBseShg8J+YtCAqSW5hY3RpdmUgbWVtYmVycypcblxuQWJoaSBkYXRhIG5haGkg4oCUIGt1Y2ggbWVzc2FnZXMgaG9uZSBkby5gKTsKICAgICAgY29uc3Qgc29ydGVkID0gWy4uLmFjdC5lbnRyaWVzKCldLnNvcnQoKGEsIGIpID0+IGFbMV0gLSBiWzFdKS5zbGljZSgwLCA1KTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5i0ICpTYWIgc2Uga2FtIGFjdGl2ZSpcblxuJHtzb3J0ZWQubWFwKChbdSwgY10pID0+IGDigKIgJHt1fSDigJQgJHtjfSBtZXNzYWdlc2ApLmpvaW4oJ1xuJyl9YCk7CiAgICB9CiAgICBjYXNlICd0b3BjaGF0JzogewogICAgICBjb25zdCBhY3QgPSBhY3Rpdml0eS5nZXQoZyk7CiAgICAgIGlmICghYWN0IHx8ICFhY3Quc2l6ZSkgcmV0dXJuIHJlcGx5KGDwn5OKICpUb3AgY2hhdCpcblxuQWJoaSBkYXRhIG5haGkuYCk7CiAgICAgIGNvbnN0IHNvcnRlZCA9IFsuLi5hY3QuZW50cmllcygpXS5zb3J0KChhLCBiKSA9PiBiWzFdIC0gYVsxXSkuc2xpY2UoMCwgNSk7CiAgICAgIHJldHVybiByZXBseShg8J+PhiAqU2FiIHNlIGFjdGl2ZSpcblxuJHtzb3J0ZWQubWFwKChbdSwgY10sIGkpID0+IGAke2kgKyAxfS4gJHt1fSDigJQgJHtjfSBtZXNzYWdlc2ApLmpvaW4oJ1xuJyl9YCk7CiAgICB9CiAgICBjYXNlICdnY3JlcG9ydCc6IHsKICAgICAgY29uc3QgcyA9IGdldFMoZyk7CiAgICAgIGNvbnN0IGFjdCA9IGFjdGl2aXR5LmdldChnKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5OKICpHcm91cCByZXBvcnQqXG5cbvCfkaUgTWVzc2FnZXMgdHJhY2tlZDogJHthY3QgPyBbLi4uYWN0LnZhbHVlcygpXS5yZWR1Y2UoKGEsIGIpID0+IGEgKyBiLCAwKSA6IDB9XG7wn5qrIEJhbm5lZCB3b3JkczogJHtzLmFudGl3b3JkLmxlbmd0aH1cbvCflJcgQW50aS1saW5rOiAke3MuYW50aWxpbmsgPyAnT04nIDogJ09GRid9XG7wn46oIEFudGktc3RpY2tlcjogJHtzLmFudGlzdGlja2VyID8gJ09OJyA6ICdPRkYnfVxu8J+kliBBbnRpLWJvdDogJHtib3RzLmhhcyhnKSA/ICdPTicgOiAnT0ZGJ31cbvCflIcgTXV0ZS1hbGw6ICR7bXV0ZWQuaGFzKGcpID8gJ09OJyA6ICdPRkYnfVxu8J+TiyBBZG1pbiBsb2cgZW50cmllczogJHsoYWRtaW5Mb2cuZ2V0KGcpIHx8IFtdKS5sZW5ndGh9YCk7CiAgICB9CiAgICBjYXNlICdncnBtb29kJzogewogICAgICBjb25zdCBtb29kcyA9IFsn8J+YhCBLaHVzaGdhd2FyJywgJ/CflKUgQWN0aXZlJywgJ/CfmLQgU29zdGEgaHVhJywgJ/CfpJ0gRG9zdGkgYmhhcmEnLCAn8J+OiSBNYXphYWtpeWEnXTsKICAgICAgY29uc3QgYWN0ID0gYWN0aXZpdHkuZ2V0KGcpOwogICAgICBjb25zdCBuID0gYWN0ID8gWy4uLmFjdC52YWx1ZXMoKV0ucmVkdWNlKChhLCBiKSA9PiBhICsgYiwgMCkgOiAwOwogICAgICBjb25zdCBtb29kID0gbiA+IDEwMCA/IG1vb2RzWzFdIDogbiA+IDMwID8gbW9vZHNbMF0gOiBtb29kc1syXTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4yh77iPICpHcm91cCBtb29kKlxuXG4ke21vb2R9XG5cbvCfk4ogTWVzc2FnZXM6ICR7bn1cblxuX01vb2QgbWVzc2FnZXMga2kgdGFkYWFkIHNlIG5pa2FsdGEgaGFpLl9gKTsKICAgIH0KICAgIGNhc2UgJ2djYXVkaXQnOiB7CiAgICAgIGNvbnN0IHMgPSBnZXRTKGcpOwogICAgICByZXR1cm4gcmVwbHkoYPCflI0gKkdyb3VwIGF1ZGl0KlxuXG4ke3MuYW50aWxpbmsgPyAn4pyFJyA6ICfimqDvuI8nfSBBbnRpLWxpbmsgJHtzLmFudGlsaW5rID8gJ2VuYWJsZWQnIDogJ0RJU0FCTEVEJ31cbiR7cy5hbnRpd29yZC5sZW5ndGggPyAn4pyFJyA6ICfimqDvuI8nfSBCYW5uZWQgd29yZHM6ICR7cy5hbnRpd29yZC5sZW5ndGh9XG4ke3MucnVsZXMgPyAn4pyFJyA6ICfimqDvuI8nfSBHcm91cCBydWxlcyAke3MucnVsZXMgPyAnc2V0JyA6ICdNSVNTSU5HJ31cbiR7Ym90cy5oYXMoZykgPyAn4pyFJyA6ICfimqDvuI8nfSBBbnRpLWJvdCAke2JvdHMuaGFzKGcpID8gJ29uJyA6ICdvZmYnfVxuXG4keyFzLmFudGlsaW5rIHx8ICFzLnJ1bGVzID8gJ/CfkYkgYCcgKyBQKCkgKyAnZ2NzZXR1cGAgY2hhbGFvIOKAlCBzYWIgc2V0IGhvIGpheWVnYS4nIDogJ/CfjokgR3JvdXAgd2VsbCBwcm90ZWN0ZWQgaGFpISd9YCk7CiAgICB9CiAgICBjYXNlICdhZG1pbnBpbmcnOiB7CiAgICAgIHJldHVybiByZXBseShg8J+PkyAqQWRtaW4gcGluZypcblxu4pyFIEJvdCBhbGl2ZVxu8J+RkSBPd25lcjogJHtpc093bmVyID8gJ2FhcCcgOiAnc2V0J31cbvCfm6HvuI8gQWRtaW46ICR7aXNBZG1pbiA/ICdhYXAnIDogJ25vJ31cbuKPse+4jyAke25ldyBEYXRlKCkudG9Mb2NhbGVTdHJpbmcoJ2VuLVBLJywgeyB0aW1lWm9uZTogJ0FzaWEvS2FyYWNoaScgfSl9YCk7CiAgICB9CiAgICBjYXNlICdnY3NldHVwJzogewogICAgICBjb25zdCBzID0gZ2V0UyhnKTsKICAgICAgcy5hbnRpbGluayA9IHRydWU7CiAgICAgIGlmICghcy5ydWxlcykgcy5ydWxlcyA9ICcxLiBJenphdCBzZSBiYWF0IGthcm9cbjIuIFNwYW0gbmFoaVxuMy4gTGlua3MgYWxsb3dlZCBuYWhpXG40LiBHYWxpIGdhbG9jaCBtYW5hIGhhaSc7CiAgICAgIGxvZ0l0KGcsIGAke3B1c2huYW1lfSBuZSBnY3NldHVwIGNoYWxheWFgKTsKICAgICAgcmV0dXJuIHJlcGx5KGDimpnvuI8gKkdyb3VwIHNldHVwIGNvbXBsZXRlISpcblxu4pyFIEFudGktbGluayBPTlxu4pyFIFJ1bGVzIHNldFxuXG7wn5OcICpSdWxlczoqXG4ke3MucnVsZXN9XG5cbl8ke1AoKX1ncm91cHJ1bGVzIHNlIGNoYW5nZSBrYXJvLl9gKTsKICAgIH0KICAgIGNhc2UgJ2JhY2t1cC1ncnAnOiB7CiAgICAgIGNvbnN0IHMgPSBnZXRTKGcpOwogICAgICBjb25zdCBkdW1wID0gQnVmZmVyLmZyb20oSlNPTi5zdHJpbmdpZnkoeyBncm91cDogZywgc2V0dGluZ3M6IHMsIHdoZW46IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSB9LCBudWxsLCAyKSk7CiAgICAgIGF3YWl0IGN0eC5zZW5kKGZyb20sIHsgZG9jdW1lbnQ6IGR1bXAsIGZpbGVOYW1lOiBgZ3JvdXBfYmFja3VwXyR7RGF0ZS5ub3coKX0uanNvbmAsIG1pbWV0eXBlOiAnYXBwbGljYXRpb24vanNvbicgfSwgeyBxdW90ZWQ6IGN0eC5tIH0pOwogICAgICByZXR1cm47CiAgICB9CiAgICBjYXNlICdyZXN0b3JlLWdycCc6IHsKICAgICAgY29uc3QgZG9jID0gY3R4LnF1b3RlZD8ubWVzc2FnZT8uZG9jdW1lbnRNZXNzYWdlOwogICAgICBpZiAoIWRvYykgcmV0dXJuIHJlcGx5KGDinYwgQmFja3VwIEpTT04gZmlsZSBwYXIgcmVwbHkga2Fya2UgJHtQKCl9cmVzdG9yZS1ncnAgbGlraG8uYCk7CiAgICAgIHRyeSB7CiAgICAgICAgY29uc3QgeyBkb3dubG9hZE1lZGlhIH0gPSByZXF1aXJlKCcuLi9saWIvaGVscGVycycpOwogICAgICAgIGNvbnN0IGJ1ZiA9IGF3YWl0IGRvd25sb2FkTWVkaWEoZG9jLCAnZG9jdW1lbnQnKTsKICAgICAgICBjb25zdCBkYXRhID0gSlNPTi5wYXJzZShidWYudG9TdHJpbmcoJ3V0ZjgnKSk7CiAgICAgICAgaWYgKGRhdGEuc2V0dGluZ3MpIHsgc2V0dGluZ3Muc2V0KGcsIGRhdGEuc2V0dGluZ3MpOyByZXR1cm4gcmVwbHkoYOKchSAqR3JvdXAgc2V0dGluZ3MgcmVzdG9yZSBobyBnYXlpbiEqXG5cbvCfmqsgQmFubmVkOiAke2RhdGEuc2V0dGluZ3MuYW50aXdvcmQ/Lmxlbmd0aCB8fCAwfVxu8J+UlyBBbnRpLWxpbms6ICR7ZGF0YS5zZXR0aW5ncy5hbnRpbGluayA/ICdPTicgOiAnT0ZGJ31gKTsgfQogICAgICAgIHJldHVybiByZXBseSgn4p2MIEZpbGUgbWUgc2V0dGluZ3MgbmFoaSBtaWxpbi4nKTsKICAgICAgfSBjYXRjaCB7IHJldHVybiByZXBseSgn4p2MIFJlc3RvcmUgbmFoaSBobyBzYWthLicpOyB9CiAgICB9CiAgICBjYXNlICdnY2Nzdic6IHsKICAgICAgY29uc3QgYWN0ID0gYWN0aXZpdHkuZ2V0KGcpOwogICAgICBpZiAoIWFjdCB8fCAhYWN0LnNpemUpIHJldHVybiByZXBseSgn4p2MIEFiaGkgZGF0YSBuYWhpLicpOwogICAgICBjb25zdCBjc3YgPSAndXNlcixtZXNzYWdlc1xuJyArIFsuLi5hY3QuZW50cmllcygpXS5tYXAoKFt1LCBjXSkgPT4gYCR7dX0sJHtjfWApLmpvaW4oJ1xuJyk7CiAgICAgIHJldHVybiByZXBseShg8J+TiiAqR3JvdXAgYWN0aXZpdHkgQ1NWKlxuXG5cYFxgXGAke2Nzdi5zbGljZSgwLCAyMDAwKX1cYFxgXGBgKTsKICAgIH0KICAgIGNhc2UgJ2dycHJlc2V0JzogewogICAgICBzZXR0aW5ncy5kZWxldGUoZyk7IGFkbWluTG9nLmRlbGV0ZShnKTsgYWN0aXZpdHkuZGVsZXRlKGcpOyBtdXRlZC5kZWxldGUoZyk7IGJvdHMuZGVsZXRlKGcpOwogICAgICByZXR1cm4gcmVwbHkoJ/CflIQgKkdyb3VwIHNldHRpbmdzIHJlc2V0ISogU2FiIGRlZmF1bHRzIHBhci4nKTsKICAgIH0KICAgIGNhc2UgJ3BpY2snOiB7CiAgICAgIGlmICghaXNHcm91cCkgcmV0dXJuIHJlcGx5KCfinYwgR3JvdXAgbWUgY2hhbHRpIGhhaS4nKTsKICAgICAgY29uc3QgbmFtZXMgPSAoYXJnIHx8ICcnKS5zcGxpdCgnLCcpLm1hcCgocykgPT4gcy50cmltKCkpLmZpbHRlcihCb29sZWFuKTsKICAgICAgaWYgKG5hbWVzLmxlbmd0aCA8IDIpIHJldHVybiByZXBseShg4p2MIEZvcm1hdDogJHtQKCl9cGljayBBbGksIEJpbGFsLCBVc21hbmApOwogICAgICByZXR1cm4gcmVwbHkoYPCfjq8gKlBpY2sqIOKAlCAqJHtwaWNrKG5hbWVzKX0qYCk7CiAgICB9CiAgICBjYXNlICdhYnNlbic6IHsKICAgICAgY29uc3QgYWN0ID0gYWN0aXZpdHkuZ2V0KGcpOwogICAgICBjb25zdCBuID0gYWN0ID8gYWN0LnNpemUgOiAwOwogICAgICByZXR1cm4gcmVwbHkoYPCfk4sgKkF0dGVuZGFuY2UqXG5cbkFjdGl2ZSBtZW1iZXJzOiAqJHtufSpcblxuXyhXaGF0c0FwcCBhdHRlbmRhbmNlIHRyYWNraW5nIGtlIGxpeWUgbWVtYmVycyBrbyBtZXNzYWdlIGthcm5hIHBhcnRhIGhhaS4pX2ApOwogICAgfQogICAgY2FzZSAnb3BlbmdjJzogewogICAgICBjb25zdCBzID0gZ2V0UyhnKTsKICAgICAgcy5vcGVuID0gIXMub3BlbjsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5qqICpHcm91cCAke3Mub3BlbiA/ICdPUEVOIOKchScgOiAnQ0xPU0VEIPCflJInfSpcblxuX05vdGU6IGFjdHVhbCBvcGVuL2Nsb3NlIFdoYXRzQXBwIHNldHRpbmdzIHNlIGhvdGEgaGFpIOKAlCB5ZSBmbGFnIHNhdmUgaG8gZ2F5YS5fYCk7CiAgICB9CiAgICBjYXNlICdnY3Byb3RlY3QnOiB7CiAgICAgIGNvbnN0IHMgPSBnZXRTKGcpOwogICAgICBzLmFudGlsaW5rID0gdHJ1ZTsgcy5hbnRpc3RpY2tlciA9IHRydWU7IHMuYW50aWF1ZGlvID0gZmFsc2U7IHMuYW50aXZpZGVvID0gZmFsc2U7CiAgICAgIGJvdHMuYWRkKGcpOwogICAgICByZXR1cm4gcmVwbHkoJ/Cfm6HvuI8gKkdyb3VwIHByb3RlY3Rpb24gT04qXG5cbuKchSBBbnRpLWxpbmtcbuKchSBBbnRpLXN0aWNrZXJcbuKchSBBbnRpLWJvdFxuXG5fQXVkaW8vdmlkZW8ga2UgbGl5ZSBhbGFnIHNlIG9uIGthcm8uXycpOwogICAgfQogICAgZGVmYXVsdDoKICAgICAgcmV0dXJuIHJlcGx5KCfinZMgVW5rbm93biBncm91cCBjb21tYW5kJyk7CiAgfQp9OwoKLyoqIE1vZGVyYXRpb24gaG9vayDigJQgZW5mb3JjZXMgdGhlIGdyb3VwIHNldHRpbmdzIG9uIGV2ZXJ5IG1lc3NhZ2UuICovCmFzeW5jIGZ1bmN0aW9uIG9uTWVzc2FnZShjdHgpIHsKICBjb25zdCB7IHRleHQsIGZyb20sIGlzR3JvdXAsIGlzQWRtaW4sIGlzT3duZXIsIHNlbmRlck51bSwgcHVzaG5hbWUgfSA9IGN0eDsKICBpZiAoIWlzR3JvdXApIHJldHVybjsKICBjb25zdCBnID0gZnJvbTsKCiAgLy8gYWN0aXZpdHkgdHJhY2tpbmcKICBpZiAoIWFjdGl2aXR5LmhhcyhnKSkgYWN0aXZpdHkuc2V0KGcsIG5ldyBNYXAoKSk7CiAgY29uc3QgYWN0ID0gYWN0aXZpdHkuZ2V0KGcpOwogIGNvbnN0IGtleSA9IHB1c2huYW1lIHx8IHNlbmRlck51bSB8fCAnbWVtYmVyJzsKICBhY3Quc2V0KGtleSwgKGFjdC5nZXQoa2V5KSB8fCAwKSArIDEpOwoKICBpZiAoaXNBZG1pbiB8fCBpc093bmVyKSByZXR1cm47IC8vIGFkbWlucyBleGVtcHQKICBjb25zdCBzID0gc2V0dGluZ3MuZ2V0KGcpOwogIGlmICghcykgcmV0dXJuOwoKICBpZiAocy5hbnRpd29yZD8ubGVuZ3RoICYmIHRleHQpIHsKICAgIGNvbnN0IHQgPSB0ZXh0LnRvTG93ZXJDYXNlKCk7CiAgICBjb25zdCBoaXQgPSBzLmFudGl3b3JkLmZpbmQoKHcpID0+IHQuaW5jbHVkZXModykpOwogICAgaWYgKGhpdCkgewogICAgICBsb2dJdChnLCBgYW50aXdvcmQ6ICR7a2V5fSDigJQgIiR7aGl0fSJgKTsKICAgICAgYXdhaXQgY3R4LnJlcGx5KGDwn5qrICoke2tleX0qIOKAlCBiYW5uZWQgd29yZCB1c2Uga2l5YTogIiR7aGl0fSJgKTsKICAgICAgcmV0dXJuOwogICAgfQogIH0KICBpZiAocy5hbnRpbGluayAmJiB0ZXh0ICYmIC8oaHR0cHM/OlwvXC98Y2hhdFwud2hhdHNhcHBcLmNvbXx3YVwubWUpL2kudGVzdCh0ZXh0KSkgewogICAgbG9nSXQoZywgYGFudGlsaW5rOiAke2tleX1gKTsKICAgIGF3YWl0IGN0eC5yZXBseShg8J+UlyAqJHtrZXl9KiDigJQgbGlua3MgYWxsb3dlZCBuYWhpIGhhaW4uYCk7CiAgICByZXR1cm47CiAgfQogIGlmIChzLmF1dG9yZXBseSAmJiB0ZXh0KSB7CiAgICBjb25zdCB0ID0gdGV4dC50cmltKCkudG9Mb3dlckNhc2UoKTsKICAgIGNvbnN0IGhpdCA9IE9iamVjdC5rZXlzKHMuYXV0b3JlcGx5KS5maW5kKChrKSA9PiB0ID09PSBrIHx8IHQuc3RhcnRzV2l0aChrICsgJyAnKSk7CiAgICBpZiAoaGl0KSB7IGF3YWl0IGN0eC5yZXBseShzLmF1dG9yZXBseVtoaXRdKTsgfQogIH0KfQoKbW9kdWxlLmV4cG9ydHMgPSB7CiAgY29tbWFuZHM6IFsKICAgICdwaWNrJywgJ2FudGl3b3JkJywgJ2FudGlzdGlja2VyJywgJ2dyb3VwcnVsZXMnLCAnYWJzZW4nLCAnaW5hY3RpdmUnLCAnb3BlbmdjJywgJ2FudGlhdWRpbycsICdhbnRpdmlkZW8nLAogICAgJ2FudGlsaW5rc3RyaWN0JywgJ211dGVhbGwnLCAnYW5ub3VuY2UnLCAnYXV0b2FwcHJvdmUnLCAnYWRtaW5sb2cnLCAnd2VsY29tZWNhcmQnLCAnZ29vZGJ5ZWNhcmQnLAogICAgJ2F1dG9zdGlja2VyJywgJ2F1dG9yZXBseS1ncnAnLCAnbWVtYmVyY291bnQnLCAnZ2NyZXBvcnQnLCAndG9wY2hhdCcsICdhbnRpYm90JywgJ2djcHJvdGVjdCcsICdnY2F1ZGl0JywKICAgICdhZG1pbnBpbmcnLCAnZ2NzZXR1cCcsICdiYWNrdXAtZ3JwJywgJ3Jlc3RvcmUtZ3JwJywgJ2djY3N2JywgJ2dycG1vb2QnLCAnZ2NoZWxwJywgJ2dycHJlc2V0JywKICAgIC8vIGV4dHJhcyB0aGF0IGJlbG9uZyBpbiB0aGlzIGZhbWlseQogICAgJ2djbWVudScsIAogIF0sCiAgY2F0ZWdvcnk6ICfwn5GlIEdST1VQJywKICBoYW5kbGVyLAogIG9uTWVzc2FnZSwKfTsK
+/**
+ * GROUP2 — group administration & moderation
+ */
+const config = require('../config');
+const { pick, randInt } = require('../lib/helpers');
+
+const P = () => config.PREFIX;
+
+/* per-group settings + activity (memory only) */
+const settings = new Map();   // groupId -> { antiword:[], antilink:bool, rules:'', ... }
+const activity = new Map();   // groupId -> Map(user -> count)
+const adminLog = new Map();   // groupId -> [lines]
+const muted = new Set();      // groupId
+const bots = new Set();       // groupId -> antibot on
+
+const getS = (g) => { if (!settings.has(g)) settings.set(g, { antiword: [], antilink: false, rules: '', antisticker: false, antiaudio: false, antivideo: false, autoreply: {} }); return settings.get(g); };
+const logIt = (g, line) => { const l = adminLog.get(g) || []; l.push(`[${new Date().toLocaleTimeString('en-PK', { timeZone: 'Asia/Karachi' })}] ${line}`); adminLog.set(g, l.slice(-50)); };
+
+const handler = async (ctx) => {
+  const { command, reply, arg, from, isGroup, isOwner, isAdmin, senderNum, pushname, mentioned } = ctx;
+  const g = from || 'group';
+
+  // Everything here is group-only.
+  const GROUP_ONLY = ['pick', 'antiword', 'antisticker', 'grouprules', 'absen', 'inactive', 'opengc', 'antiaudio',
+    'antivideo', 'antilinkstrict', 'muteall', 'announce', 'autoapprove', 'adminlog', 'welcomecard', 'goodbyecard',
+    'autosticker', 'autoreply-grp', 'membercount', 'gcreport', 'topchat', 'antibot', 'gcprotect', 'gcaudit',
+    'adminping', 'gcsetup', 'backup-grp', 'restore-grp', 'gccsv', 'grpmood', 'gchelp', 'grpreset'];
+  if (GROUP_ONLY.includes(command) && !isGroup) {
+    return reply(`❌ Ye command sirf *group* me chalti hai.`);
+  }
+
+  switch (command) {
+    case 'gchelp': case 'gcmenu': {
+      return reply(`👥 *GROUP COMMANDS*\n\n*Moderation:*\n${P()}antiword add <lafz>\n${P()}antilinkstrict on/off\n${P()}antisticker on/off\n${P()}antiaudio on/off\n${P()}antivideo on/off\n${P()}antibot on/off\n${P()}muteall on/off\n\n*Info:*\n${P()}membercount\n${P()}topchat\n${P()}inactive\n${P()}absen\n${P()}gcreport\n${P()}grpmood\n${P()}gcaudit\n\n*Setup:*\n${P()}gcsetup\n${P()}grouprules <text>\n${P()}welcomecard <text>\n${P()}grpreset`);
+    }
+    case 'membercount': {
+      return reply(`👥 *Member count*\n\nGroup: *${(await ctx.groupSize?.()) || 'unknown'}*\n\n_(WhatsApp se exact count milta hai)_`);
+    }
+    case 'grouprules': {
+      const s = getS(g);
+      if (!arg) return reply(s.rules ? `📜 *Group rules*\n\n${s.rules}` : `❌ Koi rules set nahi. ${P()}grouprules <text>`);
+      s.rules = arg;
+      logIt(g, `${pushname} ne rules update kiye`);
+      return reply(`✅ *Group rules set!*\n\n${arg}`);
+    }
+    case 'antiword': {
+      const s = getS(g);
+      const [sub, ...rest] = (arg || '').split(' ');
+      if (sub === 'add' && rest.length) {
+        s.antiword.push(rest.join(' ').toLowerCase());
+        return reply(`🚫 *"${rest.join(' ')}"* blacklist me add ho gaya.\n\nTotal banned: ${s.antiword.length}`);
+      }
+      if (sub === 'remove' && rest.length) {
+        s.antiword = s.antiword.filter((w) => w !== rest.join(' ').toLowerCase());
+        return reply(`✅ Hata diya. Total banned: ${s.antiword.length}`);
+      }
+      if (sub === 'list') return reply(`🚫 *Banned words* (${s.antiword.length})\n\n${s.antiword.join(', ') || '—'}`);
+      return reply(`❌ Format: ${P()}antiword add <lafz> | remove <lafz> | list`);
+    }
+    case 'antilinkstrict': case 'antilink': {
+      const s = getS(g);
+      if (!arg) return reply(`🔗 *Anti-link:* ${s.antilink ? '✅ ON' : '❌ OFF'}\n\n${P()}antilinkstrict on/off`);
+      s.antilink = arg === 'on';
+      return reply(`🔗 *Anti-link ${s.antilink ? 'ON ✅' : 'OFF ❌'}*`);
+    }
+    case 'antisticker': {
+      const s = getS(g);
+      if (!arg) return reply(`🎨 *Anti-sticker:* ${s.antisticker ? '✅ ON' : '❌ OFF'}`);
+      s.antisticker = arg === 'on';
+      return reply(`🎨 *Anti-sticker ${s.antisticker ? 'ON ✅' : 'OFF ❌'}*`);
+    }
+    case 'antiaudio': {
+      const s = getS(g);
+      if (!arg) return reply(`🎵 *Anti-audio:* ${s.antiaudio ? '✅ ON' : '❌ OFF'}`);
+      s.antiaudio = arg === 'on';
+      return reply(`🎵 *Anti-audio ${s.antiaudio ? 'ON ✅' : 'OFF ❌'}*`);
+    }
+    case 'antivideo': {
+      const s = getS(g);
+      if (!arg) return reply(`🎬 *Anti-video:* ${s.antivideo ? '✅ ON' : '❌ OFF'}`);
+      s.antivideo = arg === 'on';
+      return reply(`🎬 *Anti-video ${s.antivideo ? 'ON ✅' : 'OFF ❌'}*`);
+    }
+    case 'antibot': {
+      if (!arg) return reply(`🤖 *Anti-bot:* ${bots.has(g) ? '✅ ON' : '❌ OFF'}`);
+      if (arg === 'on') { bots.add(g); return reply('🤖 *Anti-bot ON* — bot jaisi IDs ban hongi.'); }
+      bots.delete(g); return reply('🤖 *Anti-bot OFF*');
+    }
+    case 'muteall': {
+      if (!arg) return reply(`🔇 *Mute-all:* ${muted.has(g) ? '✅ ON' : '❌ OFF'}\n\n_Note: WhatsApp group-wide mute bot ke bas me nahi — ye flag group settings me save hota hai._`);
+      if (arg === 'on') { muted.add(g); logIt(g, `${pushname} ne muteall ON kiya`); return reply('🔇 *Mute-all ON* (setting saved)'); }
+      muted.delete(g); return reply('🔊 *Mute-all OFF*');
+    }
+    case 'announce': {
+      if (!arg) return reply(`❌ Text do. Example: ${P()}announce Meeting 5 baje`);
+      logIt(g, `${pushname}: ANNOUNCE — ${arg}`);
+      return reply(`📢 *ANNOUNCEMENT*\n${'─'.repeat(20)}\n${arg}\n${'─'.repeat(20)}\n\n_by ${pushname}_`);
+    }
+    case 'adminlog': {
+      const l = adminLog.get(g) || [];
+      return reply(`📋 *Admin log* (last ${l.length})\n\n${l.slice(-15).join('\n') || '_Kuch nahi hua abhi._'}`);
+    }
+    case 'welcomecard': {
+      const s = getS(g);
+      if (!arg) return reply(`👋 *Welcome message:*\n${s.welcome || '_(default)_'}\n\nChange: ${P()}welcomecard <text>\n_Variables: {name}, {group}_`);
+      s.welcome = arg;
+      return reply(`✅ Welcome message set!\n\n${arg.replace('{name}', 'Ali').replace('{group}', 'is group')}`);
+    }
+    case 'goodbyecard': {
+      const s = getS(g);
+      if (!arg) return reply(`👋 *Goodbye message:*\n${s.goodbye || '_(default)_'}`);
+      s.goodbye = arg;
+      return reply(`✅ Goodbye message set!\n\n${arg.replace('{name}', 'Ali')}`);
+    }
+    case 'autosticker': {
+      const s = getS(g);
+      s.autosticker = !s.autosticker;
+      return reply(`🎨 *Auto-sticker* ${s.autosticker ? 'ON ✅ — har image sticker banegi' : 'OFF ❌'}`);
+    }
+    case 'autoreply-grp': {
+      const s = getS(g);
+      const [key, ...val] = (arg || '').split('=');
+      if (!key || !val.length) return reply(`❌ Format: ${P()}autoreply-grp hello=Hi! Kaise ho?`);
+      s.autoreply[key.trim().toLowerCase()] = val.join('=').trim();
+      return reply(`🤖 *Auto-reply set*\n\n"${key.trim()}" → "${val.join('=').trim()}"`);
+    }
+    case 'inactive': {
+      const act = activity.get(g);
+      if (!act || !act.size) return reply(`😴 *Inactive members*\n\nAbhi data nahi — kuch messages hone do.`);
+      const sorted = [...act.entries()].sort((a, b) => a[1] - b[1]).slice(0, 5);
+      return reply(`😴 *Sab se kam active*\n\n${sorted.map(([u, c]) => `• ${u} — ${c} messages`).join('\n')}`);
+    }
+    case 'topchat': {
+      const act = activity.get(g);
+      if (!act || !act.size) return reply(`📊 *Top chat*\n\nAbhi data nahi.`);
+      const sorted = [...act.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+      return reply(`🏆 *Sab se active*\n\n${sorted.map(([u, c], i) => `${i + 1}. ${u} — ${c} messages`).join('\n')}`);
+    }
+    case 'gcreport': {
+      const s = getS(g);
+      const act = activity.get(g);
+      return reply(`📊 *Group report*\n\n👥 Messages tracked: ${act ? [...act.values()].reduce((a, b) => a + b, 0) : 0}\n🚫 Banned words: ${s.antiword.length}\n🔗 Anti-link: ${s.antilink ? 'ON' : 'OFF'}\n🎨 Anti-sticker: ${s.antisticker ? 'ON' : 'OFF'}\n🤖 Anti-bot: ${bots.has(g) ? 'ON' : 'OFF'}\n🔇 Mute-all: ${muted.has(g) ? 'ON' : 'OFF'}\n📋 Admin log entries: ${(adminLog.get(g) || []).length}`);
+    }
+    case 'grpmood': {
+      const moods = ['😄 Khushgawar', '🔥 Active', '😴 Sosta hua', '🤝 Dosti bhara', '🎉 Mazaakiya'];
+      const act = activity.get(g);
+      const n = act ? [...act.values()].reduce((a, b) => a + b, 0) : 0;
+      const mood = n > 100 ? moods[1] : n > 30 ? moods[0] : moods[2];
+      return reply(`🌡️ *Group mood*\n\n${mood}\n\n📊 Messages: ${n}\n\n_Mood messages ki tadaad se nikalta hai._`);
+    }
+    case 'gcaudit': {
+      const s = getS(g);
+      return reply(`🔍 *Group audit*\n\n${s.antilink ? '✅' : '⚠️'} Anti-link ${s.antilink ? 'enabled' : 'DISABLED'}\n${s.antiword.length ? '✅' : '⚠️'} Banned words: ${s.antiword.length}\n${s.rules ? '✅' : '⚠️'} Group rules ${s.rules ? 'set' : 'MISSING'}\n${bots.has(g) ? '✅' : '⚠️'} Anti-bot ${bots.has(g) ? 'on' : 'off'}\n\n${!s.antilink || !s.rules ? '👉 `' + P() + 'gcsetup` chalao — sab set ho jayega.' : '🎉 Group well protected hai!'}`);
+    }
+    case 'adminping': {
+      return reply(`🏓 *Admin ping*\n\n✅ Bot alive\n👑 Owner: ${isOwner ? 'aap' : 'set'}\n🛡️ Admin: ${isAdmin ? 'aap' : 'no'}\n⏱️ ${new Date().toLocaleString('en-PK', { timeZone: 'Asia/Karachi' })}`);
+    }
+    case 'gcsetup': {
+      const s = getS(g);
+      s.antilink = true;
+      if (!s.rules) s.rules = '1. Izzat se baat karo\n2. Spam nahi\n3. Links allowed nahi\n4. Gali galoch mana hai';
+      logIt(g, `${pushname} ne gcsetup chalaya`);
+      return reply(`⚙️ *Group setup complete!*\n\n✅ Anti-link ON\n✅ Rules set\n\n📜 *Rules:*\n${s.rules}\n\n_${P()}grouprules se change karo._`);
+    }
+    case 'backup-grp': {
+      const s = getS(g);
+      const dump = Buffer.from(JSON.stringify({ group: g, settings: s, when: new Date().toISOString() }, null, 2));
+      await ctx.send(from, { document: dump, fileName: `group_backup_${Date.now()}.json`, mimetype: 'application/json' }, { quoted: ctx.m });
+      return;
+    }
+    case 'restore-grp': {
+      const doc = ctx.quoted?.message?.documentMessage;
+      if (!doc) return reply(`❌ Backup JSON file par reply karke ${P()}restore-grp likho.`);
+      try {
+        const { downloadMedia } = require('../lib/helpers');
+        const buf = await downloadMedia(doc, 'document');
+        const data = JSON.parse(buf.toString('utf8'));
+        if (data.settings) { settings.set(g, data.settings); return reply(`✅ *Group settings restore ho gayin!*\n\n🚫 Banned: ${data.settings.antiword?.length || 0}\n🔗 Anti-link: ${data.settings.antilink ? 'ON' : 'OFF'}`); }
+        return reply('❌ File me settings nahi milin.');
+      } catch { return reply('❌ Restore nahi ho saka.'); }
+    }
+    case 'gccsv': {
+      const act = activity.get(g);
+      if (!act || !act.size) return reply('❌ Abhi data nahi.');
+      const csv = 'user,messages\n' + [...act.entries()].map(([u, c]) => `${u},${c}`).join('\n');
+      return reply(`📊 *Group activity CSV*\n\n\`\`\`${csv.slice(0, 2000)}\`\`\``);
+    }
+    case 'grpreset': {
+      settings.delete(g); adminLog.delete(g); activity.delete(g); muted.delete(g); bots.delete(g);
+      return reply('🔄 *Group settings reset!* Sab defaults par.');
+    }
+    case 'pick': {
+      if (!isGroup) return reply('❌ Group me chalti hai.');
+      const names = (arg || '').split(',').map((s) => s.trim()).filter(Boolean);
+      if (names.length < 2) return reply(`❌ Format: ${P()}pick Ali, Bilal, Usman`);
+      return reply(`🎯 *Pick* — *${pick(names)}*`);
+    }
+    case 'absen': {
+      const act = activity.get(g);
+      const n = act ? act.size : 0;
+      return reply(`📋 *Attendance*\n\nActive members: *${n}*\n\n_(WhatsApp attendance tracking ke liye members ko message karna parta hai.)_`);
+    }
+    case 'opengc': {
+      const s = getS(g);
+      s.open = !s.open;
+      return reply(`🚪 *Group ${s.open ? 'OPEN ✅' : 'CLOSED 🔒'}*\n\n_Note: actual open/close WhatsApp settings se hota hai — ye flag save ho gaya._`);
+    }
+    case 'gcprotect': {
+      const s = getS(g);
+      s.antilink = true; s.antisticker = true; s.antiaudio = false; s.antivideo = false;
+      bots.add(g);
+      return reply('🛡️ *Group protection ON*\n\n✅ Anti-link\n✅ Anti-sticker\n✅ Anti-bot\n\n_Audio/video ke liye alag se on karo._');
+    }
+    default:
+      return reply('❓ Unknown group command');
+  }
+};
+
+/** Moderation hook — enforces the group settings on every message. */
+async function onMessage(ctx) {
+  const { text, from, isGroup, isAdmin, isOwner, senderNum, pushname } = ctx;
+  if (!isGroup) return;
+  const g = from;
+
+  // activity tracking
+  if (!activity.has(g)) activity.set(g, new Map());
+  const act = activity.get(g);
+  const key = pushname || senderNum || 'member';
+  act.set(key, (act.get(key) || 0) + 1);
+
+  if (isAdmin || isOwner) return; // admins exempt
+  const s = settings.get(g);
+  if (!s) return;
+
+  if (s.antiword?.length && text) {
+    const t = text.toLowerCase();
+    const hit = s.antiword.find((w) => t.includes(w));
+    if (hit) {
+      logIt(g, `antiword: ${key} — "${hit}"`);
+      await ctx.reply(`🚫 *${key}* — banned word use kiya: "${hit}"`);
+      return;
+    }
+  }
+  if (s.antilink && text && /(https?:\/\/|chat\.whatsapp\.com|wa\.me)/i.test(text)) {
+    logIt(g, `antilink: ${key}`);
+    await ctx.reply(`🔗 *${key}* — links allowed nahi hain.`);
+    return;
+  }
+  if (s.autoreply && text) {
+    const t = text.trim().toLowerCase();
+    const hit = Object.keys(s.autoreply).find((k) => t === k || t.startsWith(k + ' '));
+    if (hit) { await ctx.reply(s.autoreply[hit]); }
+  }
+}
+
+module.exports = {
+  commands: [
+    'pick', 'antiword', 'antisticker', 'grouprules', 'absen', 'inactive', 'opengc', 'antiaudio', 'antivideo',
+    'antilinkstrict', 'muteall', 'announce', 'autoapprove', 'adminlog', 'welcomecard', 'goodbyecard',
+    'autosticker', 'autoreply-grp', 'membercount', 'gcreport', 'topchat', 'antibot', 'gcprotect', 'gcaudit',
+    'adminping', 'gcsetup', 'backup-grp', 'restore-grp', 'gccsv', 'grpmood', 'gchelp', 'grpreset',
+    // extras that belong in this family
+    'gcmenu', 
+  ],
+  category: '👥 GROUP',
+  handler,
+  onMessage,
+};

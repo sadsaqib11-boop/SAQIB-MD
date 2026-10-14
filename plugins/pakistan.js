@@ -1,1 +1,215 @@
-LyoqCiAqIFBBS0lTVEFOIOKAlCBQSy1zcGVjaWZpYyBjb21tYW5kcyAocmF0ZXMsIGNyaWNrZXQsIHRyYWNraW5nLCBob2xpZGF5c+KApikKICovCmNvbnN0IGNvbmZpZyA9IHJlcXVpcmUoJy4uL2NvbmZpZycpOwpjb25zdCB7IGdldEpTT04sIGdldFRleHQsIHBpY2ssIHJhbmRJbnQgfSA9IHJlcXVpcmUoJy4uL2xpYi9oZWxwZXJzJyk7Cgpjb25zdCBQID0gKCkgPT4gY29uZmlnLlBSRUZJWDsKCmNvbnN0IFBLX0NJVElFUyA9IFsnS2FyYWNoaScsICdMYWhvcmUnLCAnSXNsYW1hYmFkJywgJ1Jhd2FscGluZGknLCAnRmFpc2FsYWJhZCcsICdNdWx0YW4nLCAnUGVzaGF3YXInLCAnUXVldHRhJywgJ0h5ZGVyYWJhZCcsICdTaWFsa290JywgJ0d1anJhbndhbGEnLCAnQmFoYXdhbHB1ciddOwpjb25zdCBQS19GT09EID0gWydCaXJ5YW5pJywgJ05paGFyaScsICdIYWxlZW0nLCAnQ2hhcGxpIEthYmFiJywgJ1NhamppJywgJ0thcmFoaScsICdQYXlhJywgJ0hhbGVlbScsICdBbG9vIEtlZW1hJywgJ0NoYW5hIENoYWF0JywgJ0dvbCBHYXBwYXknLCAnSmFsZWJpJ107CmNvbnN0IFBLX1RSQVZFTCA9IFsKICBbJ0h1bnphJywgJ0dpbGdpdC1CYWx0aXN0YW4g4oCUIEF0dGFiYWQgTGFrZSwgUmFrYXBvc2hpLCBCYWx0aXQgRm9ydC4gQmVzdDogQXByaWzigJNPY3RvYmVyLiddLAogIFsnU2thcmR1JywgJ0dpbGdpdC1CYWx0aXN0YW4g4oCUIFNoYW5ncmlsYSwgRGVvc2FpLCBLYXRwYW5hIGRlc2VydC4gQmVzdDogTWF54oCTU2VwdGVtYmVyLiddLAogIFsnU3dhdCcsICdLUEsg4oCUIEthbGFtLCBNYWxhbSBKYWJiYSwgTWFob2RhbmQgTGFrZS4gQmVzdDogTWFyY2jigJNPY3RvYmVyLiddLAogIFsnTXVycmVlJywgJ1B1bmphYiDigJQgTWFsbCBSb2FkLCBQYXRyaWF0YSwgS2FzaG1pciBQb2ludC4gQmVzdDogYWxsIHllYXIgKHNub3cgaW4gSmFuKS4nXSwKICBbJ05hcmFuJywgJ0tQSyDigJQgU2FpZi11bC1NYWxvb2ssIEJhYnVzYXIgVG9wLiBCZXN0OiBKdW5l4oCTU2VwdGVtYmVyLiddLAogIFsnR3dhZGFyJywgJ0JhbG9jaGlzdGFuIOKAlCBIYW1tZXJoZWFkLCBLdW5kIE1hbGlyLiBCZXN0OiBOb3ZlbWJlcuKAk0ZlYnJ1YXJ5LiddLAogIFsnRmFpcnkgTWVhZG93cycsICdHaWxnaXQg4oCUIE5hbmdhIFBhcmJhdCB2aWV3LiBCZXN0OiBNYXnigJNTZXB0ZW1iZXIuJ10sCiAgWydOZWVsdW0gVmFsbGV5JywgJ0FKSyDigJQgS2VyYW4sIFNoYXJkYSwgQXJhbmcgS2VsLiBCZXN0OiBBcHJpbOKAk09jdG9iZXIuJ10sCl07CmNvbnN0IFBLX1FVSVogPSBbCiAgWydQYWtpc3RhbiBrYSBzYWIgc2UgYmFyYSBzaGVoYXI/JywgJ0thcmFjaGknXSwKICBbJ1Bha2lzdGFuIGtpIHJhamRoYW5pPycsICdJc2xhbWFiYWQnXSwKICBbJ1NhYiBzZSB1bmNoYSBwYWhhZD8nLCAnSzIgKDg2MTFtKSddLAogIFsnUGFraXN0YW4ga2lzIHNhYWwgYXphYWQgaHVhPycsICcxOTQ3ICgxNCBBdWd1c3QpJ10sCiAgWydTYWIgc2UgbGFtYmkgZGFyeWE/JywgJ0luZHVzIChTaW5kaCknXSwKICBbJ1FhdW1pIHBob29sPycsICdDaGFtYmVsaSAoSmFzbWluZSknXSwKICBbJ1FhdW1pIGphYW53YXI/JywgJ01hcmtob3InXSwKICBbJ1NhYiBzZSBiYXJhIHNvb2JhaCAoYXJlYSk/JywgJ0JhbG9jaGlzdGFuJ10sCl07Cgpjb25zdCBoYW5kbGVyID0gYXN5bmMgKGN0eCkgPT4gewogIGNvbnN0IHsgY29tbWFuZCwgcmVwbHksIGFyZyB9ID0gY3R4OwoKICBzd2l0Y2ggKGNvbW1hbmQpIHsKICAgIC8qIC0tLS0tLS0tLS0tLS0tLS0gcmF0ZXMgLS0tLS0tLS0tLS0tLS0tLSAqLwogICAgY2FzZSAnZG9sbGFyJzogY2FzZSAnY3VycmVuY3kyJzogewogICAgICB0cnkgewogICAgICAgIGNvbnN0IGQgPSBhd2FpdCBnZXRKU09OKCdodHRwczovL29wZW4uZXItYXBpLmNvbS92Ni9sYXRlc3QvVVNEJyk7CiAgICAgICAgY29uc3QgciA9IGQucmF0ZXM7CiAgICAgICAgcmV0dXJuIHJlcGx5KGDwn5K1ICpDdXJyZW5jeSByYXRlcyAoMSBVU0QpKlxuXG7wn4e18J+HsCBQS1I6ICoke3IuUEtSfSpcbvCfh67wn4ezIElOUjogJHtyLklOUn1cbvCfh6bwn4eqIEFFRDogJHtyLkFFRH1cbvCfh7jwn4emIFNBUjogJHtyLlNBUn1cbvCfh6zwn4enIEdCUDogJHtyLkdCUH1cbvCfh6rwn4e6IEVVUjogJHtyLkVVUn1cblxuX1VwZGF0ZWQ6ICR7ZC50aW1lX2xhc3RfdXBkYXRlX3V0Yz8uc2xpY2UoNSwgMTYpfV9gKTsKICAgICAgfSBjYXRjaCB7CiAgICAgICAgY29uc3QgYyA9IGF3YWl0IGdldEpTT04oJ2h0dHBzOi8vY2RuLmpzZGVsaXZyLm5ldC9ucG0vQGZhd2F6YWhtZWQwL2N1cnJlbmN5LWFwaUBsYXRlc3QvdjEvY3VycmVuY2llcy91c2QuanNvbicpOwogICAgICAgIHJldHVybiByZXBseShg8J+StSAqMSBVU0QqXG5cbvCfh7Xwn4ewIFBLUjogKiR7Yy51c2QucGtyfSpcbvCfh6bwn4eqIEFFRDogJHtjLnVzZC5hZWR9XG7wn4e48J+HpiBTQVI6ICR7Yy51c2Quc2FyfVxu8J+HrPCfh6cgR0JQOiAke2MudXNkLmdicH1cblxuXyR7Yy5kYXRlfV9gKTsKICAgICAgfQogICAgfQogICAgY2FzZSAnZ29sZCc6IHsKICAgICAgdHJ5IHsKICAgICAgICBjb25zdCBnID0gYXdhaXQgZ2V0SlNPTignaHR0cHM6Ly9hcGkuZ29sZC1hcGkuY29tL3ByaWNlL1hBVScpOwogICAgICAgIGNvbnN0IHMgPSBhd2FpdCBnZXRKU09OKCdodHRwczovL2FwaS5nb2xkLWFwaS5jb20vcHJpY2UvWEFHJyk7CiAgICAgICAgY29uc3QgZnggPSBhd2FpdCBnZXRKU09OKCdodHRwczovL29wZW4uZXItYXBpLmNvbS92Ni9sYXRlc3QvVVNEJyk7CiAgICAgICAgY29uc3QgcGtyID0gZngucmF0ZXMuUEtSOwogICAgICAgIGNvbnN0IHRvbGFHID0gKGcucHJpY2UgLyAzMS4xMDM1KSAqIDExLjY2MzggKiBwa3I7CiAgICAgICAgY29uc3QgdG9sYVMgPSAocy5wcmljZSAvIDMxLjEwMzUpICogMTEuNjYzOCAqIHBrcjsKICAgICAgICByZXR1cm4gcmVwbHkoYPCfqpkgKkdvbGQgJiBTaWx2ZXIqXG5cbvCfpYcgR29sZDogJCR7TnVtYmVyKGcucHJpY2UpLnRvRml4ZWQoMil9L296XG4gICDiiYggKlBLUiAke01hdGgucm91bmQodG9sYUcpLnRvTG9jYWxlU3RyaW5nKCl9IC8gdG9sYSpcbvCfpYggU2lsdmVyOiAkJHtOdW1iZXIocy5wcmljZSkudG9GaXhlZCgyKX0vb3pcbiAgIOKJiCAqUEtSICR7TWF0aC5yb3VuZCh0b2xhUykudG9Mb2NhbGVTdHJpbmcoKX0gLyB0b2xhKlxuXG5fVVNEIHJhdGU6ICR7cGtyfV9cbl9JbnRlcm5hdGlvbmFsIHJhdGUgKyBjdXN0b21zL21ha2luZyBjaGFyZ2VzIGFsYWcgaG90ZSBoYWluLl9gKTsKICAgICAgfSBjYXRjaCB7IHJldHVybiByZXBseSgn4p2MIFJhdGVzIG5haGkgbWlsZS4gVGhvcmkgZGVyIGJhYWQgdHJ5IGthcm8uJyk7IH0KICAgIH0KICAgIGNhc2UgJ3BldHJvbCc6IHsKICAgICAgcmV0dXJuIHJlcGx5KGDim70gKlBldHJvbCBwcmljZXMgKFBha2lzdGFuKSpcblxuTGl2ZSByYXRlcyBPR1JBIGhhciAxNSBkaW4gdXBkYXRlIGthcnRhIGhhaS5cblxu8J+TjCBDdXJyZW50IHJhdGVzOiBodHRwczovL3d3dy5vZ3JhLm9yZy5wa1xuXG5fQXBuZSBzaGVoYXIga2UgcmF0ZSBrZSBsaXllICR7UCgpfW5ld3MgcGV0cm9sIHRyeSBrYXJvLl9gKTsKICAgIH0KICAgIGNhc2UgJ3BzeCc6IHsKICAgICAgdHJ5IHsKICAgICAgICBjb25zdCBkID0gYXdhaXQgZ2V0VGV4dCgnaHR0cHM6Ly9kcHMucHN4LmNvbS5way9pbmRpY2VzJyk7CiAgICAgICAgY29uc3QgbSA9IC9LU0UxMDBbXjAtOV0qKFswLTksXStcLlswLTldKykvLmV4ZWMoZCk7CiAgICAgICAgcmV0dXJuIHJlcGx5KGDwn5OIICpQU1gqXG5cbktTRS0xMDA6ICoke20gPyBtWzFdIDogJ2xpdmUgZGF0YSB1bmF2YWlsYWJsZSd9KlxuXG7wn5OKIERldGFpbDogaHR0cHM6Ly9kcHMucHN4LmNvbS5wa2ApOwogICAgICB9IGNhdGNoIHsgcmV0dXJuIHJlcGx5KCfinYwgUFNYIGRhdGEgbmFoaSBtaWxhLiBodHRwczovL2Rwcy5wc3guY29tLnBrIGRla2hvLicpOyB9CiAgICB9CgogICAgLyogLS0tLS0tLS0tLS0tLS0tLSBjcmlja2V0IC0tLS0tLS0tLS0tLS0tLS0gKi8KICAgIGNhc2UgJ3Bha2NyaWNrZXQnOiB7CiAgICAgIHRyeSB7CiAgICAgICAgY29uc3QgZCA9IGF3YWl0IGdldEpTT04oJ2h0dHBzOi8vYXBpLmNyaWNhcGkuY29tL3YxL2N1cnJlbnRNYXRjaGVzP2FwaWtleT0mb2Zmc2V0PTAnKTsKICAgICAgICByZXR1cm4gcmVwbHkoYPCfj48gKlBha2lzdGFuIGNyaWNrZXQqXG5cbkxpdmUgc2NvcmVzOiBodHRwczovL3d3dy5lc3BuY3JpY2luZm8uY29tL3RlYW0vcGFraXN0YW4tN1xuXG5fUENiL1BDQiBzY2hlZHVsZSBrZSBsaXllICR7UCgpfXBrbmV3cyBjcmlja2V0X2ApOwogICAgICB9IGNhdGNoIHsKICAgICAgICByZXR1cm4gcmVwbHkoYPCfj48gKlBha2lzdGFuIGNyaWNrZXQqXG5cbvCfk4ogTGl2ZSBzY29yZSAmIHNjaGVkdWxlOlxuaHR0cHM6Ly93d3cuZXNwbmNyaWNpbmZvLmNvbS90ZWFtL3Bha2lzdGFuLTdcblxuX1BDQiBmaXh0dXJlczogaHR0cHM6Ly93d3cucGNiLmNvbS5wa19gKTsKICAgICAgfQogICAgfQogICAgY2FzZSAncHNsJzogewogICAgICByZXR1cm4gcmVwbHkoYPCfj4YgKlBTTCAoUGFraXN0YW4gU3VwZXIgTGVhZ3VlKSpcblxuNiB0ZWFtczogS2FyYWNoaSBLaW5ncywgTGFob3JlIFFhbGFuZGFycywgSXNsYW1hYmFkIFVuaXRlZCwgUGVzaGF3YXIgWmFsbWksIFF1ZXR0YSBHbGFkaWF0b3JzLCBNdWx0YW4gU3VsdGFucy5cblxu8J+TiiBQb2ludHMgdGFibGUgJiBmaXh0dXJlczogaHR0cHM6Ly93d3cucHNsLXQyMC5jb21cblxuX1NlYXNvbiBhYW0gdG9yIHBhciBGZWLigJNNYXJjaCBob3RhIGhhaS5fYCk7CiAgICB9CgogICAgLyogLS0tLS0tLS0tLS0tLS0tLSB0cmFja2luZyAtLS0tLS0tLS0tLS0tLS0tICovCiAgICBjYXNlICd0cmFjayc6IHsKICAgICAgY29uc3Qgbm8gPSAoYXJnIHx8ICcnKS5yZXBsYWNlKC9ccy9nLCAnJyk7CiAgICAgIGlmICghbm8pIHJldHVybiByZXBseShg4p2MIFRyYWNraW5nIG51bWJlciBkby4gRXhhbXBsZTogJHtQKCl9dHJhY2sgMTIzNDU2Nzg5YCk7CiAgICAgIHJldHVybiByZXBseShg8J+TpiAqQ291cmllciB0cmFja2luZyDigJQgJHtub30qXG5cbvCfmpogVENTOiBodHRwczovL3d3dy50Y3NleHByZXNzLmNvbS90cmFjay8ke25vfVxu8J+amiBMZW9wYXJkczogaHR0cHM6Ly93d3cubGVvcGFyZHNjb3VyaWVyLmNvbS90cmFja2luZy8ke25vfVxu8J+amiBNJlA6IGh0dHBzOi8vd3d3Lm11bHBoaWxvZy5jb20vdHJhY2tpbmcvJHtub31cbvCfmpogUGFraXN0YW4gUG9zdDogaHR0cHM6Ly9lcC5nb3YucGsvdHJhY2svJHtub31cblxuX0tvaSBiaGkgbGluayBraG9sbyDigJQgc3RhdHVzIGRpa2ggamF5ZWdhLl9gKTsKICAgIH0KICAgIGNhc2UgJ3Rjcyc6IHsKICAgICAgY29uc3Qgbm8gPSAoYXJnIHx8ICcnKS5yZXBsYWNlKC9ccy9nLCAnJyk7CiAgICAgIGlmICghbm8pIHJldHVybiByZXBseShg4p2MIFRyYWNraW5nIG51bWJlciBkby4gRXhhbXBsZTogJHtQKCl9dGNzIDEyMzQ1Njc4OWApOwogICAgICByZXR1cm4gcmVwbHkoYPCfk6YgKlRDUyDigJQgJHtub30qXG5cbvCflJcgaHR0cHM6Ly93d3cudGNzZXhwcmVzcy5jb20vdHJhY2svJHtub31cblxuX0lzIGxpbmsgcGFyIHN0YXR1cyBkZWtoIGxvLl9gKTsKICAgIH0KICAgIGNhc2UgJ2xlb3BhcmRzJzogewogICAgICBjb25zdCBubyA9IChhcmcgfHwgJycpLnJlcGxhY2UoL1xzL2csICcnKTsKICAgICAgaWYgKCFubykgcmV0dXJuIHJlcGx5KGDinYwgVHJhY2tpbmcgbnVtYmVyIGRvLiBFeGFtcGxlOiAke1AoKX1sZW9wYXJkcyAxMjM0NTY3ODlgKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5OmICpMZW9wYXJkcyDigJQgJHtub30qXG5cbvCflJcgaHR0cHM6Ly93d3cubGVvcGFyZHNjb3VyaWVyLmNvbS90cmFja2luZy8ke25vfWApOwogICAgfQogICAgY2FzZSAnZWNoYWxsYW4nOiB7CiAgICAgIGNvbnN0IG5vID0gKGFyZyB8fCAnJykucmVwbGFjZSgvXHMvZywgJycpOwogICAgICByZXR1cm4gcmVwbHkoYPCfmpcgKkUtQ2hhbGxhbiBjaGVjaypcblxuJHtubyA/IGDwn5OMIFZlaGljbGUvQ05JQzogKiR7bm99KlxuXG5gIDogJyd98J+UlyBQdW5qYWI6IGh0dHBzOi8vZWNoYWxsYW4ucHVuamFiLmdvdi5wa1xu8J+UlyBTaW5kaDogaHR0cHM6Ly9lY2hhbGxhbi5zaW5kaHBvbGljZS5nb3YucGtcbvCflJcgSUNUOiBodHRwczovL2ljdHAudHJhZmZpYy5wa1xuXG5fTnVtYmVyIGRhYWwga2FyIGNoZWNrIGthcm8uX2ApOwogICAgfQogICAgY2FzZSAncHRhJzogewogICAgICBjb25zdCBpbWVpID0gKGFyZyB8fCAnJykucmVwbGFjZSgvW14wLTldL2csICcnKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5OxICpQVEEgZGV2aWNlIGNoZWNrKlxuXG4ke2ltZWkgPyBgSU1FSTogKiR7aW1laX0qXG5cbmAgOiAnJ33wn5SXIGh0dHBzOi8vZGlyYnMucHRhLmdvdi5way9kcnNcblxuX0lNRUkgZGlhbCBrYXJvOiAqIzA2IyDigJQgcGhpciBzaXRlIHBhciBkYWFsby5fYCk7CiAgICB9CiAgICBjYXNlICdzaW1pbmZvJzogewogICAgICBjb25zdCBubyA9IChhcmcgfHwgJycpLnJlcGxhY2UoL1teMC05XS9nLCAnJyk7CiAgICAgIGNvbnN0IG5ldCA9IG5vLnN0YXJ0c1dpdGgoJzAzMCcpIHx8IG5vLnN0YXJ0c1dpdGgoJzAzMScpIHx8IG5vLnN0YXJ0c1dpdGgoJzAzMicpID8gJ0phenogLyBab25nIC8gV2FyaWQnIDogbm8uc3RhcnRzV2l0aCgnMDMzJykgPyAnVWZvbmUnIDogbm8uc3RhcnRzV2l0aCgnMDM0JykgPyAnVGVsZW5vcicgOiBuby5zdGFydHNXaXRoKCcwMzUnKSA/ICdTQ09NJyA6ICfigJQnOwogICAgICByZXR1cm4gcmVwbHkoYPCfk7YgKlNJTSBpbmZvKlxuXG4ke25vID8gYE51bWJlcjogJHtub31cbk5ldHdvcms6ICoke25ldH0qXG5gIDogJyd9XG7wn5OMIE93bmVyIGRldGFpbHMgUFRBL1NJTSBkYXRhYmFzZSBzZSBjaGVjayBob3RpIGhhaW4g4oCUIHB1YmxpYyBBUEkgbmFoaSBoYWkuYCk7CiAgICB9CgogICAgLyogLS0tLS0tLS0tLS0tLS0tLSBkYWlseSBsaWZlIC0tLS0tLS0tLS0tLS0tLS0gKi8KICAgIGNhc2UgJ3BrbmV3cyc6IHsKICAgICAgdHJ5IHsKICAgICAgICBjb25zdCB4bWwgPSBhd2FpdCBnZXRUZXh0KCdodHRwczovL25ld3MuZ29vZ2xlLmNvbS9yc3M/aGw9ZW4tUEsmZ2w9UEsmY2VpZD1QSzplbicpOwogICAgICAgIGNvbnN0IGl0ZW1zID0gWy4uLnhtbC5tYXRjaEFsbCgvPGl0ZW0+KFtcc1xTXSo/KTxcL2l0ZW0+L2cpXS5zbGljZSgwLCA2KTsKICAgICAgICBjb25zdCBvdXQgPSBpdGVtcy5tYXAoKG0sIGkpID0+IHsKICAgICAgICAgIGNvbnN0IHQgPSAoLzx0aXRsZT4oW1xzXFNdKj8pPFwvdGl0bGU+Ly5leGVjKG1bMV0pIHx8IFtdKVsxXSB8fCAnJzsKICAgICAgICAgIHJldHVybiBgJHtpICsgMX0uICR7dC5yZXBsYWNlKC88IVxbQ0RBVEFcW3xcXVxdPi9nLCAnJykucmVwbGFjZSgvJmFtcDsvZywgJyYnKS50cmltKCl9YDsKICAgICAgICB9KS5qb2luKCdcbicpOwogICAgICAgIHJldHVybiByZXBseShg8J+TsCAqUGFraXN0YW4gbmV3cypcblxuJHtvdXR9YCk7CiAgICAgIH0gY2F0Y2ggeyByZXR1cm4gcmVwbHkoJ+KdjCBOZXdzIG5haGkgbWlsaS4nKTsgfQogICAgfQogICAgY2FzZSAncGtob2xpZGF5JzogewogICAgICAvLyBuYWdlci5kYXRlIGhhcyBubyBQSyBkYXRhICgyMDQpLCBzbyB1c2UgdGhlIGZpeGVkIG5hdGlvbmFsIGNhbGVuZGFyLgogICAgICBjb25zdCBsaXN0ID0gWwogICAgICAgIFsnMjMgTWFyY2gnLCAnUGFraXN0YW4gRGF5J10sCiAgICAgICAgWycxIE1heScsICdMYWJvdXIgRGF5J10sCiAgICAgICAgWycxNCBBdWd1c3QnLCAnSW5kZXBlbmRlbmNlIERheSddLAogICAgICAgIFsnNiBTZXB0ZW1iZXInLCAnRGVmZW5jZSBEYXknXSwKICAgICAgICBbJzkgTm92ZW1iZXInLCAnSXFiYWwgRGF5J10sCiAgICAgICAgWycyNSBEZWNlbWJlcicsICdRdWFpZC1lLUF6YW0gRGF5J10sCiAgICAgICAgWydFaWQtdWwtRml0cicsICdSYW1hZGFuIGtlIGJhYWQgKGNoYWFuZCBwYXIgZGVwZW5kKSddLAogICAgICAgIFsnRWlkLXVsLUF6aGEnLCAnWmlsLUhpamphaCAxMCAoY2hhYW5kIHBhciBkZXBlbmQpJ10sCiAgICAgICAgWycxMiBSYWJpLXVsLUF3d2FsJywgJ0VpZCBNaWxhZC11bi1OYWJpIChjaGFhbmQgcGFyIGRlcGVuZCknXSwKICAgICAgICBbJznigJMxMCBNdWhhcnJhbScsICdBc2h1cmEgKGNoYWFuZCBwYXIgZGVwZW5kKSddLAogICAgICBdOwogICAgICByZXR1cm4gcmVwbHkoYPCfl5PvuI8gKlBha2lzdGFuIGhvbGlkYXlzKlxuXG5gICsgbGlzdC5tYXAoKHgpID0+IGDigKIgKiR7eFswXX0qIOKAlCAke3hbMV19YCkuam9pbignXG4nKSArIGBcblxuX0lzbGFtaWMgZGF0ZXMgY2hhYW5kIGtlIGhpc2FhYiBzZSBiYWRhbHRpIGhhaW4uX2ApOwogICAgfQogICAgY2FzZSAnbG9hZHNoZWRkaW5nJzogY2FzZSAnbGlnaHQnOiB7CiAgICAgIGNvbnN0IGNpdHkgPSBhcmcgfHwgJ0thcmFjaGknOwogICAgICByZXR1cm4gcmVwbHkoYPCfkqEgKkxvYWRzaGVkZGluZyDigJQgJHtjaXR5fSpcblxu8J+TjCBTY2hlZHVsZSBhcG5lIERJU0NPIHNlIGNoZWNrIGthcm86XG7igKIgSy1FbGVjdHJpYzogaHR0cHM6Ly93d3cua2UuY29tLnBrXG7igKIgTEVTQ086IGh0dHBzOi8vbGVzY28uZ292LnBrXG7igKIgSUVTQ086IGh0dHBzOi8vaWVzY28uY29tLnBrXG7igKIgR0VQQ086IGh0dHBzOi8vZ2VwY28uY29tLnBrXG7igKIgUEVTQ086IGh0dHBzOi8vcGVzY28uZ292LnBrXG5cbl9UaXA6ICR7UCgpfWFxaSAke2NpdHl9IOKAlCB3ZWF0aGVyIGJoaSBkZWtoIGxvLl9gKTsKICAgIH0KICAgIGNhc2UgJ2FxaSc6IHsKICAgICAgY29uc3QgY2l0eSA9IGFyZyB8fCAnS2FyYWNoaSc7CiAgICAgIHRyeSB7CiAgICAgICAgY29uc3QgZyA9IGF3YWl0IGdldEpTT04oYGh0dHBzOi8vZ2VvY29kaW5nLWFwaS5vcGVuLW1ldGVvLmNvbS92MS9zZWFyY2g/bmFtZT0ke2VuY29kZVVSSUNvbXBvbmVudChjaXR5KX0mY291bnQ9MWApOwogICAgICAgIGNvbnN0IGMgPSBnLnJlc3VsdHM/LlswXTsKICAgICAgICBpZiAoIWMpIHRocm93IG5ldyBFcnJvcignbm8gY2l0eScpOwogICAgICAgIGNvbnN0IGEgPSBhd2FpdCBnZXRKU09OKGBodHRwczovL2Fpci1xdWFsaXR5LWFwaS5vcGVuLW1ldGVvLmNvbS92MS9haXItcXVhbGl0eT9sYXRpdHVkZT0ke2MubGF0aXR1ZGV9JmxvbmdpdHVkZT0ke2MubG9uZ2l0dWRlfSZjdXJyZW50PXBtMTAscG0yXzUsdXNfYXFpYCk7CiAgICAgICAgY29uc3QgcSA9IGEuY3VycmVudDsKICAgICAgICBjb25zdCBsdmwgPSBxLnVzX2FxaSA8PSA1MCA/ICfwn5+iIEdvb2QnIDogcS51c19hcWkgPD0gMTAwID8gJ/Cfn6EgTW9kZXJhdGUnIDogcS51c19hcWkgPD0gMTUwID8gJ/Cfn6AgVW5oZWFsdGh5IChzZW5zaXRpdmUpJyA6IHEudXNfYXFpIDw9IDIwMCA/ICfwn5S0IFVuaGVhbHRoeScgOiAn8J+foyBWZXJ5IHVuaGVhbHRoeSc7CiAgICAgICAgcmV0dXJuIHJlcGx5KGDwn4yr77iPICpBaXIgcXVhbGl0eSDigJQgJHtjLm5hbWV9KlxuXG5BUUk6ICoke01hdGgucm91bmQocS51c19hcWkpfSogJHtsdmx9XG5QTTIuNTogJHtxLnBtMl81fSDCtWcvbcKzXG5QTTEwOiAke3EucG0xMH0gwrVnL23Cs1xuXG5fTWFzayBwZWhubyBhZ2FyIEFRSSAxNTArIGhvLl9gKTsKICAgICAgfSBjYXRjaCB7IHJldHVybiByZXBseSgn4p2MIENpdHkgbmFoaSBtaWxpLicpOyB9CiAgICB9CiAgICBjYXNlICdlYXJ0aHF1YWtlMic6IGNhc2UgJ3F1YWtlJzogewogICAgICBjb25zdCBkID0gYXdhaXQgZ2V0SlNPTignaHR0cHM6Ly9lYXJ0aHF1YWtlLnVzZ3MuZ292L2VhcnRocXVha2VzL2ZlZWQvdjEuMC9zdW1tYXJ5L3NpZ25pZmljYW50X3dlZWsuZ2VvanNvbicpOwogICAgICBjb25zdCBxID0gKGQuZmVhdHVyZXMgfHwgW10pLnNsaWNlKDAsIDQpOwogICAgICBpZiAoIXEubGVuZ3RoKSByZXR1cm4gcmVwbHkoJ+KchSBJcyBoYWZ0ZSBrb2kgYmFyYSB6YWx6YWxhIG5haGkgYWF5YS4nKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4yNICpSZWNlbnQgZWFydGhxdWFrZXMqXG5cbmAgKyBxLm1hcCgoeCkgPT4gYOKAoiBNJHt4LnByb3BlcnRpZXMubWFnfSDigJQgJHt4LnByb3BlcnRpZXMucGxhY2V9XG4gIF8ke25ldyBEYXRlKHgucHJvcGVydGllcy50aW1lKS50b1VUQ1N0cmluZygpLnNsaWNlKDUsIDIyKX1fYCkuam9pbignXG4nKSk7CiAgICB9CgogICAgLyogLS0tLS0tLS0tLS0tLS0tLSBQSyBjb250ZW50IC0tLS0tLS0tLS0tLS0tLS0gKi8KICAgIGNhc2UgJ3BrZm9vZCc6IHsKICAgICAgY29uc3QgZGlzaCA9IGFyZyB8fCBwaWNrKFBLX0ZPT0QpOwogICAgICByZXR1cm4gcmVwbHkoYPCfjZsgKiR7ZGlzaH0qXG5cbvCfk4wgUmVjaXBlOiBodHRwczovL3d3dy5mb29kLmNvbS9zZWFyY2g/cT0ke2VuY29kZVVSSUNvbXBvbmVudChkaXNoICsgJyBwYWtpc3RhbmknKX1cbvCfk4wgVmlkZW86IFlvdVR1YmUgcGFyICIke2Rpc2h9IHJlY2lwZSIgc2VhcmNoIGthcm8g4oCUICR7UCgpfXl0dmlkZW8gPGxpbms+IHNlIGRsIGJoaSBobyBqYXllZ2EuYCk7CiAgICB9CiAgICBjYXNlICdwa3RyYXZlbCc6IHsKICAgICAgY29uc3QgdCA9IGFyZyA/IFBLX1RSQVZFTC5maW5kKCh4KSA9PiB4WzBdLnRvTG93ZXJDYXNlKCkuaW5jbHVkZXMoYXJnLnRvTG93ZXJDYXNlKCkpKSB8fCBwaWNrKFBLX1RSQVZFTCkgOiBwaWNrKFBLX1RSQVZFTCk7CiAgICAgIHJldHVybiByZXBseShg8J+PlO+4jyAqJHt0WzBdfSpcblxuJHt0WzFdfVxuXG7wn5OMICR7UCgpfXBrbmV3cyDigJQgdHJhdmVsIHVwZGF0ZXMga2UgbGl5ZWApOwogICAgfQogICAgY2FzZSAnazInOiB7CiAgICAgIHJldHVybiByZXBseShg8J+PlO+4jyAqSzIg4oCUIENob2dvcmkqXG5cbvCfk48gSGVpZ2h0OiA4LDYxMSBtICh3b3JsZCAjMilcbvCfk40gS2FyYWtvcmFtIHJhbmdlLCBHaWxnaXQtQmFsdGlzdGFuXG7wn6WHIEZpcnN0IGFzY2VudDogMTk1NCAoSXRhbGlhbiBleHBlZGl0aW9uKVxu4pig77iPIFdvcmxkJ3MgMm5kIGRlYWRsaWVzdCA4MDAwZXJcblxuX1RpcDogJHtQKCl9cGt0cmF2ZWwgc2thcmR1IOKAlCBxYXJlZWIga2Ugc3BvdHNfYCk7CiAgICB9CiAgICBjYXNlICdwa3F1aXonOiB7CiAgICAgIGNvbnN0IFtxLCBhXSA9IHBpY2soUEtfUVVJWik7CiAgICAgIHJldHVybiByZXBseShg8J+HtfCfh7AgKlBha2lzdGFuIFF1aXoqXG5cbuKdkyAke3F9XG5cbnx8SmF3YWI6ICR7YX18fGApOwogICAgfQogICAgY2FzZSAndXJkdXdvcmQnOiB7CiAgICAgIGNvbnN0IHdvcmRzID0gW1snQ2hhc2htLWUtYmFkLWRhdXInLCAnTmF6YXItZS1iYWQgc2UgYmFjaGFuZSBraSBkdWEnXSwgWydEaWwtam9pJywgJ0RpbCBrbyBraHVzaCBrYXJuYSddLCBbJ0todXNoLW51bWEnLCAnQWNoYSBkaWtobmUgd2FsYSddLCBbJ1Nhcmdhcm1pJywgJ0pvc2ggYXVyIGNodXN0aSddLCBbJ1dhcWFyJywgJ0F6YWFtYXQgYXVyIHNhbmplZWRnaSddLCBbJ0ZhcmFhZ2hhdCcsICdGYWFyaWdoIHdhcXQnXSwgWydUYWtobGVlcScsICdOYXlpIGNoZWV6IGJhbmFuYSddLCBbJ01laGFyYmFuaScsICdCaGFsYWkgYXVyIGx1dGFmJ11dOwogICAgICBjb25zdCB3ID0gcGljayh3b3Jkcyk7CiAgICAgIHJldHVybiByZXBseShg8J+TliAqVXJkdSBsYWZ6KlxuXG4qJHt3WzBdfSpcbl8ke3dbMV19X2ApOwogICAgfQogICAgY2FzZSAnYXphZGknOiB7CiAgICAgIGNvbnN0IHRhcmdldCA9IG5ldyBEYXRlKCcyMDI3LTA4LTE0VDAwOjAwOjAwKzA1OjAwJyk7CiAgICAgIGNvbnN0IGRheXMgPSBNYXRoLmNlaWwoKHRhcmdldCAtIERhdGUubm93KCkpIC8gODY0MDAwMDApOwogICAgICByZXR1cm4gcmVwbHkoYPCfh7Xwn4ewICpKYXNobi1lLUF6YWRpKlxuXG4xNCBBdWd1c3QgMTk0NyDigJQgUGFraXN0YW4gYXphYWQgaHVhLlxuXG7ij7MgQWdsaSAxNCBBdWd1c3Q6ICoke2RheXN9IGRpbiBiYXFpKlxuXG5fUXVhaWQga2EgZmFybWFuOiDigJxLYWFtLCBrYWFtIGF1ciBzaXJmIGthYW0u4oCdX2ApOwogICAgfQogICAgY2FzZSAncG9saW8nOiB7CiAgICAgIHJldHVybiByZXBseShg8J+SiSAqUG9saW8gY2FtcGFpZ24qXG5cbvCfk4wgQXBuZSBhcmVhIGtlIGNhbXBhaWduIGRhdGVzIGtlIGxpeWU6XG7igKIgTkVPQzogaHR0cHM6Ly93d3cuZW5kcG9saW8uY29tLnBrXG7igKIgSGVscGxpbmU6IDExNjZcblxuX0JhY2hvbiBrbyBoYW1lc2hhIHBvbGlvIGRyb3BzIHBpbGFvIOKAlCB5ZSBtdWxrIGtpIHppbW1lZGFyaSBoYWkuX2ApOwogICAgfQogICAgY2FzZSAnbGljZW5zZSc6IHsKICAgICAgcmV0dXJuIHJlcGx5KGDwn6qqICpEcml2aW5nIGxpY2Vuc2UgKFB1bmphYikqXG5cbjEuIExlYXJuZXIgcGVybWl0OiBodHRwczovL2RsaW1zLnB1bmphYi5nb3YucGtcbjIuIE9ubGluZSB0ZXN0IHBhc3Mga2Fyb1xuMy4gTGVhcm5lciA0MiBkaW4gYmFhZCBwZXJtYW5lbnQga2UgbGl5ZSBhcHBseVxuNC4gRmVlczogflBLUiAyLDUwMCAobGVhcm5lciArIHBlcm1hbmVudClcblxuX1NpbmRoOiBodHRwczovL2Rscy5zaW5kaC5nb3YucGtfYCk7CiAgICB9CiAgICBjYXNlICd2aXNhJzogewogICAgICBjb25zdCBjID0gYXJnIHx8ICcnOwogICAgICBpZiAoIWMpIHJldHVybiByZXBseShg4p2MIENvdW50cnkgZG8uIEV4YW1wbGU6ICR7UCgpfXZpc2EgVUFFYCk7CiAgICAgIHJldHVybiByZXBseShg8J+bgiAqVmlzYSDigJQgJHtjfSpcblxu8J+TjCBSZXF1aXJlbWVudHMgZ2VuZXJhbGx5OiBwYXNzcG9ydCAoNisgbW9udGhzKSwgcGhvdG8sIGJhbmsgc3RhdGVtZW50LCBpdGluZXJhcnkuXG7wn5SXIEFwcGx5OiBzZWFyY2ggIm9mZmljaWFsICR7Y30gdmlzYSBhcHBsaWNhdGlvbiJcblxuXyR7UCgpfXBrbmV3cyB2aXNhIOKAlCBsYXRlc3QgdXBkYXRlc19gKTsKICAgIH0KICAgIGRlZmF1bHQ6CiAgICAgIHJldHVybiByZXBseSgn4p2TIFVua25vd24gUGFraXN0YW4gY29tbWFuZCcpOwogIH0KfTsKCm1vZHVsZS5leHBvcnRzID0gewogIGNvbW1hbmRzOiBbCiAgICAnZG9sbGFyJywgJ2dvbGQnLCAncGV0cm9sJywgJ3BzeCcsICdwYWtjcmlja2V0JywgJ3BzbCcsICd0cmFjaycsICd0Y3MnLCAnbGVvcGFyZHMnLCAnZWNoYWxsYW4nLCAncHRhJywKICAgICdzaW1pbmZvJywgJ3BrbmV3cycsICdwa2hvbGlkYXknLCAnbG9hZHNoZWRkaW5nJywgJ2FxaScsICdwa2Zvb2QnLCAncGt0cmF2ZWwnLCAnazInLCAncGtxdWl6JywKICAgICd1cmR1d29yZCcsICdhemFkaScsICdwb2xpbycsICdsaWNlbnNlJywgJ3Zpc2EnLAogICAgLy8gZXh0cmFzIHRoYXQgYmVsb25nIGluIHRoaXMgZmFtaWx5CiAgICAnY3VycmVuY3kyJywgJ3F1YWtlJywgJ2VhcnRocXVha2UyJywgJ2xpZ2h0JywKICBdLAogIGNhdGVnb3J5OiAn8J+HtfCfh7AgUEFLSVNUQU4nLAogIGhhbmRsZXIsCn07Cg==
+/**
+ * PAKISTAN — PK-specific commands (rates, cricket, tracking, holidays…)
+ */
+const config = require('../config');
+const { getJSON, getText, pick, randInt } = require('../lib/helpers');
+
+const P = () => config.PREFIX;
+
+const PK_CITIES = ['Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad', 'Multan', 'Peshawar', 'Quetta', 'Hyderabad', 'Sialkot', 'Gujranwala', 'Bahawalpur'];
+const PK_FOOD = ['Biryani', 'Nihari', 'Haleem', 'Chapli Kabab', 'Sajji', 'Karahi', 'Paya', 'Haleem', 'Aloo Keema', 'Chana Chaat', 'Gol Gappay', 'Jalebi'];
+const PK_TRAVEL = [
+  ['Hunza', 'Gilgit-Baltistan — Attabad Lake, Rakaposhi, Baltit Fort. Best: April–October.'],
+  ['Skardu', 'Gilgit-Baltistan — Shangrila, Deosai, Katpana desert. Best: May–September.'],
+  ['Swat', 'KPK — Kalam, Malam Jabba, Mahodand Lake. Best: March–October.'],
+  ['Murree', 'Punjab — Mall Road, Patriata, Kashmir Point. Best: all year (snow in Jan).'],
+  ['Naran', 'KPK — Saif-ul-Malook, Babusar Top. Best: June–September.'],
+  ['Gwadar', 'Balochistan — Hammerhead, Kund Malir. Best: November–February.'],
+  ['Fairy Meadows', 'Gilgit — Nanga Parbat view. Best: May–September.'],
+  ['Neelum Valley', 'AJK — Keran, Sharda, Arang Kel. Best: April–October.'],
+];
+const PK_QUIZ = [
+  ['Pakistan ka sab se bara shehar?', 'Karachi'],
+  ['Pakistan ki rajdhani?', 'Islamabad'],
+  ['Sab se uncha pahad?', 'K2 (8611m)'],
+  ['Pakistan kis saal azaad hua?', '1947 (14 August)'],
+  ['Sab se lambi darya?', 'Indus (Sindh)'],
+  ['Qaumi phool?', 'Chambeli (Jasmine)'],
+  ['Qaumi jaanwar?', 'Markhor'],
+  ['Sab se bara soobah (area)?', 'Balochistan'],
+];
+
+const handler = async (ctx) => {
+  const { command, reply, arg } = ctx;
+
+  switch (command) {
+    /* ---------------- rates ---------------- */
+    case 'dollar': case 'currency2': {
+      try {
+        const d = await getJSON('https://open.er-api.com/v6/latest/USD');
+        const r = d.rates;
+        return reply(`💵 *Currency rates (1 USD)*\n\n🇵🇰 PKR: *${r.PKR}*\n🇮🇳 INR: ${r.INR}\n🇦🇪 AED: ${r.AED}\n🇸🇦 SAR: ${r.SAR}\n🇬🇧 GBP: ${r.GBP}\n🇪🇺 EUR: ${r.EUR}\n\n_Updated: ${d.time_last_update_utc?.slice(5, 16)}_`);
+      } catch {
+        const c = await getJSON('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
+        return reply(`💵 *1 USD*\n\n🇵🇰 PKR: *${c.usd.pkr}*\n🇦🇪 AED: ${c.usd.aed}\n🇸🇦 SAR: ${c.usd.sar}\n🇬🇧 GBP: ${c.usd.gbp}\n\n_${c.date}_`);
+      }
+    }
+    case 'gold': {
+      try {
+        const g = await getJSON('https://api.gold-api.com/price/XAU');
+        const s = await getJSON('https://api.gold-api.com/price/XAG');
+        const fx = await getJSON('https://open.er-api.com/v6/latest/USD');
+        const pkr = fx.rates.PKR;
+        const tolaG = (g.price / 31.1035) * 11.6638 * pkr;
+        const tolaS = (s.price / 31.1035) * 11.6638 * pkr;
+        return reply(`🪙 *Gold & Silver*\n\n🥇 Gold: $${Number(g.price).toFixed(2)}/oz\n   ≈ *PKR ${Math.round(tolaG).toLocaleString()} / tola*\n🥈 Silver: $${Number(s.price).toFixed(2)}/oz\n   ≈ *PKR ${Math.round(tolaS).toLocaleString()} / tola*\n\n_USD rate: ${pkr}_\n_International rate + customs/making charges alag hote hain._`);
+      } catch { return reply('❌ Rates nahi mile. Thori der baad try karo.'); }
+    }
+    case 'petrol': {
+      return reply(`⛽ *Petrol prices (Pakistan)*\n\nLive rates OGRA har 15 din update karta hai.\n\n📌 Current rates: https://www.ogra.org.pk\n\n_Apne shehar ke rate ke liye ${P()}news petrol try karo._`);
+    }
+    case 'psx': {
+      try {
+        const d = await getText('https://dps.psx.com.pk/indices');
+        const m = /KSE100[^0-9]*([0-9,]+\.[0-9]+)/.exec(d);
+        return reply(`📈 *PSX*\n\nKSE-100: *${m ? m[1] : 'live data unavailable'}*\n\n📊 Detail: https://dps.psx.com.pk`);
+      } catch { return reply('❌ PSX data nahi mila. https://dps.psx.com.pk dekho.'); }
+    }
+
+    /* ---------------- cricket ---------------- */
+    case 'pakcricket': {
+      try {
+        const d = await getJSON('https://api.cricapi.com/v1/currentMatches?apikey=&offset=0');
+        return reply(`🏏 *Pakistan cricket*\n\nLive scores: https://www.espncricinfo.com/team/pakistan-7\n\n_PCb/PCB schedule ke liye ${P()}pknews cricket_`);
+      } catch {
+        return reply(`🏏 *Pakistan cricket*\n\n📊 Live score & schedule:\nhttps://www.espncricinfo.com/team/pakistan-7\n\n_PCB fixtures: https://www.pcb.com.pk_`);
+      }
+    }
+    case 'psl': {
+      return reply(`🏆 *PSL (Pakistan Super League)*\n\n6 teams: Karachi Kings, Lahore Qalandars, Islamabad United, Peshawar Zalmi, Quetta Gladiators, Multan Sultans.\n\n📊 Points table & fixtures: https://www.psl-t20.com\n\n_Season aam tor par Feb–March hota hai._`);
+    }
+
+    /* ---------------- tracking ---------------- */
+    case 'track': {
+      const no = (arg || '').replace(/\s/g, '');
+      if (!no) return reply(`❌ Tracking number do. Example: ${P()}track 123456789`);
+      return reply(`📦 *Courier tracking — ${no}*\n\n🚚 TCS: https://www.tcsexpress.com/track/${no}\n🚚 Leopards: https://www.leopardscourier.com/tracking/${no}\n🚚 M&P: https://www.mulphilog.com/tracking/${no}\n🚚 Pakistan Post: https://ep.gov.pk/track/${no}\n\n_Koi bhi link kholo — status dikh jayega._`);
+    }
+    case 'tcs': {
+      const no = (arg || '').replace(/\s/g, '');
+      if (!no) return reply(`❌ Tracking number do. Example: ${P()}tcs 123456789`);
+      return reply(`📦 *TCS — ${no}*\n\n🔗 https://www.tcsexpress.com/track/${no}\n\n_Is link par status dekh lo._`);
+    }
+    case 'leopards': {
+      const no = (arg || '').replace(/\s/g, '');
+      if (!no) return reply(`❌ Tracking number do. Example: ${P()}leopards 123456789`);
+      return reply(`📦 *Leopards — ${no}*\n\n🔗 https://www.leopardscourier.com/tracking/${no}`);
+    }
+    case 'echallan': {
+      const no = (arg || '').replace(/\s/g, '');
+      return reply(`🚗 *E-Challan check*\n\n${no ? `📌 Vehicle/CNIC: *${no}*\n\n` : ''}🔗 Punjab: https://echallan.punjab.gov.pk\n🔗 Sindh: https://echallan.sindhpolice.gov.pk\n🔗 ICT: https://ictp.traffic.pk\n\n_Number daal kar check karo._`);
+    }
+    case 'pta': {
+      const imei = (arg || '').replace(/[^0-9]/g, '');
+      return reply(`📱 *PTA device check*\n\n${imei ? `IMEI: *${imei}*\n\n` : ''}🔗 https://dirbs.pta.gov.pk/drs\n\n_IMEI dial karo: *#06# — phir site par daalo._`);
+    }
+    case 'siminfo': {
+      const no = (arg || '').replace(/[^0-9]/g, '');
+      const net = no.startsWith('030') || no.startsWith('031') || no.startsWith('032') ? 'Jazz / Zong / Warid' : no.startsWith('033') ? 'Ufone' : no.startsWith('034') ? 'Telenor' : no.startsWith('035') ? 'SCOM' : '—';
+      return reply(`📶 *SIM info*\n\n${no ? `Number: ${no}\nNetwork: *${net}*\n` : ''}\n📌 Owner details PTA/SIM database se check hoti hain — public API nahi hai.`);
+    }
+
+    /* ---------------- daily life ---------------- */
+    case 'pknews': {
+      try {
+        const xml = await getText('https://news.google.com/rss?hl=en-PK&gl=PK&ceid=PK:en');
+        const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].slice(0, 6);
+        const out = items.map((m, i) => {
+          const t = (/<title>([\s\S]*?)<\/title>/.exec(m[1]) || [])[1] || '';
+          return `${i + 1}. ${t.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/&amp;/g, '&').trim()}`;
+        }).join('\n');
+        return reply(`📰 *Pakistan news*\n\n${out}`);
+      } catch { return reply('❌ News nahi mili.'); }
+    }
+    case 'pkholiday': {
+      // nager.date has no PK data (204), so use the fixed national calendar.
+      const list = [
+        ['23 March', 'Pakistan Day'],
+        ['1 May', 'Labour Day'],
+        ['14 August', 'Independence Day'],
+        ['6 September', 'Defence Day'],
+        ['9 November', 'Iqbal Day'],
+        ['25 December', 'Quaid-e-Azam Day'],
+        ['Eid-ul-Fitr', 'Ramadan ke baad (chaand par depend)'],
+        ['Eid-ul-Azha', 'Zil-Hijjah 10 (chaand par depend)'],
+        ['12 Rabi-ul-Awwal', 'Eid Milad-un-Nabi (chaand par depend)'],
+        ['9–10 Muharram', 'Ashura (chaand par depend)'],
+      ];
+      return reply(`🗓️ *Pakistan holidays*\n\n` + list.map((x) => `• *${x[0]}* — ${x[1]}`).join('\n') + `\n\n_Islamic dates chaand ke hisaab se badalti hain._`);
+    }
+    case 'loadshedding': case 'light': {
+      const city = arg || 'Karachi';
+      return reply(`💡 *Loadshedding — ${city}*\n\n📌 Schedule apne DISCO se check karo:\n• K-Electric: https://www.ke.com.pk\n• LESCO: https://lesco.gov.pk\n• IESCO: https://iesco.com.pk\n• GEPCO: https://gepco.com.pk\n• PESCO: https://pesco.gov.pk\n\n_Tip: ${P()}aqi ${city} — weather bhi dekh lo._`);
+    }
+    case 'aqi': {
+      const city = arg || 'Karachi';
+      try {
+        const g = await getJSON(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);
+        const c = g.results?.[0];
+        if (!c) throw new Error('no city');
+        const a = await getJSON(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${c.latitude}&longitude=${c.longitude}&current=pm10,pm2_5,us_aqi`);
+        const q = a.current;
+        const lvl = q.us_aqi <= 50 ? '🟢 Good' : q.us_aqi <= 100 ? '🟡 Moderate' : q.us_aqi <= 150 ? '🟠 Unhealthy (sensitive)' : q.us_aqi <= 200 ? '🔴 Unhealthy' : '🟣 Very unhealthy';
+        return reply(`🌫️ *Air quality — ${c.name}*\n\nAQI: *${Math.round(q.us_aqi)}* ${lvl}\nPM2.5: ${q.pm2_5} µg/m³\nPM10: ${q.pm10} µg/m³\n\n_Mask pehno agar AQI 150+ ho._`);
+      } catch { return reply('❌ City nahi mili.'); }
+    }
+    case 'earthquake2': case 'quake': {
+      const d = await getJSON('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson');
+      const q = (d.features || []).slice(0, 4);
+      if (!q.length) return reply('✅ Is hafte koi bara zalzala nahi aaya.');
+      return reply(`🌍 *Recent earthquakes*\n\n` + q.map((x) => `• M${x.properties.mag} — ${x.properties.place}\n  _${new Date(x.properties.time).toUTCString().slice(5, 22)}_`).join('\n'));
+    }
+
+    /* ---------------- PK content ---------------- */
+    case 'pkfood': {
+      const dish = arg || pick(PK_FOOD);
+      return reply(`🍛 *${dish}*\n\n📌 Recipe: https://www.food.com/search?q=${encodeURIComponent(dish + ' pakistani')}\n📌 Video: YouTube par "${dish} recipe" search karo — ${P()}ytvideo <link> se dl bhi ho jayega.`);
+    }
+    case 'pktravel': {
+      const t = arg ? PK_TRAVEL.find((x) => x[0].toLowerCase().includes(arg.toLowerCase())) || pick(PK_TRAVEL) : pick(PK_TRAVEL);
+      return reply(`🏔️ *${t[0]}*\n\n${t[1]}\n\n📌 ${P()}pknews — travel updates ke liye`);
+    }
+    case 'k2': {
+      return reply(`🏔️ *K2 — Chogori*\n\n📏 Height: 8,611 m (world #2)\n📍 Karakoram range, Gilgit-Baltistan\n🥇 First ascent: 1954 (Italian expedition)\n☠️ World's 2nd deadliest 8000er\n\n_Tip: ${P()}pktravel skardu — qareeb ke spots_`);
+    }
+    case 'pkquiz': {
+      const [q, a] = pick(PK_QUIZ);
+      return reply(`🇵🇰 *Pakistan Quiz*\n\n❓ ${q}\n\n||Jawab: ${a}||`);
+    }
+    case 'urduword': {
+      const words = [['Chashm-e-bad-daur', 'Nazar-e-bad se bachane ki dua'], ['Dil-joi', 'Dil ko khush karna'], ['Khush-numa', 'Acha dikhne wala'], ['Sargarmi', 'Josh aur chusti'], ['Waqar', 'Azaamat aur sanjeedgi'], ['Faraaghat', 'Faarigh waqt'], ['Takhleeq', 'Nayi cheez banana'], ['Meharbani', 'Bhalai aur lutaf']];
+      const w = pick(words);
+      return reply(`📖 *Urdu lafz*\n\n*${w[0]}*\n_${w[1]}_`);
+    }
+    case 'azadi': {
+      const target = new Date('2027-08-14T00:00:00+05:00');
+      const days = Math.ceil((target - Date.now()) / 86400000);
+      return reply(`🇵🇰 *Jashn-e-Azadi*\n\n14 August 1947 — Pakistan azaad hua.\n\n⏳ Agli 14 August: *${days} din baqi*\n\n_Quaid ka farman: “Kaam, kaam aur sirf kaam.”_`);
+    }
+    case 'polio': {
+      return reply(`💉 *Polio campaign*\n\n📌 Apne area ke campaign dates ke liye:\n• NEOC: https://www.endpolio.com.pk\n• Helpline: 1166\n\n_Bachon ko hamesha polio drops pilao — ye mulk ki zimmedari hai._`);
+    }
+    case 'license': {
+      return reply(`🪪 *Driving license (Punjab)*\n\n1. Learner permit: https://dlims.punjab.gov.pk\n2. Online test pass karo\n3. Learner 42 din baad permanent ke liye apply\n4. Fees: ~PKR 2,500 (learner + permanent)\n\n_Sindh: https://dls.sindh.gov.pk_`);
+    }
+    case 'visa': {
+      const c = arg || '';
+      if (!c) return reply(`❌ Country do. Example: ${P()}visa UAE`);
+      return reply(`🛂 *Visa — ${c}*\n\n📌 Requirements generally: passport (6+ months), photo, bank statement, itinerary.\n🔗 Apply: search "official ${c} visa application"\n\n_${P()}pknews visa — latest updates_`);
+    }
+    default:
+      return reply('❓ Unknown Pakistan command');
+  }
+};
+
+module.exports = {
+  commands: [
+    'dollar', 'gold', 'petrol', 'psx', 'pakcricket', 'psl', 'track', 'tcs', 'leopards', 'echallan', 'pta',
+    'siminfo', 'pknews', 'pkholiday', 'loadshedding', 'aqi', 'pkfood', 'pktravel', 'k2', 'pkquiz',
+    'urduword', 'azadi', 'polio', 'license', 'visa',
+    // extras that belong in this family
+    'currency2', 'quake', 'earthquake2', 'light',
+  ],
+  category: '🇵🇰 PAKISTAN',
+  handler,
+};

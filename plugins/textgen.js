@@ -1,1 +1,60 @@
-LyoqCiAqIFRFWFRHRU4g4oCUIHNtYWxsIHRleHQgZ2VuZXJhdG9ycyAmIG9uZS1saW5lcnMKICovCmNvbnN0IGNvbmZpZyA9IHJlcXVpcmUoJy4uL2NvbmZpZycpOwpjb25zdCB7IHBpY2ssIHJhbmRJbnQgfSA9IHJlcXVpcmUoJy4uL2xpYi9oZWxwZXJzJyk7Cgpjb25zdCBQID0gKCkgPT4gY29uZmlnLlBSRUZJWDsKCmNvbnN0IEZPUlRVTkVTID0gWwogICdBYWoga2EgZGluIGFhcCBrZSBsaXllIGtodXNoaXlvbiBiaGFyYSBoYWkg4oCUIGVrIHB1cmFuYSBkb3N0IHJhYnRhIGthcmVnYS4nLAogICdLb2kgYWNoaSBraGFiYXIgamFsZCBhYW5lIHdhbGkgaGFpLiBTYWJyIGthIHBoYWwgbWVldGhhIGhvZ2EuJywKICAnUGFpc2Uga2EgbWFtbGEgaGFsIGhvZ2EsIG1hZ2FyIHNvY2ggc2FtYWpoIGthciBraGFyY2gga2FybmEuJywKICAnQWFqIGtpc2kga2kgbWFkYWQga2FybyDigJQgYmFkbGUgbWUga2h1c2hpIG1pbGVnaS4nLAogICdBaWsgY2hob3RpIHNpIGtvc2hpc2ggYmFyYSBiYWRsYXYgbGF5ZWdpLicsCiAgJ0pvIGRob29uZCByYWhlIGhvIHdvIHFhcmVlYiBoaSBoYWkg4oCUIG5hemFyIHRoZWVrIGthcm8uJywKICAnQWFqIGtpc2kgcHVyYW5pIGdoYWx0aSBrYSBzYWJhayBrYWFtIGFheWVnYS4nLAogICdNZWhuYXQga2Egc2lsYSB6YXJvb3IgbWlsZWdhLCB3YXF0IHNlIHBlaGxlIG5haGkuJywKXTsKY29uc3QgQURWSUNFID0gWwogICdKbyBhYWoga2FyIHNha3RlIGhvLCBrYWwgcGFyIG5hIGNoaG9yby4nLAogICdHdXNzYSBhYXllIHRvIDEwIHRhayBnaW50aSBrYXJvLicsCiAgJ0hhciByaXNodGUgbWUgc3VubmEgYm9sbmUgc2UgenlhZGEgemFyb29yaSBoYWkuJywKICAnUGFpc2UgYmFjaGFvIOKAlCBrYWwga2EgYmhhcm9zYSBuYWhpLicsCiAgJ1NlaGF0IHBlaGxlLCBiYXFpIHNhYiBiYWFkIG1lLicsCiAgJ0pvIHR1bWhhcmUgcGFhcyBoYWkgdXMgcGFyIHNodWthciBrYXJvLicsCiAgJ05heWUgbG9nb24gc2Ugc2Vla2hvLCBwdXJhbmUgZG9zdCBuYSBjaGhvcm8uJywKICAnU29uYSA4IGdoYW50ZSDigJQgeWUgaW52ZXN0IGhhaSwgbGF6aW5lc3MgbmFoaS4nLApdOwpjb25zdCBDT05TUElSQUNZID0gWwogICdLYWJvb3RlciBhc2FsIG1lIHNhcmthcmkgamFzb29zIGhhaW4g4oCUIGlzaSBsaXllIGhhciBnYWxpIG1lIG1pbHRlIGhhaW4uJywKICAnV2lGaSByb3V0ZXIgcmFhdCBrbyBzbG93IGlzbGl5ZSBob3RhIGhhaSBrZSB3byB0dW1oYXJpIGJhYXRlaW4gc3VuIHJhaGEgaG90YSBoYWkuJywKICAnQ2hhaSBrZSBiaW5hIG1lZXRpbmcga2Ega29pIG1hdGxhYiBuYWhpIOKAlCB5ZSBjb3Jwb3JhdGUgY29uc3BpcmFjeSBoYWkuJywKICAnTW9uZGF5IGthIHdham9vZCBjYWxlbmRhciBjb21wYW5pZXMgbmUgYmFuYXlhIGhhaSB0YWFrZSB3ZWVrZW5kcyBjaGhvdGUgbGFnZW4uJywKICAnQmlyeWFuaSBtZSBhbG9vIGRhYWxuZSBrYSBhc2FsIG1hcXNhZCBjaGF3YWwgYmFjaGFuYSB0aGEuJywKXTsKY29uc3QgREFESk9LRVMgPSBbCiAgJ01haW5lIGFwbmUgZnJpZGdlIGtvIGthaGEgcnVrIGphIOKAlCB3byBiYXJmIGJhbiBnYXlhLiDwn6eKJywKICAnQmlqbGkga2EgYmlsbCBpdG5hIHp5YWRhIGt5dW4/IEt5dW5rZSB3byBjaGFyZ2VkIHRoYS4g4pqhJywKICAnV2lmaSBuZSBtdWpoZSBreXVuIGNoaG9yYT8gS3l1bmtlIGNvbm5lY3Rpb24gd2VhayB0aGEuIPCfk7YnLAogICdNYWluIGJob29raGEgdGhhLCB0byBraGFuYSBraGEgbGl5YSDigJQgYWIgbWFpbiAia2hhIGxpeWEiIGhvb24uIPCfjb3vuI8nLAogICdDaGFpIG5lIGthaGE6IHR1bSBtZXJpIGN1cCBvZiB0ZWEgaG8uIOKYlScsCiAgJ0RhcmFraHQgbmUga2FoYSBtdWpoZSBha2VsYSBjaGhvciBkbyDigJQgbWFpbiAicGVkIiBob29uLiDwn4yzJywKXTsKCmNvbnN0IGhhbmRsZXIgPSBhc3luYyAoY3R4KSA9PiB7CiAgY29uc3QgeyBjb21tYW5kLCByZXBseSB9ID0gY3R4OwogIHN3aXRjaCAoY29tbWFuZCkgewogICAgY2FzZSAnZm9ydHVuZSc6IHJldHVybiByZXBseShg8J+UriAqQWFqIGtpIHRhcWRlZXIqXG5cbiR7cGljayhGT1JUVU5FUyl9YCk7CiAgICBjYXNlICdhZHZpY2UnOiByZXR1cm4gcmVwbHkoYPCfkqEgKk1hc2h3YXJhKlxuXG4ke3BpY2soQURWSUNFKX1gKTsKICAgIGNhc2UgJ2NvbnNwaXJhY3knOiByZXR1cm4gcmVwbHkoYPCfkb0gKkNvbnNwaXJhY3kgdGhlb3J5KlxuXG4ke3BpY2soQ09OU1BJUkFDWSl9XG5cbl8xMDAlIG1hemFhayBoYWlfIPCfmIRgKTsKICAgIGNhc2UgJ2RhZGpva2UnOiByZXR1cm4gcmVwbHkoYPCfmIQgKkRhZCBqb2tlKlxuXG4ke3BpY2soREFESk9LRVMpfWApOwogICAgZGVmYXVsdDogcmV0dXJuIHJlcGx5KCfinZMgVW5rbm93biBjb21tYW5kJyk7CiAgfQp9OwoKbW9kdWxlLmV4cG9ydHMgPSB7CiAgY29tbWFuZHM6IFsnZm9ydHVuZScsICdhZHZpY2UnLCAnY29uc3BpcmFjeScsICdkYWRqb2tlJ10sCiAgY2F0ZWdvcnk6ICfinI3vuI8gVEVYVCcsCiAgaGFuZGxlciwKfTsK
+/**
+ * TEXTGEN — small text generators & one-liners
+ */
+const config = require('../config');
+const { pick, randInt } = require('../lib/helpers');
+
+const P = () => config.PREFIX;
+
+const FORTUNES = [
+  'Aaj ka din aap ke liye khushiyon bhara hai — ek purana dost rabta karega.',
+  'Koi achi khabar jald aane wali hai. Sabr ka phal meetha hoga.',
+  'Paise ka mamla hal hoga, magar soch samajh kar kharch karna.',
+  'Aaj kisi ki madad karo — badle me khushi milegi.',
+  'Aik chhoti si koshish bara badlav layegi.',
+  'Jo dhoond rahe ho wo qareeb hi hai — nazar theek karo.',
+  'Aaj kisi purani ghalti ka sabak kaam aayega.',
+  'Mehnat ka sila zaroor milega, waqt se pehle nahi.',
+];
+const ADVICE = [
+  'Jo aaj kar sakte ho, kal par na chhoro.',
+  'Gussa aaye to 10 tak ginti karo.',
+  'Har rishte me sunna bolne se zyada zaroori hai.',
+  'Paise bachao — kal ka bharosa nahi.',
+  'Sehat pehle, baqi sab baad me.',
+  'Jo tumhare paas hai us par shukar karo.',
+  'Naye logon se seekho, purane dost na chhoro.',
+  'Sona 8 ghante — ye invest hai, laziness nahi.',
+];
+const CONSPIRACY = [
+  'Kabooter asal me sarkari jasoos hain — isi liye har gali me milte hain.',
+  'WiFi router raat ko slow isliye hota hai ke wo tumhari baatein sun raha hota hai.',
+  'Chai ke bina meeting ka koi matlab nahi — ye corporate conspiracy hai.',
+  'Monday ka wajood calendar companies ne banaya hai taake weekends chhote lagen.',
+  'Biryani me aloo daalne ka asal maqsad chawal bachana tha.',
+];
+const DADJOKES = [
+  'Maine apne fridge ko kaha ruk ja — wo barf ban gaya. 🧊',
+  'Bijli ka bill itna zyada kyun? Kyunke wo charged tha. ⚡',
+  'Wifi ne mujhe kyun chhora? Kyunke connection weak tha. 📶',
+  'Main bhookha tha, to khana kha liya — ab main "kha liya" hoon. 🍽️',
+  'Chai ne kaha: tum meri cup of tea ho. ☕',
+  'Darakht ne kaha mujhe akela chhor do — main "ped" hoon. 🌳',
+];
+
+const handler = async (ctx) => {
+  const { command, reply } = ctx;
+  switch (command) {
+    case 'fortune': return reply(`🔮 *Aaj ki taqdeer*\n\n${pick(FORTUNES)}`);
+    case 'advice': return reply(`💡 *Mashwara*\n\n${pick(ADVICE)}`);
+    case 'conspiracy': return reply(`👽 *Conspiracy theory*\n\n${pick(CONSPIRACY)}\n\n_100% mazaak hai_ 😄`);
+    case 'dadjoke': return reply(`😄 *Dad joke*\n\n${pick(DADJOKES)}`);
+    default: return reply('❓ Unknown command');
+  }
+};
+
+module.exports = {
+  commands: ['fortune', 'advice', 'conspiracy', 'dadjoke'],
+  category: '✍️ TEXT',
+  handler,
+};

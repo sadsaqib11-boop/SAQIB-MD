@@ -1,1 +1,134 @@
-LyoqCiAqIE9XTkVSMiDigJQgb3duZXItb25seSBib3QgbWFuYWdlbWVudAogKi8KY29uc3QgY29uZmlnID0gcmVxdWlyZSgnLi4vY29uZmlnJyk7CmNvbnN0IGZzID0gcmVxdWlyZSgnZnMnKTsKY29uc3Qgb3MgPSByZXF1aXJlKCdvcycpOwpjb25zdCBwYXRoID0gcmVxdWlyZSgncGF0aCcpOwpjb25zdCB7IGdldEpTT04sIHBpY2ssIHJhbmRJbnQgfSA9IHJlcXVpcmUoJy4uL2xpYi9oZWxwZXJzJyk7Cgpjb25zdCBQID0gKCkgPT4gY29uZmlnLlBSRUZJWDsKCmNvbnN0IG93bmVyU3RhdGUgPSB7CiAgYXV0b2Fuc3dlcjogbnVsbCwgICAgICAgLy8gc3RyaW5nIHwgbnVsbAogIG1haW50ZW5hbmNlOiBmYWxzZSwKICBtYWludGVuYW5jZU1zZzogJ/CflKcgQm90IG1haW50ZW5hbmNlIG1lIGhhaS4gVGhvcmkgZGVyIGJhYWQgdHJ5IGthcm8uJywKICBzZWxmbW9kZTogZmFsc2UsCiAgc3VkbzogbmV3IFNldCgpLAogIHByZW06IG5ldyBTZXQoKSwKICB0aHVtYjogbnVsbCwKICBib290OiBEYXRlLm5vdygpLAogIGNvbW1hbmRzUnVuOiAwLAp9Owpjb25zdCBlcnJvcnMgPSBbXTsKCmNvbnN0IGhhbmRsZXIgPSBhc3luYyAoY3R4KSA9PiB7CiAgY29uc3QgeyBjb21tYW5kLCByZXBseSwgYXJnLCBpc093bmVyLCBzZW5kZXJOdW0sIHB1c2huYW1lIH0gPSBjdHg7CgogIC8vIGV2ZXJ5IGNvbW1hbmQgaW4gdGhpcyBmaWxlIGlzIG93bmVyLW9ubHkKICBpZiAoIWlzT3duZXIpIHsKICAgIHJldHVybiByZXBseShg4puUICpPd25lci1vbmx5IGNvbW1hbmQuKlxuXG5ZZSBzaXJmIGJvdCBvd25lciB1c2Uga2FyIHNha3RhIGhhaS5gKTsKICB9CgogIHN3aXRjaCAoY29tbWFuZCkgewogICAgY2FzZSAnc3RhdHMnOiB7CiAgICAgIGNvbnN0IHVwID0gRGF0ZS5ub3coKSAtIG93bmVyU3RhdGUuYm9vdDsKICAgICAgY29uc3QgaCA9IE1hdGguZmxvb3IodXAgLyAzNjAwMDAwKSwgbSA9IE1hdGguZmxvb3IoKHVwICUgMzYwMDAwMCkgLyA2MDAwMCk7CiAgICAgIGNvbnN0IG1lbSA9IHByb2Nlc3MubWVtb3J5VXNhZ2UoKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5OKICpCb3Qgc3RhdHMqXG5cbuKPse+4jyBVcHRpbWU6ICoke2h9aCAke219bSpcbvCfp6AgUkFNOiAkeyhtZW0ucnNzIC8gMTA0ODU3NikudG9GaXhlZCgwKX0gTUJcbuKame+4jyBOb2RlOiAke3Byb2Nlc3MudmVyc2lvbn1cbvCfkrsgUGxhdGZvcm06ICR7cHJvY2Vzcy5wbGF0Zm9ybX1cbvCflKcgQ29tbWFuZHMgcnVuOiAke293bmVyU3RhdGUuY29tbWFuZHNSdW59XG7wn5GRIE93bmVyOiAke3B1c2huYW1lIHx8IHNlbmRlck51bX1cbvCflZAgJHtuZXcgRGF0ZSgpLnRvTG9jYWxlU3RyaW5nKCdlbi1QSycsIHsgdGltZVpvbmU6ICdBc2lhL0thcmFjaGknIH0pfWApOwogICAgfQogICAgY2FzZSAnaGVhbHRoY2hlY2snOiB7CiAgICAgIGNvbnN0IGNoZWNrcyA9IFtdOwogICAgICB0cnkgeyBjb25zdCB0ID0gRGF0ZS5ub3coKTsgYXdhaXQgZ2V0SlNPTignaHR0cHM6Ly9hcGkuaXBpZnkub3JnP2Zvcm1hdD1qc29uJyk7IGNoZWNrcy5wdXNoKGDinIUgSW50ZXJuZXQg4oCUICR7RGF0ZS5ub3coKSAtIHR9bXNgKTsgfQogICAgICBjYXRjaCB7IGNoZWNrcy5wdXNoKCfinYwgSW50ZXJuZXQg4oCUIGZhaWwnKTsgfQogICAgICBjaGVja3MucHVzaChg4pyFIE1lbW9yeSDigJQgJHsocHJvY2Vzcy5tZW1vcnlVc2FnZSgpLnJzcyAvIDEwNDg1NzYpLnRvRml4ZWQoMCl9IE1CYCk7CiAgICAgIGNoZWNrcy5wdXNoKGDinIUgUHJlZml4IOKAlCAke2NvbmZpZy5QUkVGSVh9YCk7CiAgICAgIGNoZWNrcy5wdXNoKGDinIUgU2Vzc2lvbiDigJQgJHtjdHguc29jayA/ICdjb25uZWN0ZWQnIDogJ2NoZWNrJ31gKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn6m6ICpIZWFsdGggY2hlY2sqXG5cbiR7Y2hlY2tzLmpvaW4oJ1xuJyl9XG5cbiR7Y2hlY2tzLnNvbWUoKGMpID0+IGMuc3RhcnRzV2l0aCgn4p2MJykpID8gJ+KaoO+4jyBLdWNoIGlzc3VlcyBoYWluLicgOiAn8J+OiSBTYWIgdGhlZWsgaGFpISd9YCk7CiAgICB9CiAgICBjYXNlICdtYWludGVuYW5jZSc6IHsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg8J+UpyAqTWFpbnRlbmFuY2U6KiAke293bmVyU3RhdGUubWFpbnRlbmFuY2UgPyAn4pyFIE9OJyA6ICfinYwgT0ZGJ31cblxuJHtQKCl9bWFpbnRlbmFuY2Ugb24vb2ZmIFttZXNzYWdlXWApOwogICAgICBjb25zdCBbc3ViLCAuLi5tc2ddID0gYXJnLnNwbGl0KCcgJyk7CiAgICAgIGlmIChzdWIgPT09ICdvbicpIHsKICAgICAgICBvd25lclN0YXRlLm1haW50ZW5hbmNlID0gdHJ1ZTsKICAgICAgICBpZiAobXNnLmxlbmd0aCkgb3duZXJTdGF0ZS5tYWludGVuYW5jZU1zZyA9IG1zZy5qb2luKCcgJyk7CiAgICAgICAgcmV0dXJuIHJlcGx5KGDwn5SnICpNYWludGVuYW5jZSBPTipcblxuTWVzc2FnZTogJHtvd25lclN0YXRlLm1haW50ZW5hbmNlTXNnfWApOwogICAgICB9CiAgICAgIG93bmVyU3RhdGUubWFpbnRlbmFuY2UgPSBmYWxzZTsKICAgICAgcmV0dXJuIHJlcGx5KCfinIUgKk1haW50ZW5hbmNlIE9GRiog4oCUIGJvdCBub3JtYWwgaGFpLicpOwogICAgfQogICAgY2FzZSAnc2VsZm1vZGUnOiB7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYPCfkaQgKlNlbGYgbW9kZToqICR7b3duZXJTdGF0ZS5zZWxmbW9kZSA/ICfinIUgT04gKHNpcmYgb3duZXIgY29tbWFuZHMpJyA6ICfinYwgT0ZGIChzYWIgY29tbWFuZHMpJ31cblxuJHtQKCl9c2VsZm1vZGUgb24vb2ZmYCk7CiAgICAgIG93bmVyU3RhdGUuc2VsZm1vZGUgPSBhcmcgPT09ICdvbic7CiAgICAgIHJldHVybiByZXBseShg8J+RpCAqU2VsZiBtb2RlICR7b3duZXJTdGF0ZS5zZWxmbW9kZSA/ICdPTiDinIUnIDogJ09GRiDinYwnfSpgKTsKICAgIH0KICAgIGNhc2UgJ3N1ZG9tb2RlJzogewogICAgICBjb25zdCBudW0gPSAoYXJnIHx8ICcnKS5yZXBsYWNlKC9bXjAtOV0vZywgJycpOwogICAgICBpZiAoIW51bSkgcmV0dXJuIHJlcGx5KGDinYwgTnVtYmVyIGRvLiBFeGFtcGxlOiAke1AoKX1zdWRvbW9kZSA5MjMwMDEyMzQ1NjdcblxuX0N1cnJlbnQ6ICR7b3duZXJTdGF0ZS5zdWRvLnNpemV9IHN1ZG8gdXNlcnNfYCk7CiAgICAgIGlmIChvd25lclN0YXRlLnN1ZG8uaGFzKG51bSkpIHsgb3duZXJTdGF0ZS5zdWRvLmRlbGV0ZShudW0pOyByZXR1cm4gcmVwbHkoYOKchSAqJHtudW19KiBzdWRvIHNlIGhhdGEgZGl5YS5gKTsgfQogICAgICBvd25lclN0YXRlLnN1ZG8uYWRkKG51bSk7CiAgICAgIHJldHVybiByZXBseShg8J+RkSAqJHtudW19KiBhYiBzdWRvIHVzZXIgaGFpLlxuXG5Ub3RhbDogJHtvd25lclN0YXRlLnN1ZG8uc2l6ZX1gKTsKICAgIH0KICAgIGNhc2UgJ3ByZW1saXN0JzogewogICAgICByZXR1cm4gcmVwbHkoYPCfko4gKlByZW1pdW0gdXNlcnMqICgke293bmVyU3RhdGUucHJlbS5zaXplfSlcblxuJHtbLi4ub3duZXJTdGF0ZS5wcmVtXS5qb2luKCdcbicpIHx8ICdfS29pIG5haGkuXyd9XG5cbl8ke1AoKX1wcmVtbGlzdCBhZGQgPG51bWJlcj4g4oCUIGphbGQgYWF5ZWdhLl9gKTsKICAgIH0KICAgIGNhc2UgJ3RvdGFsdXNlcic6IHsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5GlICpUb3RhbCB1c2Vycypcblxu8J+TsSBUcmFja2VkIGNoYXRzOiAke293bmVyU3RhdGUuY29tbWFuZHNSdW4gPyAnYWN0aXZlJyA6ICdzdGFydGluZyd9XG5cbl9FeGFjdCBjb3VudCBXaGF0c0FwcCBzZSBtaWx0YSBoYWkg4oCUIGJhaWxleXMgc3RhdHMgZW5kcG9pbnQgZGVraCBsby5fYCk7CiAgICB9CiAgICBjYXNlICdhdXRvYW5zd2VyJzogewogICAgICBpZiAoIWFyZykgewogICAgICAgIHJldHVybiByZXBseShvd25lclN0YXRlLmF1dG9hbnN3ZXIKICAgICAgICAgID8gYPCfpJYgKkF1dG8tYW5zd2VyIE9OKlxuXG5SZXBseTogIiR7b3duZXJTdGF0ZS5hdXRvYW5zd2VyfSJcblxuX09mZiBrYXJuZSBrZSBsaXllICR7UCgpfWF1dG9hbnN3ZXIgb2ZmX2AKICAgICAgICAgIDogYPCfpJYgKkF1dG8tYW5zd2VyIE9GRipcblxuJHtQKCl9YXV0b2Fuc3dlciA8dGV4dD4g4oCUIGphYiBhYXAgb2ZmbGluZSBob2ApOwogICAgICB9CiAgICAgIGlmIChhcmcgPT09ICdvZmYnKSB7IG93bmVyU3RhdGUuYXV0b2Fuc3dlciA9IG51bGw7IHJldHVybiByZXBseSgn4pyFICpBdXRvLWFuc3dlciBPRkYqJyk7IH0KICAgICAgb3duZXJTdGF0ZS5hdXRvYW5zd2VyID0gYXJnOwogICAgICByZXR1cm4gcmVwbHkoYPCfpJYgKkF1dG8tYW5zd2VyIE9OKlxuXG5KYWIgYWFwIGJ1c3kgaG86ICIke2FyZ30iYCk7CiAgICB9CiAgICBjYXNlICdzZXR0aHVtYic6IHsKICAgICAgY29uc3QgaW1nID0gY3R4LnF1b3RlZD8ubWVzc2FnZT8uaW1hZ2VNZXNzYWdlOwogICAgICBpZiAoIWltZykgcmV0dXJuIHJlcGx5KGDinYwgS2lzaSBpbWFnZSBwYXIgcmVwbHkga2Fya2UgJHtQKCl9c2V0dGh1bWIgbGlraG8uYCk7CiAgICAgIHRyeSB7CiAgICAgICAgY29uc3QgeyBkb3dubG9hZE1lZGlhIH0gPSByZXF1aXJlKCcuLi9saWIvaGVscGVycycpOwogICAgICAgIG93bmVyU3RhdGUudGh1bWIgPSBhd2FpdCBkb3dubG9hZE1lZGlhKGltZywgJ2ltYWdlJyk7CiAgICAgICAgcmV0dXJuIHJlcGx5KGDinIUgKlRodW1ibmFpbCBzZXQhKiAoJHsob3duZXJTdGF0ZS50aHVtYi5sZW5ndGggLyAxMDI0KS50b0ZpeGVkKDEpfSBLQilcblxuX1llIGFiIHN0aWNrZXJzL21lZGlhIGtlIHByZXZpZXcgbWUgdXNlIGhvZ2EuX2ApOwogICAgICB9IGNhdGNoIHsgcmV0dXJuIHJlcGx5KCfinYwgVGh1bWJuYWlsIHNldCBuYWhpIGh1aS4nKTsgfQogICAgfQogICAgY2FzZSAnbG9ncyc6IHsKICAgICAgaWYgKCFlcnJvcnMubGVuZ3RoKSByZXR1cm4gcmVwbHkoJ/Cfk4sgKkVycm9yIGxvZ3MqXG5cbuKchSBLb2kgZXJyb3IgbmFoaS4gQm90IHNhYWYgY2hhbCByYWhhIGhhaS4nKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5OLICpFcnJvciBsb2dzKiAobGFzdCAke01hdGgubWluKGVycm9ycy5sZW5ndGgsIDEwKX0pXG5cbiR7ZXJyb3JzLnNsaWNlKC0xMCkubWFwKChlLCBpKSA9PiBgJHtpICsgMX0uICR7ZX1gKS5qb2luKCdcbicpfWApOwogICAgfQogICAgY2FzZSAnYmFja3VwJzogewogICAgICB0cnkgewogICAgICAgIGNvbnN0IGZpbGVzID0gZnMucmVhZGRpclN5bmMocGF0aC5qb2luKF9fZGlybmFtZSwgJy4uJywgJ3BsdWdpbnMnKSkuZmlsdGVyKChmKSA9PiBmLmVuZHNXaXRoKCcuanMnKSk7CiAgICAgICAgY29uc3QgZHVtcCA9IEJ1ZmZlci5mcm9tKEpTT04uc3RyaW5naWZ5KHsKICAgICAgICAgIHdoZW46IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKSwKICAgICAgICAgIHBsdWdpbnM6IGZpbGVzLAogICAgICAgICAgc2V0dGluZ3M6IHsgcHJlZml4OiBjb25maWcuUFJFRklYLCBib3ROYW1lOiBjb25maWcuQk9UX05BTUUgfSwKICAgICAgICAgIGNvdW50czogeyBwbHVnaW5zOiBmaWxlcy5sZW5ndGgsIHN1ZG86IG93bmVyU3RhdGUuc3Vkby5zaXplLCBwcmVtOiBvd25lclN0YXRlLnByZW0uc2l6ZSB9LAogICAgICAgIH0sIG51bGwsIDIpKTsKICAgICAgICBhd2FpdCBjdHguc2VuZChjdHguZnJvbSwgeyBkb2N1bWVudDogZHVtcCwgZmlsZU5hbWU6IGBib3RfYmFja3VwXyR7RGF0ZS5ub3coKX0uanNvbmAsIG1pbWV0eXBlOiAnYXBwbGljYXRpb24vanNvbicgfSwgeyBxdW90ZWQ6IGN0eC5tIH0pOwogICAgICB9IGNhdGNoIHsgcmV0dXJuIHJlcGx5KCfinYwgQmFja3VwIG5haGkgYmFuYS4nKTsgfQogICAgICBicmVhazsKICAgIH0KICAgIGNhc2UgJ2NoYXJ0JzogewogICAgICBjb25zdCBiYXJzID0gQXJyYXkuZnJvbSh7IGxlbmd0aDogNyB9LCAoXywgaSkgPT4gewogICAgICAgIGNvbnN0IG4gPSByYW5kSW50KDIsIDEwKTsKICAgICAgICByZXR1cm4gYERheSAke2kgKyAxfSAkeyfilognLnJlcGVhdChuKX0gJHtufWA7CiAgICAgIH0pOwogICAgICByZXR1cm4gcmVwbHkoYPCfk4ggKkFjdGl2aXR5IGNoYXJ0KiAoZGVtbylcblxuJHtiYXJzLmpvaW4oJ1xuJyl9XG5cbl9SZWFsIGRhdGEga2UgbGl5ZSBhbmFseXRpY3MgcGx1Z2luIGNoYWhpeWUuX2ApOwogICAgfQogICAgZGVmYXVsdDoKICAgICAgcmV0dXJuIHJlcGx5KCfinZMgVW5rbm93biBvd25lciBjb21tYW5kJyk7CiAgfQp9OwoKbW9kdWxlLmV4cG9ydHMgPSB7CiAgY29tbWFuZHM6IFsKICAgICdiYWNrdXAnLCAnYXV0b2Fuc3dlcicsICd0b3RhbHVzZXInLCAnbWFpbnRlbmFuY2UnLCAncHJlbWxpc3QnLCAnc3Vkb21vZGUnLCAnc2VsZm1vZGUnLCAnc2V0dGh1bWInLAogICAgJ3N0YXRzJywgJ2NoYXJ0JywgJ2xvZ3MnLCAnaGVhbHRoY2hlY2snLAogIF0sCiAgY2F0ZWdvcnk6ICfwn5GRIE9XTkVSJywKICBoYW5kbGVyLAogIG93bmVyU3RhdGUsCn07Cg==
+/**
+ * OWNER2 — owner-only bot management
+ */
+const config = require('../config');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { getJSON, pick, randInt } = require('../lib/helpers');
+
+const P = () => config.PREFIX;
+
+const ownerState = {
+  autoanswer: null,       // string | null
+  maintenance: false,
+  maintenanceMsg: '🔧 Bot maintenance me hai. Thori der baad try karo.',
+  selfmode: false,
+  sudo: new Set(),
+  prem: new Set(),
+  thumb: null,
+  boot: Date.now(),
+  commandsRun: 0,
+};
+const errors = [];
+
+const handler = async (ctx) => {
+  const { command, reply, arg, isOwner, senderNum, pushname } = ctx;
+
+  // every command in this file is owner-only
+  if (!isOwner) {
+    return reply(`⛔ *Owner-only command.*\n\nYe sirf bot owner use kar sakta hai.`);
+  }
+
+  switch (command) {
+    case 'stats': {
+      const up = Date.now() - ownerState.boot;
+      const h = Math.floor(up / 3600000), m = Math.floor((up % 3600000) / 60000);
+      const mem = process.memoryUsage();
+      return reply(`📊 *Bot stats*\n\n⏱️ Uptime: *${h}h ${m}m*\n🧠 RAM: ${(mem.rss / 1048576).toFixed(0)} MB\n⚙️ Node: ${process.version}\n💻 Platform: ${process.platform}\n🔧 Commands run: ${ownerState.commandsRun}\n👑 Owner: ${pushname || senderNum}\n🕐 ${new Date().toLocaleString('en-PK', { timeZone: 'Asia/Karachi' })}`);
+    }
+    case 'healthcheck': {
+      const checks = [];
+      try { const t = Date.now(); await getJSON('https://api.ipify.org?format=json'); checks.push(`✅ Internet — ${Date.now() - t}ms`); }
+      catch { checks.push('❌ Internet — fail'); }
+      checks.push(`✅ Memory — ${(process.memoryUsage().rss / 1048576).toFixed(0)} MB`);
+      checks.push(`✅ Prefix — ${config.PREFIX}`);
+      checks.push(`✅ Session — ${ctx.sock ? 'connected' : 'check'}`);
+      return reply(`🩺 *Health check*\n\n${checks.join('\n')}\n\n${checks.some((c) => c.startsWith('❌')) ? '⚠️ Kuch issues hain.' : '🎉 Sab theek hai!'}`);
+    }
+    case 'maintenance': {
+      if (!arg) return reply(`🔧 *Maintenance:* ${ownerState.maintenance ? '✅ ON' : '❌ OFF'}\n\n${P()}maintenance on/off [message]`);
+      const [sub, ...msg] = arg.split(' ');
+      if (sub === 'on') {
+        ownerState.maintenance = true;
+        if (msg.length) ownerState.maintenanceMsg = msg.join(' ');
+        return reply(`🔧 *Maintenance ON*\n\nMessage: ${ownerState.maintenanceMsg}`);
+      }
+      ownerState.maintenance = false;
+      return reply('✅ *Maintenance OFF* — bot normal hai.');
+    }
+    case 'selfmode': {
+      if (!arg) return reply(`👤 *Self mode:* ${ownerState.selfmode ? '✅ ON (sirf owner commands)' : '❌ OFF (sab commands)'}\n\n${P()}selfmode on/off`);
+      ownerState.selfmode = arg === 'on';
+      return reply(`👤 *Self mode ${ownerState.selfmode ? 'ON ✅' : 'OFF ❌'}*`);
+    }
+    case 'sudomode': {
+      const num = (arg || '').replace(/[^0-9]/g, '');
+      if (!num) return reply(`❌ Number do. Example: ${P()}sudomode 923001234567\n\n_Current: ${ownerState.sudo.size} sudo users_`);
+      if (ownerState.sudo.has(num)) { ownerState.sudo.delete(num); return reply(`✅ *${num}* sudo se hata diya.`); }
+      ownerState.sudo.add(num);
+      return reply(`👑 *${num}* ab sudo user hai.\n\nTotal: ${ownerState.sudo.size}`);
+    }
+    case 'premlist': {
+      return reply(`💎 *Premium users* (${ownerState.prem.size})\n\n${[...ownerState.prem].join('\n') || '_Koi nahi._'}\n\n_${P()}premlist add <number> — jald aayega._`);
+    }
+    case 'totaluser': {
+      return reply(`👥 *Total users*\n\n📱 Tracked chats: ${ownerState.commandsRun ? 'active' : 'starting'}\n\n_Exact count WhatsApp se milta hai — baileys stats endpoint dekh lo._`);
+    }
+    case 'autoanswer': {
+      if (!arg) {
+        return reply(ownerState.autoanswer
+          ? `🤖 *Auto-answer ON*\n\nReply: "${ownerState.autoanswer}"\n\n_Off karne ke liye ${P()}autoanswer off_`
+          : `🤖 *Auto-answer OFF*\n\n${P()}autoanswer <text> — jab aap offline ho`);
+      }
+      if (arg === 'off') { ownerState.autoanswer = null; return reply('✅ *Auto-answer OFF*'); }
+      ownerState.autoanswer = arg;
+      return reply(`🤖 *Auto-answer ON*\n\nJab aap busy ho: "${arg}"`);
+    }
+    case 'setthumb': {
+      const img = ctx.quoted?.message?.imageMessage;
+      if (!img) return reply(`❌ Kisi image par reply karke ${P()}setthumb likho.`);
+      try {
+        const { downloadMedia } = require('../lib/helpers');
+        ownerState.thumb = await downloadMedia(img, 'image');
+        return reply(`✅ *Thumbnail set!* (${(ownerState.thumb.length / 1024).toFixed(1)} KB)\n\n_Ye ab stickers/media ke preview me use hoga._`);
+      } catch { return reply('❌ Thumbnail set nahi hui.'); }
+    }
+    case 'logs': {
+      if (!errors.length) return reply('📋 *Error logs*\n\n✅ Koi error nahi. Bot saaf chal raha hai.');
+      return reply(`📋 *Error logs* (last ${Math.min(errors.length, 10)})\n\n${errors.slice(-10).map((e, i) => `${i + 1}. ${e}`).join('\n')}`);
+    }
+    case 'backup': {
+      try {
+        const files = fs.readdirSync(path.join(__dirname, '..', 'plugins')).filter((f) => f.endsWith('.js'));
+        const dump = Buffer.from(JSON.stringify({
+          when: new Date().toISOString(),
+          plugins: files,
+          settings: { prefix: config.PREFIX, botName: config.BOT_NAME },
+          counts: { plugins: files.length, sudo: ownerState.sudo.size, prem: ownerState.prem.size },
+        }, null, 2));
+        await ctx.send(ctx.from, { document: dump, fileName: `bot_backup_${Date.now()}.json`, mimetype: 'application/json' }, { quoted: ctx.m });
+      } catch { return reply('❌ Backup nahi bana.'); }
+      break;
+    }
+    case 'chart': {
+      const bars = Array.from({ length: 7 }, (_, i) => {
+        const n = randInt(2, 10);
+        return `Day ${i + 1} ${'█'.repeat(n)} ${n}`;
+      });
+      return reply(`📈 *Activity chart* (demo)\n\n${bars.join('\n')}\n\n_Real data ke liye analytics plugin chahiye._`);
+    }
+    default:
+      return reply('❓ Unknown owner command');
+  }
+};
+
+module.exports = {
+  commands: [
+    'backup', 'autoanswer', 'totaluser', 'maintenance', 'premlist', 'sudomode', 'selfmode', 'setthumb',
+    'stats', 'chart', 'logs', 'healthcheck',
+  ],
+  category: '👑 OWNER',
+  handler,
+  ownerState,
+};

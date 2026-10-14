@@ -1,1 +1,377 @@
-LyoqCiAqIFVUSUxTLTIg4oCUIG1pc2MgdXRpbGl0aWVzIChlbWFpbCwgSVAsIHRpbWVycywgY2FsY3VsYXRvcnMsIGVuY29kZXJzKQogKi8KY29uc3QgY29uZmlnID0gcmVxdWlyZSgnLi4vY29uZmlnJyk7CmNvbnN0IGNyeXB0byA9IHJlcXVpcmUoJ2NyeXB0bycpOwpjb25zdCBvcyA9IHJlcXVpcmUoJ29zJyk7CmNvbnN0IHsgZ2V0SlNPTiwgZ2V0VGV4dCwgcGljaywgcmFuZEludCB9ID0gcmVxdWlyZSgnLi4vbGliL2hlbHBlcnMnKTsKCmNvbnN0IFAgPSAoKSA9PiBjb25maWcuUFJFRklYOwoKLyogLS0tLSB0aW55IGluLW1lbW9yeSBzdG9yZXMgKHBlci1wcm9jZXNzLCByZXNldCBvbiByZWRlcGxveSkgLS0tLSAqLwpjb25zdCBtYWlsYm94ZXMgPSBuZXcgTWFwKCk7ICAgLy8gaWQgLT4geyBhZGRyZXNzLCBjcmVhdGVkIH0KY29uc3QgdG9kb3MgPSBuZXcgTWFwKCk7ICAgICAgIC8vIHVzZXIgLT4gWyB7dCwgZG9uZX0gXQpjb25zdCBzdG9wd2F0Y2hlcyA9IG5ldyBNYXAoKTsgLy8gdXNlciAtPiBzdGFydGVkQXQKCmNvbnN0IE1PUlNFID0gewogIGE6ICcuLScsIGI6ICctLi4uJywgYzogJy0uLS4nLCBkOiAnLS4uJywgZTogJy4nLCBmOiAnLi4tLicsIGc6ICctLS4nLCBoOiAnLi4uLicsIGk6ICcuLicsIGo6ICcuLS0tJywKICBrOiAnLS4tJywgbDogJy4tLi4nLCBtOiAnLS0nLCBuOiAnLS4nLCBvOiAnLS0tJywgcDogJy4tLS4nLCBxOiAnLS0uLScsIHI6ICcuLS4nLCBzOiAnLi4uJywgdDogJy0nLAogIHU6ICcuLi0nLCB2OiAnLi4uLScsIHc6ICcuLS0nLCB4OiAnLS4uLScsIHk6ICctLi0tJywgejogJy0tLi4nLCAnMCc6ICctLS0tLScsICcxJzogJy4tLS0tJywgJzInOiAnLi4tLS0nLAogICczJzogJy4uLi0tJywgJzQnOiAnLi4uLi0nLCAnNSc6ICcuLi4uLicsICc2JzogJy0uLi4uJywgJzcnOiAnLS0uLi4nLCAnOCc6ICctLS0uLicsICc5JzogJy0tLS0uJywKfTsKY29uc3QgTU9SU0VfUkVWID0gT2JqZWN0LmZyb21FbnRyaWVzKE9iamVjdC5lbnRyaWVzKE1PUlNFKS5tYXAoKFtrLCB2XSkgPT4gW3YsIGtdKSk7Cgpjb25zdCBoYW5kbGVyID0gYXN5bmMgKGN0eCkgPT4gewogIGNvbnN0IHsgY29tbWFuZCwgcmVwbHksIGFyZywgc2VuZGVyTnVtIH0gPSBjdHg7CiAgY29uc3Qgd2hvID0gc2VuZGVyTnVtIHx8ICdhbm9uJzsKCiAgc3dpdGNoIChjb21tYW5kKSB7CiAgICAvKiAtLS0tLS0tLS0tLS0tLS0tIGVtYWlsIC0tLS0tLS0tLS0tLS0tLS0gKi8KICAgIGNhc2UgJ3RlbXBtYWlsJzogewogICAgICBpZiAoYXJnICYmIGFyZy50b0xvd2VyQ2FzZSgpID09PSAnY2hlY2snKSB7CiAgICAgICAgY29uc3QgbWIgPSBtYWlsYm94ZXMuZ2V0KHdobyk7CiAgICAgICAgaWYgKCFtYikgcmV0dXJuIHJlcGx5KGDinYwgUGVobGUgJHtQKCl9dGVtcG1haWwgbGlraG8g4oCUIG1haWxib3ggYmFuYW8uYCk7CiAgICAgICAgdHJ5IHsKICAgICAgICAgIGNvbnN0IGQgPSBhd2FpdCBnZXRKU09OKGBodHRwczovL2FwaS5tYWlsLnRtL21lc3NhZ2VzP3BhZ2U9MWApOwogICAgICAgICAgcmV0dXJuIHJlcGx5KGDwn5OsICpNYWlsYm94OiAke21iLmFkZHJlc3N9KlxuXG4keyhkWydoeWRyYTptZW1iZXInXSB8fCBbXSkuc2xpY2UoMCwgNSkubWFwKChtKSA9PiBg4oCiICoke20uZnJvbT8uYWRkcmVzc30qXG4gICR7bS5zdWJqZWN0fWApLmpvaW4oJ1xuJykgfHwgJ19Lb2kgbWFpbCBuYWhpLl8nfWApOwogICAgICAgIH0gY2F0Y2ggeyByZXR1cm4gcmVwbHkoJ+KdjCBJbmJveCBjaGVjayBuYWhpIGhvIHNha2EuJyk7IH0KICAgICAgfQogICAgICB0cnkgewogICAgICAgIGNvbnN0IGRvbWFpbnMgPSBhd2FpdCBnZXRKU09OKCdodHRwczovL2FwaS5tYWlsLnRtL2RvbWFpbnM/cGFnZT0xJyk7CiAgICAgICAgY29uc3QgZG9tYWluID0gZG9tYWluc1snaHlkcmE6bWVtYmVyJ10/LlswXT8uZG9tYWluOwogICAgICAgIGlmICghZG9tYWluKSB0aHJvdyBuZXcgRXJyb3IoJ25vIGRvbWFpbicpOwogICAgICAgIGNvbnN0IGFkZHIgPSBgc2FxaWIke3JhbmRJbnQoMTAwMCwgOTk5OTkpfUAke2RvbWFpbn1gOwogICAgICAgIGNvbnN0IHBhc3MgPSBjcnlwdG8ucmFuZG9tQnl0ZXMoNikudG9TdHJpbmcoJ2hleCcpOwogICAgICAgIGNvbnN0IHIgPSBhd2FpdCBmZXRjaCgnaHR0cHM6Ly9hcGkubWFpbC50bS9hY2NvdW50cycsIHsKICAgICAgICAgIG1ldGhvZDogJ1BPU1QnLCBoZWFkZXJzOiB7ICdDb250ZW50LVR5cGUnOiAnYXBwbGljYXRpb24vanNvbicgfSwKICAgICAgICAgIGJvZHk6IEpTT04uc3RyaW5naWZ5KHsgYWRkcmVzczogYWRkciwgcGFzc3dvcmQ6IHBhc3MgfSksCiAgICAgICAgfSk7CiAgICAgICAgaWYgKCFyLm9rKSB0aHJvdyBuZXcgRXJyb3IoJ2NyZWF0ZSBmYWlsZWQnKTsKICAgICAgICBtYWlsYm94ZXMuc2V0KHdobywgeyBhZGRyZXNzOiBhZGRyLCBwYXNzLCBjcmVhdGVkOiBEYXRlLm5vdygpIH0pOwogICAgICAgIHJldHVybiByZXBseShg8J+TpyAqVGVtcG9yYXJ5IGVtYWlsKlxuXG7wn5OuIEFkZHJlc3M6ICoke2FkZHJ9Klxu8J+UkSBQYXNzd29yZDogJHtwYXNzfVxuXG5fSW5ib3ggZGVraG5lIGtlIGxpeWUgJHtQKCl9dGVtcG1haWwgY2hlY2tfXG5fKFllIG1haWxib3ggc2lyZiBpcyBib3Qga2UgY2hhbHRlIHdhcXQgdGFrIHJlaHRhIGhhaS4pX2ApOwogICAgICB9IGNhdGNoIHsgcmV0dXJuIHJlcGx5KCfinYwgVGVtcCBlbWFpbCBzZXJ2aWNlIGFiaGkgYnVzeSBoYWkuIFRob3JpIGRlciBiYWFkIHRyeSBrYXJvLicpOyB9CiAgICB9CgogICAgLyogLS0tLS0tLS0tLS0tLS0tLSBuZXR3b3JrIC0tLS0tLS0tLS0tLS0tLS0gKi8KICAgIGNhc2UgJ215aXAnOiB7CiAgICAgIGNvbnN0IGQgPSBhd2FpdCBnZXRKU09OKCdodHRwczovL2FwaS5pcGlmeS5vcmc/Zm9ybWF0PWpzb24nKTsKICAgICAgbGV0IGV4dHJhID0gJyc7CiAgICAgIHRyeSB7CiAgICAgICAgY29uc3QgZSA9IGF3YWl0IGdldEpTT04oYGh0dHA6Ly9pcC1hcGkuY29tL2pzb24vJHtkLmlwfWApOwogICAgICAgIGV4dHJhID0gYFxu8J+MjSAke2UuY291bnRyeX0g4oCUICR7ZS5jaXR5fVxu8J+PoiAke2UuaXNwfWA7CiAgICAgIH0gY2F0Y2ggeyAvKiBpZ25vcmUgKi8gfQogICAgICByZXR1cm4gcmVwbHkoYPCfjJAgKlNlcnZlciBJUCpcblxu8J+TjCAke2QuaXB9JHtleHRyYX1gKTsKICAgIH0KICAgIGNhc2UgJ2lwaW5mbyc6IHsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg4p2MIElQIGRvLiBFeGFtcGxlOiAke1AoKX1pcGluZm8gOC44LjguOGApOwogICAgICB0cnkgewogICAgICAgIGNvbnN0IGQgPSBhd2FpdCBnZXRKU09OKGBodHRwOi8vaXAtYXBpLmNvbS9qc29uLyR7ZW5jb2RlVVJJQ29tcG9uZW50KGFyZyl9YCk7CiAgICAgICAgaWYgKGQuc3RhdHVzICE9PSAnc3VjY2VzcycpIHRocm93IG5ldyBFcnJvcignYmFkIGlwJyk7CiAgICAgICAgcmV0dXJuIHJlcGx5KGDwn4yQICoke2FyZ30qXG5cbvCfjI0gJHtkLmNvdW50cnl9ICgke2QuY291bnRyeUNvZGV9KVxu8J+Pme+4jyAke2QucmVnaW9uTmFtZX0sICR7ZC5jaXR5fVxu8J+PoiBJU1A6ICR7ZC5pc3B9XG7wn4+b77iPIE9yZzogJHtkLm9yZ31cbvCfk6EgQVM6ICR7ZC5hc31cbvCfk40gJHtkLmxhdH0sICR7ZC5sb259XG7wn5WQICR7ZC50aW1lem9uZX1gKTsKICAgICAgfSBjYXRjaCB7IHJldHVybiByZXBseSgn4p2MIElQIHZhbGlkIG5haGkuJyk7IH0KICAgIH0KICAgIGNhc2UgJ3dob2lzJzogewogICAgICBpZiAoIWFyZykgcmV0dXJuIHJlcGx5KGDinYwgRG9tYWluIGRvLiBFeGFtcGxlOiAke1AoKX13aG9pcyBnb29nbGUuY29tYCk7CiAgICAgIHRyeSB7CiAgICAgICAgY29uc3QgZCA9IGF3YWl0IGdldEpTT04oYGh0dHBzOi8vcmRhcC5vcmcvZG9tYWluLyR7ZW5jb2RlVVJJQ29tcG9uZW50KGFyZy5yZXBsYWNlKC9eaHR0cHM/OlwvXC8vLCAnJykuc3BsaXQoJy8nKVswXSl9YCk7CiAgICAgICAgY29uc3QgZXYgPSAoZC5ldmVudHMgfHwgW10pLmZpbmQoKGUpID0+IGUuZXZlbnRBY3Rpb24gPT09ICdyZWdpc3RyYXRpb24nKTsKICAgICAgICByZXR1cm4gcmVwbHkoYPCfjJAgKldIT0lTIOKAlCAke2QubGRoTmFtZSB8fCBhcmd9KlxuXG7wn5OFIFJlZ2lzdGVyZWQ6ICR7ZXYgPyBuZXcgRGF0ZShldi5ldmVudERhdGUpLnRvRGF0ZVN0cmluZygpIDogJ+KAlCd9XG7wn4+iIFJlZ2lzdHJhcjogJHtkLmVudGl0aWVzPy5maW5kKChlKSA9PiBlLnJvbGVzPy5pbmNsdWRlcygncmVnaXN0cmFyJykpPy52Y2FyZEFycmF5Py5bMV0/LmZpbmQoKHgpID0+IHhbMF0gPT09ICdmbicpPy5bM10gfHwgJ+KAlCd9XG7wn5OKIFN0YXR1czogJHsoZC5zdGF0dXMgfHwgW10pLnNsaWNlKDAsIDMpLmpvaW4oJywgJyl9YCk7CiAgICAgIH0gY2F0Y2ggeyByZXR1cm4gcmVwbHkoJ+KdjCBEb21haW4gaW5mbyBuYWhpIG1pbGkuJyk7IH0KICAgIH0KICAgIGNhc2UgJ2Rucyc6IHsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg4p2MIERvbWFpbiBkby4gRXhhbXBsZTogJHtQKCl9ZG5zIGdvb2dsZS5jb21gKTsKICAgICAgY29uc3QgZCA9IGF3YWl0IGdldEpTT04oYGh0dHBzOi8vZG5zLmdvb2dsZS9yZXNvbHZlP25hbWU9JHtlbmNvZGVVUklDb21wb25lbnQoYXJnKX0mdHlwZT1BYCk7CiAgICAgIGNvbnN0IGEgPSAoZC5BbnN3ZXIgfHwgW10pLmZpbHRlcigoeCkgPT4geC50eXBlID09PSAxKS5tYXAoKHgpID0+IHguZGF0YSk7CiAgICAgIGNvbnN0IG14ID0gYXdhaXQgZ2V0SlNPTihgaHR0cHM6Ly9kbnMuZ29vZ2xlL3Jlc29sdmU/bmFtZT0ke2VuY29kZVVSSUNvbXBvbmVudChhcmcpfSZ0eXBlPU1YYCk7CiAgICAgIHJldHVybiByZXBseShg8J+MkCAqRE5TIOKAlCAke2FyZ30qXG5cbvCfk4wgQTogJHthLmpvaW4oJywgJykgfHwgJ+KAlCd9XG7wn5OnIE1YOiAkeyhteC5BbnN3ZXIgfHwgW10pLm1hcCgoeCkgPT4geC5kYXRhKS5qb2luKCcsICcpIHx8ICfigJQnfWApOwogICAgfQogICAgY2FzZSAndW5zaG9ydCc6IHsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg4p2MIFNob3J0IGxpbmsgZG8uIEV4YW1wbGU6ICR7UCgpfXVuc2hvcnQgYml0Lmx5L2FiY2ApOwogICAgICB0cnkgewogICAgICAgIGNvbnN0IHVybCA9IC9eaHR0cHM/OlwvXC8vLnRlc3QoYXJnKSA/IGFyZyA6IGBodHRwczovLyR7YXJnfWA7CiAgICAgICAgY29uc3QgY3RybCA9IG5ldyBBYm9ydENvbnRyb2xsZXIoKTsKICAgICAgICBjb25zdCB0ID0gc2V0VGltZW91dCgoKSA9PiBjdHJsLmFib3J0KCksIDEwMDAwKTsKICAgICAgICBsZXQgZmluYWwgPSB1cmw7CiAgICAgICAgdHJ5IHsKICAgICAgICAgIGNvbnN0IHIgPSBhd2FpdCBmZXRjaCh1cmwsIHsgcmVkaXJlY3Q6ICdmb2xsb3cnLCBtZXRob2Q6ICdIRUFEJywgc2lnbmFsOiBjdHJsLnNpZ25hbCB9KTsKICAgICAgICAgIGZpbmFsID0gci51cmw7CiAgICAgICAgfSBmaW5hbGx5IHsgY2xlYXJUaW1lb3V0KHQpOyB9CiAgICAgICAgcmV0dXJuIHJlcGx5KGDwn5SXICpMaW5rIGV4cGFuZCpcblxuU2hvcnQ6ICR7YXJnfVxuRmluYWw6ICR7ZmluYWx9XG4ke2ZpbmFsID09PSB1cmwgPyAnXG5f4pqg77iPIFJlZGlyZWN0IG5haGkgbWlsYS5fJyA6ICcnfWApOwogICAgICB9IGNhdGNoIHsgcmV0dXJuIHJlcGx5KCfinYwgTGluayBraG9sIG5haGkgc2FrYS4nKTsgfQogICAgfQogICAgY2FzZSAncGluZ2hvc3QnOiB7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYOKdjCBIb3N0IGRvLiBFeGFtcGxlOiAke1AoKX1waW5naG9zdCBnb29nbGUuY29tYCk7CiAgICAgIGNvbnN0IHQwID0gRGF0ZS5ub3coKTsKICAgICAgdHJ5IHsKICAgICAgICBjb25zdCByID0gYXdhaXQgZmV0Y2goYGh0dHBzOi8vJHthcmcucmVwbGFjZSgvXmh0dHBzPzpcL1wvLywgJycpfWAsIHsgbWV0aG9kOiAnSEVBRCcgfSk7CiAgICAgICAgcmV0dXJuIHJlcGx5KGDwn5OhICoke2FyZ30qXG5cbuKchSBSZWFjaGFibGUg4oCUICR7RGF0ZS5ub3coKSAtIHQwfW1zIChIVFRQICR7ci5zdGF0dXN9KWApOwogICAgICB9IGNhdGNoIHsKICAgICAgICByZXR1cm4gcmVwbHkoYPCfk6EgKiR7YXJnfSpcblxu4p2MIFJlYWNoYWJsZSBuYWhpICgke0RhdGUubm93KCkgLSB0MH1tcylgKTsKICAgICAgfQogICAgfQoKICAgIC8qIC0tLS0tLS0tLS0tLS0tLS0gdGltZSAvIGNhbGMgLS0tLS0tLS0tLS0tLS0tLSAqLwogICAgY2FzZSAnc3RvcHdhdGNoJzogewogICAgICBpZiAoYXJnID09PSAnc3RvcCcgfHwgYXJnID09PSAncmVzZXQnKSB7CiAgICAgICAgY29uc3QgdDAgPSBzdG9wd2F0Y2hlcy5nZXQod2hvKTsKICAgICAgICBzdG9wd2F0Y2hlcy5kZWxldGUod2hvKTsKICAgICAgICBpZiAoIXQwKSByZXR1cm4gcmVwbHkoJ+KPse+4jyBTdG9wd2F0Y2ggY2hhbCBoaSBuYWhpIHJhaGEgdGhhLicpOwogICAgICAgIGNvbnN0IG1zID0gRGF0ZS5ub3coKSAtIHQwOwogICAgICAgIHJldHVybiByZXBseShg4o+x77iPICpTdG9wcGVkKlxuXG7ij7MgJHtNYXRoLmZsb29yKG1zIC8gNjAwMDApfW0gJHtNYXRoLmZsb29yKChtcyAlIDYwMDAwKSAvIDEwMDApfXMgJHttcyAlIDEwMDB9bXNgKTsKICAgICAgfQogICAgICBpZiAoYXJnID09PSAnbGFwJyAmJiBzdG9wd2F0Y2hlcy5oYXMod2hvKSkgewogICAgICAgIGNvbnN0IG1zID0gRGF0ZS5ub3coKSAtIHN0b3B3YXRjaGVzLmdldCh3aG8pOwogICAgICAgIHJldHVybiByZXBseShg4o+x77iPICpMYXAqIOKAlCAke01hdGguZmxvb3IobXMgLyA2MDAwMCl9bSAke01hdGguZmxvb3IoKG1zICUgNjAwMDApIC8gMTAwMCl9c2ApOwogICAgICB9CiAgICAgIHN0b3B3YXRjaGVzLnNldCh3aG8sIERhdGUubm93KCkpOwogICAgICByZXR1cm4gcmVwbHkoYOKPse+4jyAqU3RvcHdhdGNoIHN0YXJ0ZWQqXG5cblJva25lIGtlIGxpeWU6ICR7UCgpfXN0b3B3YXRjaCBzdG9wYCk7CiAgICB9CiAgICBjYXNlICd0aW1lcic6IHsKICAgICAgY29uc3QgbSA9IC9eKFxkKylccyooW3NtaF0/KSQvLmV4ZWMoKGFyZyB8fCAnJykudHJpbSgpKTsKICAgICAgaWYgKCFtKSByZXR1cm4gcmVwbHkoYOKdjCBGb3JtYXQ6ICR7UCgpfXRpbWVyIDVtYCk7CiAgICAgIGNvbnN0IG4gPSBwYXJzZUludChtWzFdLCAxMCk7CiAgICAgIGNvbnN0IHVuaXQgPSBtWzJdIHx8ICdtJzsKICAgICAgY29uc3Qgc2VjcyA9IHVuaXQgPT09ICdzJyA/IG4gOiB1bml0ID09PSAnaCcgPyBuICogMzYwMCA6IG4gKiA2MDsKICAgICAgaWYgKHNlY3MgPiAzNjAwKSByZXR1cm4gcmVwbHkoJ+KdjCBNYXggMSBnaGFudGEuJyk7CiAgICAgIHNldFRpbWVvdXQoKCkgPT4gewogICAgICAgIGN0eC5zZW5kKGN0eC5mcm9tLCB7IHRleHQ6IGDij7AgKlRpbWVyISogJHtufSR7dW5pdH0gcG9vcmEgaG8gZ2F5YS5gIH0pLmNhdGNoKCgpID0+IHt9KTsKICAgICAgfSwgc2VjcyAqIDEwMDApOwogICAgICByZXR1cm4gcmVwbHkoYOKPsCAqVGltZXIgc2V0KiDigJQgJHtufSR7dW5pdH1cbl9JcyBjaGF0IG1lIGFsZXJ0IGFheWVnYS5fYCk7CiAgICB9CiAgICBjYXNlICdob3Vycyc6IHsKICAgICAgY29uc3QgcGFydHMgPSAoYXJnIHx8ICcnKS5zcGxpdCgvW1xzLC1dKy8pLm1hcCgoeCkgPT4geC50cmltKCkpLmZpbHRlcihCb29sZWFuKTsKICAgICAgaWYgKHBhcnRzLmxlbmd0aCA8IDIpIHJldHVybiByZXBseShg4p2MIEZvcm1hdDogJHtQKCl9aG91cnMgMDk6MDAgMTc6MzBgKTsKICAgICAgY29uc3QgdG9NaW4gPSAocykgPT4geyBjb25zdCBbaCwgbV0gPSBzLnNwbGl0KCc6JykubWFwKE51bWJlcik7IHJldHVybiBoICogNjAgKyAobSB8fCAwKTsgfTsKICAgICAgY29uc3QgZGlmZiA9IHRvTWluKHBhcnRzWzFdKSAtIHRvTWluKHBhcnRzWzBdKTsKICAgICAgY29uc3QgZCA9IGRpZmYgPCAwID8gZGlmZiArIDE0NDAgOiBkaWZmOwogICAgICByZXR1cm4gcmVwbHkoYPCflZAgKldvcmsgaG91cnMqXG5cbiR7cGFydHNbMF19IOKGkiAke3BhcnRzWzFdfVxuXG7ij7MgKiR7TWF0aC5mbG9vcihkIC8gNjApfWggJHtkICUgNjB9bSoke2RpZmYgPCAwID8gJ1xuXyhyYWF0IGthIHNoaWZ0KV8nIDogJyd9YCk7CiAgICB9CiAgICBjYXNlICd1dWlkJzogewogICAgICByZXR1cm4gcmVwbHkoYPCflJEgKlVVSUQgdjQqXG5cblxgJHtjcnlwdG8ucmFuZG9tVVVJRCgpfVxgYCk7CiAgICB9CiAgICBjYXNlICdyYW5kbnVtJzogewogICAgICBjb25zdCBtID0gLygtP1xkKylccypbLeKAk3RvIF0rXHMqKC0/XGQrKS8uZXhlYyhhcmcgfHwgJycpOwogICAgICBpZiAoIW0pIHJldHVybiByZXBseShg4p2MIEZvcm1hdDogJHtQKCl9cmFuZG51bSAxLTEwMGApOwogICAgICBjb25zdCBhID0gcGFyc2VJbnQobVsxXSwgMTApLCBiID0gcGFyc2VJbnQobVsyXSwgMTApOwogICAgICBjb25zdCBsbyA9IE1hdGgubWluKGEsIGIpLCBoaSA9IE1hdGgubWF4KGEsIGIpOwogICAgICByZXR1cm4gcmVwbHkoYPCfjrIgKlJhbmRvbSogKCR7bG994oCTJHtoaX0pXG5cbvCfkYkgKiR7cmFuZEludChsbywgaGkpfSpgKTsKICAgIH0KICAgIGNhc2UgJ3JhbmRwaWNrJzogewogICAgICBjb25zdCBpdGVtcyA9IChhcmcgfHwgJycpLnNwbGl0KCcsJykubWFwKChzKSA9PiBzLnRyaW0oKSkuZmlsdGVyKEJvb2xlYW4pOwogICAgICBpZiAoaXRlbXMubGVuZ3RoIDwgMikgcmV0dXJuIHJlcGx5KGDinYwgRm9ybWF0OiAke1AoKX1yYW5kcGljayBjaGFpLCBjb2ZmZWUsIGp1aWNlYCk7CiAgICAgIHJldHVybiByZXBseShg8J+OryAqUGljayog4oCUICR7cGljayhpdGVtcyl9YCk7CiAgICB9CiAgICBjYXNlICdzaHVmZmxlJzogewogICAgICBjb25zdCBpdGVtcyA9IChhcmcgfHwgJycpLnNwbGl0KCcsJykubWFwKChzKSA9PiBzLnRyaW0oKSkuZmlsdGVyKEJvb2xlYW4pOwogICAgICBpZiAoaXRlbXMubGVuZ3RoIDwgMikgcmV0dXJuIHJlcGx5KGDinYwgRm9ybWF0OiAke1AoKX1zaHVmZmxlIGEsIGIsIGNgKTsKICAgICAgZm9yIChsZXQgaSA9IGl0ZW1zLmxlbmd0aCAtIDE7IGkgPiAwOyBpLS0pIHsgY29uc3QgaiA9IHJhbmRJbnQoMCwgaSk7IFtpdGVtc1tpXSwgaXRlbXNbal1dID0gW2l0ZW1zW2pdLCBpdGVtc1tpXV07IH0KICAgICAgcmV0dXJuIHJlcGx5KGDwn5SAICpTaHVmZmxlZCpcblxuJHtpdGVtcy5tYXAoKHgsIGkpID0+IGAke2kgKyAxfS4gJHt4fWApLmpvaW4oJ1xuJyl9YCk7CiAgICB9CiAgICBjYXNlICdyb21hbic6IHsKICAgICAgY29uc3QgbiA9IHBhcnNlSW50KGFyZywgMTApOwogICAgICBpZiAoIShuID4gMCAmJiBuIDwgNDAwMCkpIHJldHVybiByZXBseShg4p2MIDHigJMzOTk5IGthIG51bWJlciBkby4gRXhhbXBsZTogJHtQKCl9cm9tYW4gMjAyNmApOwogICAgICBjb25zdCBtYXAgPSBbWzEwMDAsICdNJ10sIFs5MDAsICdDTSddLCBbNTAwLCAnRCddLCBbNDAwLCAnQ0QnXSwgWzEwMCwgJ0MnXSwgWzkwLCAnWEMnXSwgWzUwLCAnTCddLCBbNDAsICdYTCddLCBbMTAsICdYJ10sIFs5LCAnSVgnXSwgWzUsICdWJ10sIFs0LCAnSVYnXSwgWzEsICdJJ11dOwogICAgICBsZXQgeCA9IG4sIG91dCA9ICcnOwogICAgICBmb3IgKGNvbnN0IFt2LCBzXSBvZiBtYXApIHdoaWxlICh4ID49IHYpIHsgb3V0ICs9IHM7IHggLT0gdjsgfQogICAgICByZXR1cm4gcmVwbHkoYPCflKIgKiR7bn0qID0gKiR7b3V0fSpgKTsKICAgIH0KICAgIGNhc2UgJ3BlcmNlbnQnOiB7CiAgICAgIGNvbnN0IG0gPSAvKFtcZC5dKylccyolP1xzKig/Om9mfFxzKVxzKihbXGQuXSspL2kuZXhlYyhhcmcgfHwgJycpOwogICAgICBpZiAoIW0pIHJldHVybiByZXBseShg4p2MIEZvcm1hdDogJHtQKCl9cGVyY2VudCAxNSBvZiAyMDAwYCk7CiAgICAgIGNvbnN0IHIgPSAocGFyc2VGbG9hdChtWzFdKSAvIDEwMCkgKiBwYXJzZUZsb2F0KG1bMl0pOwogICAgICByZXR1cm4gcmVwbHkoYPCfk4ogKiR7bVsxXX0lIG9mICR7bVsyXX0qID0gKiR7ci50b0xvY2FsZVN0cmluZyh1bmRlZmluZWQsIHsgbWF4aW11bUZyYWN0aW9uRGlnaXRzOiAyIH0pfSpgKTsKICAgIH0KICAgIGNhc2UgJ2xvYW4nOiB7CiAgICAgIGNvbnN0IG0gPSAvKFtcZC5dKylccypbLCBdXHMqKFtcZC5dKylccyolP1xzKlssIF1ccyooXGQrKVxzKih5fG18eWVhcnxtb250aCk/L2kuZXhlYyhhcmcgfHwgJycpOwogICAgICBpZiAoIW0pIHJldHVybiByZXBseShg4p2MIEZvcm1hdDogJHtQKCl9bG9hbiA1MDAwMDAgMjAgNXlgKTsKICAgICAgY29uc3QgcHJpbmNpcGFsID0gcGFyc2VGbG9hdChtWzFdKTsKICAgICAgY29uc3QgcmF0ZSA9IHBhcnNlRmxvYXQobVsyXSkgLyAxMDAgLyAxMjsKICAgICAgY29uc3QgbiA9IG1bNF0/LnN0YXJ0c1dpdGgoJ20nKSA/IHBhcnNlSW50KG1bM10sIDEwKSA6IHBhcnNlSW50KG1bM10sIDEwKSAqIDEyOwogICAgICBjb25zdCBlbWkgPSByYXRlID09PSAwID8gcHJpbmNpcGFsIC8gbiA6IChwcmluY2lwYWwgKiByYXRlICogTWF0aC5wb3coMSArIHJhdGUsIG4pKSAvIChNYXRoLnBvdygxICsgcmF0ZSwgbikgLSAxKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4+mICpMb2FuIC8gRU1JKlxuXG7wn5KwIEFtb3VudDogUEtSICR7cHJpbmNpcGFsLnRvTG9jYWxlU3RyaW5nKCl9XG7wn5OIIFJhdGU6ICR7bVsyXX0lIGFubnVhbFxu4o+zIFRlbnVyZTogJHtufSBtb250aHNcblxu8J+StSAqTW9udGhseSBFTUk6IFBLUiAke01hdGgucm91bmQoZW1pKS50b0xvY2FsZVN0cmluZygpfSpcbvCfk4ogVG90YWw6IFBLUiAke01hdGgucm91bmQoZW1pICogbikudG9Mb2NhbGVTdHJpbmcoKX1cbvCfk4kgSW50ZXJlc3Q6IFBLUiAke01hdGgucm91bmQoZW1pICogbiAtIHByaW5jaXBhbCkudG9Mb2NhbGVTdHJpbmcoKX1gKTsKICAgIH0KICAgIGNhc2UgJ2Rpc2NvdW50JzogewogICAgICBjb25zdCBtID0gLyhbXGQuXSspXHMqWywgXVxzKihbXGQuXSspXHMqJT8vLmV4ZWMoYXJnIHx8ICcnKTsKICAgICAgaWYgKCFtKSByZXR1cm4gcmVwbHkoYOKdjCBGb3JtYXQ6ICR7UCgpfWRpc2NvdW50IDIwMDAgMzAlYCk7CiAgICAgIGNvbnN0IHByaWNlID0gcGFyc2VGbG9hdChtWzFdKSwgb2ZmID0gcGFyc2VGbG9hdChtWzJdKTsKICAgICAgY29uc3Qgc2F2ZSA9IChwcmljZSAqIG9mZikgLyAxMDA7CiAgICAgIHJldHVybiByZXBseShg8J+Pt++4jyAqRGlzY291bnQqXG5cbk9yaWdpbmFsOiBQS1IgJHtwcmljZS50b0xvY2FsZVN0cmluZygpfVxuRGlzY291bnQ6ICR7b2ZmfSVcblxu4pyFICpGaW5hbDogUEtSICR7KHByaWNlIC0gc2F2ZSkudG9Mb2NhbGVTdHJpbmcoKX0qXG7wn5KwIEJhY2hhdDogUEtSICR7c2F2ZS50b0xvY2FsZVN0cmluZygpfWApOwogICAgfQogICAgY2FzZSAnc3BsaXQnOiB7CiAgICAgIGNvbnN0IG0gPSAvKFtcZC5dKylccypbLCBdXHMqKFxkKykvLmV4ZWMoYXJnIHx8ICcnKTsKICAgICAgaWYgKCFtKSByZXR1cm4gcmVwbHkoYOKdjCBGb3JtYXQ6ICR7UCgpfXNwbGl0IDQ1MDAgNGApOwogICAgICBjb25zdCB0b3RhbCA9IHBhcnNlRmxvYXQobVsxXSksIG4gPSBwYXJzZUludChtWzJdLCAxMCk7CiAgICAgIHJldHVybiByZXBseShg8J+nviAqQmlsbCBzcGxpdCpcblxuVG90YWw6IFBLUiAke3RvdGFsLnRvTG9jYWxlU3RyaW5nKCl9XG5QZW9wbGU6ICR7bn1cblxu8J+RpCAqUGVyIHBlcnNvbjogUEtSICR7TWF0aC5jZWlsKHRvdGFsIC8gbikudG9Mb2NhbGVTdHJpbmcoKX0qYCk7CiAgICB9CiAgICBjYXNlICdhZ2UnOiB7CiAgICAgIGNvbnN0IG0gPSAvKFxkezR9KVstL10oXGR7MSwyfSlbLS9dKFxkezEsMn0pLy5leGVjKGFyZyB8fCAnJyk7CiAgICAgIGlmICghbSkgcmV0dXJuIHJlcGx5KGDinYwgRm9ybWF0OiAke1AoKX1hZ2UgMjAwMC0wNS0xMmApOwogICAgICBjb25zdCBiID0gbmV3IERhdGUoK21bMV0sICttWzJdIC0gMSwgK21bM10pOwogICAgICBpZiAoaXNOYU4oYikpIHJldHVybiByZXBseSgn4p2MIERhdGUgc2FoaSBuYWhpLicpOwogICAgICBjb25zdCBub3cgPSBuZXcgRGF0ZSgpOwogICAgICBsZXQgeSA9IG5vdy5nZXRGdWxsWWVhcigpIC0gYi5nZXRGdWxsWWVhcigpOwogICAgICBsZXQgbW8gPSBub3cuZ2V0TW9udGgoKSAtIGIuZ2V0TW9udGgoKTsKICAgICAgaWYgKG5vdy5nZXREYXRlKCkgPCBiLmdldERhdGUoKSkgbW8tLTsKICAgICAgaWYgKG1vIDwgMCkgeyB5LS07IG1vICs9IDEyOyB9CiAgICAgIGNvbnN0IGRheXMgPSBNYXRoLmZsb29yKChub3cgLSBiKSAvIDg2NDAwMDAwKTsKICAgICAgY29uc3QgbmV4dCA9IG5ldyBEYXRlKG5vdy5nZXRGdWxsWWVhcigpLCBiLmdldE1vbnRoKCksIGIuZ2V0RGF0ZSgpKTsKICAgICAgaWYgKG5leHQgPCBub3cpIG5leHQuc2V0RnVsbFllYXIobmV4dC5nZXRGdWxsWWVhcigpICsgMSk7CiAgICAgIGNvbnN0IHRvQmRheSA9IE1hdGguY2VpbCgobmV4dCAtIG5vdykgLyA4NjQwMDAwMCk7CiAgICAgIHJldHVybiByZXBseShg8J+OgiAqQWdlKlxuXG7wn5OFIERPQjogJHtiLnRvRGF0ZVN0cmluZygpfVxuXG7wn46JICoke3l9IHNhYWwsICR7bW99IG1haGluZSpcbvCfk4YgJHtkYXlzLnRvTG9jYWxlU3RyaW5nKCl9IGRpblxu8J+OiCBBZ2xhIGJpcnRoZGF5OiAqJHt0b0JkYXl9IGRpbiBiYWFkKmApOwogICAgfQogICAgY2FzZSAnYm1pJzogewogICAgICBjb25zdCBtID0gLyhbXGQuXSspXHMqWywgXVxzKihbXGQuXSspLy5leGVjKGFyZyB8fCAnJyk7CiAgICAgIGlmICghbSkgcmV0dXJuIHJlcGx5KGDinYwgRm9ybWF0OiAke1AoKX1ibWkgNzAgMS43NSAgKGtnLCBtZXRlcnMpYCk7CiAgICAgIGNvbnN0IHcgPSBwYXJzZUZsb2F0KG1bMV0pLCBoID0gcGFyc2VGbG9hdChtWzJdKTsKICAgICAgY29uc3QgYm1pID0gdyAvIChoICogaCk7CiAgICAgIGNvbnN0IGNhdCA9IGJtaSA8IDE4LjUgPyAn8J+UtSBVbmRlcndlaWdodCcgOiBibWkgPCAyNSA/ICfwn5+iIE5vcm1hbCcgOiBibWkgPCAzMCA/ICfwn5+gIE92ZXJ3ZWlnaHQnIDogJ/CflLQgT2Jlc2UnOwogICAgICByZXR1cm4gcmVwbHkoYOKalu+4jyAqQk1JKlxuXG5XZWlnaHQ6ICR7d30ga2dcbkhlaWdodDogJHtofSBtXG5cbvCfk4ogKkJNSTogJHtibWkudG9GaXhlZCgxKX0qIOKAlCAke2NhdH1cblxuX0hlYWx0aHkgcmFuZ2U6IDE4LjXigJMyNC45X2ApOwogICAgfQogICAgY2FzZSAnd2Vla2RheSc6IHsKICAgICAgY29uc3QgbSA9IC8oXGR7NH0pWy0vXShcZHsxLDJ9KVstL10oXGR7MSwyfSkvLmV4ZWMoYXJnIHx8ICcnKTsKICAgICAgaWYgKCFtKSByZXR1cm4gcmVwbHkoYOKdjCBGb3JtYXQ6ICR7UCgpfXdlZWtkYXkgMTk5MC0wMy0xNGApOwogICAgICBjb25zdCBkID0gbmV3IERhdGUoK21bMV0sICttWzJdIC0gMSwgK21bM10pOwogICAgICByZXR1cm4gcmVwbHkoYPCfk4UgKiR7ZC50b0RhdGVTdHJpbmcoKX0qXG5cbvCfkYkgJHtbJ0l0d2FyJywgJ1NvbXdhcicsICdNYW5nYWwnLCAnQnVkaCcsICdKdW1lcmFhdCcsICdKdW1tYWgnLCAnSGFmdGEnXVtkLmdldERheSgpXX0gdGhhLmApOwogICAgfQogICAgY2FzZSAnZGF0ZWNhbGMnOiB7CiAgICAgIGNvbnN0IG0gPSAvKFxkezR9KVstL10oXGR7MSwyfSlbLS9dKFxkezEsMn0pLy5leGVjKGFyZyB8fCAnJyk7CiAgICAgIGlmICghbSkgcmV0dXJuIHJlcGx5KGDinYwgRm9ybWF0OiAke1AoKX1kYXRlY2FsYyAyMDI2LTAxLTAxYCk7CiAgICAgIGNvbnN0IGQgPSBuZXcgRGF0ZSgrbVsxXSwgK21bMl0gLSAxLCArbVszXSk7CiAgICAgIGNvbnN0IGRpZmYgPSBNYXRoLmNlaWwoKGQgLSBEYXRlLm5vdygpKSAvIDg2NDAwMDAwKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5OGICoke2QudG9EYXRlU3RyaW5nKCl9KlxuXG4ke2RpZmYgPiAwID8gYOKPsyAqJHtkaWZmfSBkaW4gYmFxaSpgIDogZGlmZiA9PT0gMCA/ICfwn46vIEFhaiBoaSBoYWkhJyA6IGDinIUgJHtNYXRoLmFicyhkaWZmKX0gZGluIHBlaGxlYH1gKTsKICAgIH0KICAgIGNhc2UgJ3RpbWVzdGFtcCc6IHsKICAgICAgY29uc3QgbiA9IHBhcnNlSW50KGFyZywgMTApOwogICAgICBpZiAoIW4pIHsKICAgICAgICBjb25zdCBub3cgPSBNYXRoLmZsb29yKERhdGUubm93KCkgLyAxMDAwKTsKICAgICAgICByZXR1cm4gcmVwbHkoYPCflZAgKk5vdypcblxuVW5peDogXGAke25vd31cYFxuSVNPOiAke25ldyBEYXRlKCkudG9JU09TdHJpbmcoKX1cblxuXyR7UCgpfXRpbWVzdGFtcCAxNzAwMDAwMDAwIOKAlCBjb252ZXJ0X2ApOwogICAgICB9CiAgICAgIGNvbnN0IGQgPSBuZXcgRGF0ZShuIDwgMWUxMiA/IG4gKiAxMDAwIDogbik7CiAgICAgIHJldHVybiByZXBseShg8J+VkCAqVGltZXN0YW1wICR7bn0qXG5cbvCfk4UgJHtkLnRvVVRDU3RyaW5nKCl9XG7wn4e18J+HsCAke2QudG9Mb2NhbGVTdHJpbmcoJ2VuLVBLJywgeyB0aW1lWm9uZTogJ0FzaWEvS2FyYWNoaScgfSl9YCk7CiAgICB9CiAgICBjYXNlICdtb29ucGhhc2UnOiB7CiAgICAgIC8vIG1ldC5ubyBnaXZlcyB0aGUgbHVuYXIgcGhhc2UgYXMgYSAwLTM2MCBhbmdsZSAoZmFybXNlbnNlIGlzIGRlYWQpLgogICAgICBjb25zdCB0b2RheSA9IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKS5zbGljZSgwLCAxMCk7CiAgICAgIGNvbnN0IGQgPSBhd2FpdCBnZXRKU09OKGBodHRwczovL2FwaS5tZXQubm8vd2VhdGhlcmFwaS9zdW5yaXNlLzMuMC9tb29uP2xhdD0yNC44NiZsb249NjcuMDEmZGF0ZT0ke3RvZGF5fWApOwogICAgICBjb25zdCBhbmcgPSBkLnByb3BlcnRpZXM/Lm1vb25waGFzZTsKICAgICAgY29uc3QgbmFtZXMgPSBbCiAgICAgICAgWzIyLjUsICfwn4yRIE5ldyBNb29uIChuYXlhIGNoYWFuZCknXSwKICAgICAgICBbNjcuNSwgJ/CfjJIgV2F4aW5nIENyZXNjZW50J10sCiAgICAgICAgWzExMi41LCAn8J+MkyBGaXJzdCBRdWFydGVyJ10sCiAgICAgICAgWzE1Ny41LCAn8J+MlCBXYXhpbmcgR2liYm91cyddLAogICAgICAgIFsyMDIuNSwgJ/CfjJUgRnVsbCBNb29uIChwb29yYSBjaGFhbmQpJ10sCiAgICAgICAgWzI0Ny41LCAn8J+MliBXYW5pbmcgR2liYm91cyddLAogICAgICAgIFsyOTIuNSwgJ/CfjJcgTGFzdCBRdWFydGVyJ10sCiAgICAgICAgWzMzNy41LCAn8J+MmCBXYW5pbmcgQ3Jlc2NlbnQnXSwKICAgICAgICBbMzYwLCAn8J+MkSBOZXcgTW9vbiAobmF5YSBjaGFhbmQpJ10sCiAgICAgIF07CiAgICAgIGNvbnN0IHBoYXNlID0gbmFtZXMuZmluZCgoW2xpbV0pID0+IGFuZyA8IGxpbSk/LlsxXSB8fCAn4oCUJzsKICAgICAgY29uc3QgcGN0ID0gTWF0aC5yb3VuZCgoMSAtIE1hdGguYWJzKDE4MCAtIGFuZykgLyAxODApICogMTAwKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn4yZICpNb29uIHBoYXNlKgoKJHtwaGFzZX1cbvCfk5AgQW5nbGU6ICR7TnVtYmVyKGFuZykudG9GaXhlZCgxKX3CsFxu8J+SoSBJbGx1bWluYXRpb246IH4ke3BjdH0lXG5cbl8ke3RvZGF5fV9gKTsKICAgIH0KCiAgICAvKiAtLS0tLS0tLS0tLS0tLS0tIGVuY29kZXJzIC0tLS0tLS0tLS0tLS0tLS0gKi8KICAgIGNhc2UgJ21vcnNlJzogewogICAgICBpZiAoIWFyZykgcmV0dXJuIHJlcGx5KGDinYwgVGV4dCBkby4gRXhhbXBsZTogJHtQKCl9bW9yc2UgaGVsbG9gKTsKICAgICAgY29uc3QgaXNNb3JzZSA9IC9eWy5cLSAvXSskLy50ZXN0KGFyZy50cmltKCkpOwogICAgICBpZiAoaXNNb3JzZSkgewogICAgICAgIGNvbnN0IG91dCA9IGFyZy50cmltKCkuc3BsaXQoL1xzKy8pLm1hcCgoYykgPT4gYy5zcGxpdCgnLycpLm1hcCgoeCkgPT4gTU9SU0VfUkVWW3hdIHx8ICcnKS5qb2luKCcnKSB8fCAoYyA9PT0gJy8nID8gJyAnIDogJycpKS5qb2luKCcnKTsKICAgICAgICByZXR1cm4gcmVwbHkoYPCfk7sgKkRlY29kZWQqXG5cbiR7b3V0LnJlcGxhY2UoL1wvL2csICcgJyl9YCk7CiAgICAgIH0KICAgICAgY29uc3Qgb3V0ID0gYXJnLnRvTG93ZXJDYXNlKCkuc3BsaXQoJycpLm1hcCgoYykgPT4gKGMgPT09ICcgJyA/ICcvJyA6IE1PUlNFW2NdIHx8ICcnKSkuZmlsdGVyKEJvb2xlYW4pLmpvaW4oJyAnKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5O7ICpNb3JzZSpcblxuJHtvdXR9YCk7CiAgICB9CiAgICBjYXNlICdiaW5hcnknOiB7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYOKdjCBUZXh0IGRvLiBFeGFtcGxlOiAke1AoKX1iaW5hcnkgaGlgKTsKICAgICAgaWYgKC9eWzAxXHNdKyQvLnRlc3QoYXJnLnRyaW0oKSkpIHsKICAgICAgICBjb25zdCBvdXQgPSBhcmcudHJpbSgpLnNwbGl0KC9ccysvKS5tYXAoKGIpID0+IFN0cmluZy5mcm9tQ2hhckNvZGUocGFyc2VJbnQoYiwgMikpKS5qb2luKCcnKTsKICAgICAgICByZXR1cm4gcmVwbHkoYPCflKIgKkRlY29kZWQqXG5cbiR7b3V0fWApOwogICAgICB9CiAgICAgIGNvbnN0IG91dCA9IGFyZy5zcGxpdCgnJykubWFwKChjKSA9PiBjLmNoYXJDb2RlQXQoMCkudG9TdHJpbmcoMikucGFkU3RhcnQoOCwgJzAnKSkuam9pbignICcpOwogICAgICByZXR1cm4gcmVwbHkoYPCflKIgKkJpbmFyeSpcblxuJHtvdXR9YCk7CiAgICB9CiAgICBjYXNlICdoZXgnOiB7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYOKdjCBUZXh0IGRvLiBFeGFtcGxlOiAke1AoKX1oZXggaGlgKTsKICAgICAgaWYgKC9eWzAtOWEtZlxzXSskL2kudGVzdChhcmcudHJpbSgpKSAmJiBhcmcucmVwbGFjZSgvXHMvZywgJycpLmxlbmd0aCAlIDIgPT09IDApIHsKICAgICAgICBjb25zdCBvdXQgPSBhcmcudHJpbSgpLnNwbGl0KC9ccysvKS5tYXAoKGgpID0+IEJ1ZmZlci5mcm9tKGgsICdoZXgnKS50b1N0cmluZygndXRmOCcpKS5qb2luKCcgJyk7CiAgICAgICAgcmV0dXJuIHJlcGx5KGDwn5ShICpEZWNvZGVkKlxuXG4ke291dH1gKTsKICAgICAgfQogICAgICByZXR1cm4gcmVwbHkoYPCflKEgKkhleCpcblxuJHtCdWZmZXIuZnJvbShhcmcpLnRvU3RyaW5nKCdoZXgnKS5tYXRjaCgvLnsxLDJ9L2cpLmpvaW4oJyAnKX1gKTsKICAgIH0KICAgIGNhc2UgJ2NhZXNhcic6IHsKICAgICAgY29uc3QgbSA9IC9eKFxkKylccysoLispJC8uZXhlYyhhcmcgfHwgJycpOwogICAgICBpZiAoIW0pIHJldHVybiByZXBseShg4p2MIEZvcm1hdDogJHtQKCl9Y2Flc2FyIDMgaGVsbG9gKTsKICAgICAgY29uc3Qgc2hpZnQgPSBwYXJzZUludChtWzFdLCAxMCkgJSAyNjsKICAgICAgY29uc3Qgb3V0ID0gbVsyXS5yZXBsYWNlKC9bYS16XS9naSwgKGMpID0+IHsKICAgICAgICBjb25zdCBiYXNlID0gYyA8PSAnWicgPyA2NSA6IDk3OwogICAgICAgIHJldHVybiBTdHJpbmcuZnJvbUNoYXJDb2RlKCgoYy5jaGFyQ29kZUF0KDApIC0gYmFzZSArIHNoaWZ0ICsgMjYpICUgMjYpICsgYmFzZSk7CiAgICAgIH0pOwogICAgICByZXR1cm4gcmVwbHkoYPCflJAgKkNhZXNhciBjaXBoZXIgKCske3NoaWZ0fSkqXG5cbiR7b3V0fWApOwogICAgfQogICAgY2FzZSAnY2FzZSc6IHsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg4p2MIFRleHQgZG8uIEV4YW1wbGU6ICR7UCgpfWNhc2UgaGVsbG8gd29ybGRgKTsKICAgICAgY29uc3QgdCA9IGFyZy50b0xvd2VyQ2FzZSgpOwogICAgICByZXR1cm4gcmVwbHkoYPCflKQgKkNhc2VzKlxuXG5VUFBFUjogJHthcmcudG9VcHBlckNhc2UoKX1cbmxvd2VyOiAke3R9XG5UaXRsZTogJHt0LnJlcGxhY2UoL1xiXHcvZywgKGMpID0+IGMudG9VcHBlckNhc2UoKSl9XG5TZW50ZW5jZTogJHt0LmNoYXJBdCgwKS50b1VwcGVyQ2FzZSgpICsgdC5zbGljZSgxKX1gKTsKICAgIH0KICAgIGNhc2UgJ3JldmVyc2UnOiB7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYOKdjCBUZXh0IGRvLiBFeGFtcGxlOiAke1AoKX1yZXZlcnNlIGhlbGxvYCk7CiAgICAgIHJldHVybiByZXBseShg8J+UhCAqUmV2ZXJzZWQqXG5cbiR7YXJnLnNwbGl0KCcnKS5yZXZlcnNlKCkuam9pbignJyl9YCk7CiAgICB9CiAgICBjYXNlICdwYWxpbmRyb21lJzogewogICAgICBpZiAoIWFyZykgcmV0dXJuIHJlcGx5KGDinYwgVGV4dCBkby4gRXhhbXBsZTogJHtQKCl9cGFsaW5kcm9tZSBtYWRhbWApOwogICAgICBjb25zdCBjbGVhbiA9IGFyZy50b0xvd2VyQ2FzZSgpLnJlcGxhY2UoL1teYS16MC05XS9nLCAnJyk7CiAgICAgIGNvbnN0IHJldiA9IGNsZWFuLnNwbGl0KCcnKS5yZXZlcnNlKCkuam9pbignJyk7CiAgICAgIHJldHVybiByZXBseShg8J+UgSAqJHthcmd9KlxuXG4ke2NsZWFuID09PSByZXYgPyAn4pyFIFBhbGluZHJvbWUgaGFpIScgOiBg4p2MIFBhbGluZHJvbWUgbmFoaS5cblVsdGE6ICR7cmV2fWB9YCk7CiAgICB9CiAgICBjYXNlICdsb3JlbSc6IHsKICAgICAgY29uc3QgbiA9IE1hdGgubWluKHBhcnNlSW50KGFyZywgMTApIHx8IDEsIDEwKTsKICAgICAgY29uc3Qgd29yZHMgPSAnbG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQgY29uc2VjdGV0dXIgYWRpcGlzY2luZyBlbGl0IHNlZCBkbyBlaXVzbW9kIHRlbXBvciBpbmNpZGlkdW50IHV0IGxhYm9yZSBldCBkb2xvcmUgbWFnbmEgYWxpcXVhJy5zcGxpdCgnICcpOwogICAgICBjb25zdCBvdXQgPSBBcnJheS5mcm9tKHsgbGVuZ3RoOiBuIH0sICgpID0+IHsKICAgICAgICBjb25zdCBsZW4gPSByYW5kSW50KDIwLCA0MCk7CiAgICAgICAgcmV0dXJuIEFycmF5LmZyb20oeyBsZW5ndGg6IGxlbiB9LCAoKSA9PiBwaWNrKHdvcmRzKSkuam9pbignICcpICsgJy4nOwogICAgICB9KS5qb2luKCdcblxuJyk7CiAgICAgIHJldHVybiByZXBseShg8J+ThCAqTG9yZW0gJHtufSBwYXJhZ3JhcGgqXG5cbiR7b3V0fWApOwogICAgfQogICAgY2FzZSAnd29yZGNvdW50JzogewogICAgICBpZiAoIWFyZykgcmV0dXJuIHJlcGx5KGDinYwgVGV4dCBkby4gRXhhbXBsZTogJHtQKCl9d29yZGNvdW50IGhlbGxvIHdvcmxkYCk7CiAgICAgIGNvbnN0IHdvcmRzID0gYXJnLnRyaW0oKS5zcGxpdCgvXHMrLykuZmlsdGVyKEJvb2xlYW4pOwogICAgICByZXR1cm4gcmVwbHkoYPCfk4ogKlRleHQgc3RhdHMqXG5cbvCfk50gV29yZHM6ICoke3dvcmRzLmxlbmd0aH0qXG7wn5SkIENoYXJhY3RlcnM6ICR7YXJnLmxlbmd0aH1cbvCflKQgKGJpbmEgc3BhY2UpOiAke2FyZy5yZXBsYWNlKC9ccy9nLCAnJykubGVuZ3RofVxu8J+TjyBMaW5lczogJHthcmcuc3BsaXQoJ1xuJykubGVuZ3RofVxu4o+x77iPIFJlYWRpbmc6IH4ke01hdGguY2VpbCh3b3Jkcy5sZW5ndGggLyAyMDApfSBtaW5gKTsKICAgIH0KICAgIGNhc2UgJ3VuaXhwZXJtJzogY2FzZSAnY2htb2QnOiB7CiAgICAgIGNvbnN0IG0gPSAvXihcZHszfSkkLy5leGVjKGFyZyB8fCAnJyk7CiAgICAgIGlmICghbSkgcmV0dXJuIHJlcGx5KGDinYwgRm9ybWF0OiAke1AoKX1jaG1vZCA3NTVgKTsKICAgICAgY29uc3QgbWFwID0geyA3OiAncnd4JywgNjogJ3J3LScsIDU6ICdyLXgnLCA0OiAnci0tJywgMzogJy13eCcsIDI6ICctdy0nLCAxOiAnLS14JywgMDogJy0tLScgfTsKICAgICAgY29uc3QgZCA9IG1bMV0uc3BsaXQoJycpLm1hcCgobikgPT4gbWFwW25dKS5qb2luKCcnKTsKICAgICAgcmV0dXJuIHJlcGx5KGDwn5SQICpjaG1vZCAke21bMV19KlxuXG5cYCR7ZH1cYFxuXG5fb3duZXIgfCBncm91cCB8IG90aGVyc19gKTsKICAgIH0KICAgIGNhc2UgJ2pzb25mbXQnOiB7CiAgICAgIGlmICghYXJnKSByZXR1cm4gcmVwbHkoYOKdjCBKU09OIGRvLiBFeGFtcGxlOiAke1AoKX1qc29uZm10IHsiYSI6MX1gKTsKICAgICAgdHJ5IHsKICAgICAgICBjb25zdCBvID0gSlNPTi5wYXJzZShhcmcpOwogICAgICAgIHJldHVybiByZXBseShg8J+nqSAqRm9ybWF0dGVkIEpTT04qXG5cblxgXGBcYCR7SlNPTi5zdHJpbmdpZnkobywgbnVsbCwgMikuc2xpY2UoMCwgMjUwMCl9XGBcYFxgYCk7CiAgICAgIH0gY2F0Y2ggKGUpIHsgcmV0dXJuIHJlcGx5KGDinYwgSW52YWxpZCBKU09OOiAke2UubWVzc2FnZS5zbGljZSgwLCA4MCl9YCk7IH0KICAgIH0KICAgIGNhc2UgJ3VybGVuY29kZSc6IHsKICAgICAgaWYgKCFhcmcpIHJldHVybiByZXBseShg4p2MIFRleHQgZG8uIEV4YW1wbGU6ICR7UCgpfXVybGVuY29kZSBoZWxsbyB3b3JsZGApOwogICAgICB0cnkgeyByZXR1cm4gcmVwbHkoYPCflJcgKlVSTCBlbmNvZGVkKlxuXG4ke2VuY29kZVVSSUNvbXBvbmVudChhcmcpfVxuXG5fRGVjb2RlZDogJHtkZWNvZGVVUklDb21wb25lbnQoYXJnKX1fYCk7IH0KICAgICAgY2F0Y2ggeyByZXR1cm4gcmVwbHkoYPCflJcgKlVSTCBlbmNvZGVkKlxuXG4ke2VuY29kZVVSSUNvbXBvbmVudChhcmcpfWApOyB9CiAgICB9CiAgICBkZWZhdWx0OgogICAgICByZXR1cm4gcmVwbHkoJ+KdkyBVbmtub3duIHV0aWxpdHkgY29tbWFuZCcpOwogIH0KfTsKCm1vZHVsZS5leHBvcnRzID0gewogIGNvbW1hbmRzOiBbCiAgICAndGVtcG1haWwnLCAnbXlpcCcsICdzdG9wd2F0Y2gnLCAnbW9vbnBoYXNlJywgJ2hvdXJzJywgJ3V1aWQnLCAnaXBpbmZvJywgJ3dob2lzJywgJ2RucycsICd1bnNob3J0JywKICAgICdwaW5naG9zdCcsICd0aW1lcicsICdyYW5kbnVtJywgJ3JhbmRwaWNrJywgJ3NodWZmbGUnLCAncm9tYW4nLCAncGVyY2VudCcsICdsb2FuJywgJ2Rpc2NvdW50JywgJ3NwbGl0JywKICAgICdhZ2UnLCAnYm1pJywgJ3dlZWtkYXknLCAnZGF0ZWNhbGMnLCAndGltZXN0YW1wJywgJ21vcnNlJywgJ2JpbmFyeScsICdoZXgnLCAnY2Flc2FyJywgJ2Nhc2UnLCAKICAgICdwYWxpbmRyb21lJywgJ2xvcmVtJywgJ3dvcmRjb3VudCcsICdjaG1vZCcsICdqc29uZm10JywgJ3VybGVuY29kZScsCiAgICAvLyBleHRyYXMgdGhhdCBiZWxvbmcgaW4gdGhpcyBmYW1pbHkKICAgICd1bml4cGVybScsCiAgXSwKICBjYXRlZ29yeTogJ/Cfp7AgVVRJTElUWScsCiAgaGFuZGxlciwKfTsK
+/**
+ * UTILS-2 — misc utilities (email, IP, timers, calculators, encoders)
+ */
+const config = require('../config');
+const crypto = require('crypto');
+const os = require('os');
+const { getJSON, getText, pick, randInt } = require('../lib/helpers');
+
+const P = () => config.PREFIX;
+
+/* ---- tiny in-memory stores (per-process, reset on redeploy) ---- */
+const mailboxes = new Map();   // id -> { address, created }
+const todos = new Map();       // user -> [ {t, done} ]
+const stopwatches = new Map(); // user -> startedAt
+
+const MORSE = {
+  a: '.-', b: '-...', c: '-.-.', d: '-..', e: '.', f: '..-.', g: '--.', h: '....', i: '..', j: '.---',
+  k: '-.-', l: '.-..', m: '--', n: '-.', o: '---', p: '.--.', q: '--.-', r: '.-.', s: '...', t: '-',
+  u: '..-', v: '...-', w: '.--', x: '-..-', y: '-.--', z: '--..', '0': '-----', '1': '.----', '2': '..---',
+  '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
+};
+const MORSE_REV = Object.fromEntries(Object.entries(MORSE).map(([k, v]) => [v, k]));
+
+const handler = async (ctx) => {
+  const { command, reply, arg, senderNum } = ctx;
+  const who = senderNum || 'anon';
+
+  switch (command) {
+    /* ---------------- email ---------------- */
+    case 'tempmail': {
+      if (arg && arg.toLowerCase() === 'check') {
+        const mb = mailboxes.get(who);
+        if (!mb) return reply(`❌ Pehle ${P()}tempmail likho — mailbox banao.`);
+        try {
+          const d = await getJSON(`https://api.mail.tm/messages?page=1`);
+          return reply(`📬 *Mailbox: ${mb.address}*\n\n${(d['hydra:member'] || []).slice(0, 5).map((m) => `• *${m.from?.address}*\n  ${m.subject}`).join('\n') || '_Koi mail nahi._'}`);
+        } catch { return reply('❌ Inbox check nahi ho saka.'); }
+      }
+      try {
+        const domains = await getJSON('https://api.mail.tm/domains?page=1');
+        const domain = domains['hydra:member']?.[0]?.domain;
+        if (!domain) throw new Error('no domain');
+        const addr = `saqib${randInt(1000, 99999)}@${domain}`;
+        const pass = crypto.randomBytes(6).toString('hex');
+        const r = await fetch('https://api.mail.tm/accounts', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address: addr, password: pass }),
+        });
+        if (!r.ok) throw new Error('create failed');
+        mailboxes.set(who, { address: addr, pass, created: Date.now() });
+        return reply(`📧 *Temporary email*\n\n📮 Address: *${addr}*\n🔑 Password: ${pass}\n\n_Inbox dekhne ke liye ${P()}tempmail check_\n_(Ye mailbox sirf is bot ke chalte waqt tak rehta hai.)_`);
+      } catch { return reply('❌ Temp email service abhi busy hai. Thori der baad try karo.'); }
+    }
+
+    /* ---------------- network ---------------- */
+    case 'myip': {
+      const d = await getJSON('https://api.ipify.org?format=json');
+      let extra = '';
+      try {
+        const e = await getJSON(`http://ip-api.com/json/${d.ip}`);
+        extra = `\n🌍 ${e.country} — ${e.city}\n🏢 ${e.isp}`;
+      } catch { /* ignore */ }
+      return reply(`🌐 *Server IP*\n\n📌 ${d.ip}${extra}`);
+    }
+    case 'ipinfo': {
+      if (!arg) return reply(`❌ IP do. Example: ${P()}ipinfo 8.8.8.8`);
+      try {
+        const d = await getJSON(`http://ip-api.com/json/${encodeURIComponent(arg)}`);
+        if (d.status !== 'success') throw new Error('bad ip');
+        return reply(`🌐 *${arg}*\n\n🌍 ${d.country} (${d.countryCode})\n🏙️ ${d.regionName}, ${d.city}\n🏢 ISP: ${d.isp}\n🏛️ Org: ${d.org}\n📡 AS: ${d.as}\n📍 ${d.lat}, ${d.lon}\n🕐 ${d.timezone}`);
+      } catch { return reply('❌ IP valid nahi.'); }
+    }
+    case 'whois': {
+      if (!arg) return reply(`❌ Domain do. Example: ${P()}whois google.com`);
+      try {
+        const d = await getJSON(`https://rdap.org/domain/${encodeURIComponent(arg.replace(/^https?:\/\//, '').split('/')[0])}`);
+        const ev = (d.events || []).find((e) => e.eventAction === 'registration');
+        return reply(`🌐 *WHOIS — ${d.ldhName || arg}*\n\n📅 Registered: ${ev ? new Date(ev.eventDate).toDateString() : '—'}\n🏢 Registrar: ${d.entities?.find((e) => e.roles?.includes('registrar'))?.vcardArray?.[1]?.find((x) => x[0] === 'fn')?.[3] || '—'}\n📊 Status: ${(d.status || []).slice(0, 3).join(', ')}`);
+      } catch { return reply('❌ Domain info nahi mili.'); }
+    }
+    case 'dns': {
+      if (!arg) return reply(`❌ Domain do. Example: ${P()}dns google.com`);
+      const d = await getJSON(`https://dns.google/resolve?name=${encodeURIComponent(arg)}&type=A`);
+      const a = (d.Answer || []).filter((x) => x.type === 1).map((x) => x.data);
+      const mx = await getJSON(`https://dns.google/resolve?name=${encodeURIComponent(arg)}&type=MX`);
+      return reply(`🌐 *DNS — ${arg}*\n\n📌 A: ${a.join(', ') || '—'}\n📧 MX: ${(mx.Answer || []).map((x) => x.data).join(', ') || '—'}`);
+    }
+    case 'unshort': {
+      if (!arg) return reply(`❌ Short link do. Example: ${P()}unshort bit.ly/abc`);
+      try {
+        const url = /^https?:\/\//.test(arg) ? arg : `https://${arg}`;
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), 10000);
+        let final = url;
+        try {
+          const r = await fetch(url, { redirect: 'follow', method: 'HEAD', signal: ctrl.signal });
+          final = r.url;
+        } finally { clearTimeout(t); }
+        return reply(`🔗 *Link expand*\n\nShort: ${arg}\nFinal: ${final}\n${final === url ? '\n_⚠️ Redirect nahi mila._' : ''}`);
+      } catch { return reply('❌ Link khol nahi saka.'); }
+    }
+    case 'pinghost': {
+      if (!arg) return reply(`❌ Host do. Example: ${P()}pinghost google.com`);
+      const t0 = Date.now();
+      try {
+        const r = await fetch(`https://${arg.replace(/^https?:\/\//, '')}`, { method: 'HEAD' });
+        return reply(`📡 *${arg}*\n\n✅ Reachable — ${Date.now() - t0}ms (HTTP ${r.status})`);
+      } catch {
+        return reply(`📡 *${arg}*\n\n❌ Reachable nahi (${Date.now() - t0}ms)`);
+      }
+    }
+
+    /* ---------------- time / calc ---------------- */
+    case 'stopwatch': {
+      if (arg === 'stop' || arg === 'reset') {
+        const t0 = stopwatches.get(who);
+        stopwatches.delete(who);
+        if (!t0) return reply('⏱️ Stopwatch chal hi nahi raha tha.');
+        const ms = Date.now() - t0;
+        return reply(`⏱️ *Stopped*\n\n⏳ ${Math.floor(ms / 60000)}m ${Math.floor((ms % 60000) / 1000)}s ${ms % 1000}ms`);
+      }
+      if (arg === 'lap' && stopwatches.has(who)) {
+        const ms = Date.now() - stopwatches.get(who);
+        return reply(`⏱️ *Lap* — ${Math.floor(ms / 60000)}m ${Math.floor((ms % 60000) / 1000)}s`);
+      }
+      stopwatches.set(who, Date.now());
+      return reply(`⏱️ *Stopwatch started*\n\nRokne ke liye: ${P()}stopwatch stop`);
+    }
+    case 'timer': {
+      const m = /^(\d+)\s*([smh]?)$/.exec((arg || '').trim());
+      if (!m) return reply(`❌ Format: ${P()}timer 5m`);
+      const n = parseInt(m[1], 10);
+      const unit = m[2] || 'm';
+      const secs = unit === 's' ? n : unit === 'h' ? n * 3600 : n * 60;
+      if (secs > 3600) return reply('❌ Max 1 ghanta.');
+      setTimeout(() => {
+        ctx.send(ctx.from, { text: `⏰ *Timer!* ${n}${unit} poora ho gaya.` }).catch(() => {});
+      }, secs * 1000);
+      return reply(`⏰ *Timer set* — ${n}${unit}\n_Is chat me alert aayega._`);
+    }
+    case 'hours': {
+      const parts = (arg || '').split(/[\s,-]+/).map((x) => x.trim()).filter(Boolean);
+      if (parts.length < 2) return reply(`❌ Format: ${P()}hours 09:00 17:30`);
+      const toMin = (s) => { const [h, m] = s.split(':').map(Number); return h * 60 + (m || 0); };
+      const diff = toMin(parts[1]) - toMin(parts[0]);
+      const d = diff < 0 ? diff + 1440 : diff;
+      return reply(`🕐 *Work hours*\n\n${parts[0]} → ${parts[1]}\n\n⏳ *${Math.floor(d / 60)}h ${d % 60}m*${diff < 0 ? '\n_(raat ka shift)_' : ''}`);
+    }
+    case 'uuid': {
+      return reply(`🔑 *UUID v4*\n\n\`${crypto.randomUUID()}\``);
+    }
+    case 'randnum': {
+      const m = /(-?\d+)\s*[-–to ]+\s*(-?\d+)/.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}randnum 1-100`);
+      const a = parseInt(m[1], 10), b = parseInt(m[2], 10);
+      const lo = Math.min(a, b), hi = Math.max(a, b);
+      return reply(`🎲 *Random* (${lo}–${hi})\n\n👉 *${randInt(lo, hi)}*`);
+    }
+    case 'randpick': {
+      const items = (arg || '').split(',').map((s) => s.trim()).filter(Boolean);
+      if (items.length < 2) return reply(`❌ Format: ${P()}randpick chai, coffee, juice`);
+      return reply(`🎯 *Pick* — ${pick(items)}`);
+    }
+    case 'shuffle': {
+      const items = (arg || '').split(',').map((s) => s.trim()).filter(Boolean);
+      if (items.length < 2) return reply(`❌ Format: ${P()}shuffle a, b, c`);
+      for (let i = items.length - 1; i > 0; i--) { const j = randInt(0, i); [items[i], items[j]] = [items[j], items[i]]; }
+      return reply(`🔀 *Shuffled*\n\n${items.map((x, i) => `${i + 1}. ${x}`).join('\n')}`);
+    }
+    case 'roman': {
+      const n = parseInt(arg, 10);
+      if (!(n > 0 && n < 4000)) return reply(`❌ 1–3999 ka number do. Example: ${P()}roman 2026`);
+      const map = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+      let x = n, out = '';
+      for (const [v, s] of map) while (x >= v) { out += s; x -= v; }
+      return reply(`🔢 *${n}* = *${out}*`);
+    }
+    case 'percent': {
+      const m = /([\d.]+)\s*%?\s*(?:of|\s)\s*([\d.]+)/i.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}percent 15 of 2000`);
+      const r = (parseFloat(m[1]) / 100) * parseFloat(m[2]);
+      return reply(`📊 *${m[1]}% of ${m[2]}* = *${r.toLocaleString(undefined, { maximumFractionDigits: 2 })}*`);
+    }
+    case 'loan': {
+      const m = /([\d.]+)\s*[, ]\s*([\d.]+)\s*%?\s*[, ]\s*(\d+)\s*(y|m|year|month)?/i.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}loan 500000 20 5y`);
+      const principal = parseFloat(m[1]);
+      const rate = parseFloat(m[2]) / 100 / 12;
+      const n = m[4]?.startsWith('m') ? parseInt(m[3], 10) : parseInt(m[3], 10) * 12;
+      const emi = rate === 0 ? principal / n : (principal * rate * Math.pow(1 + rate, n)) / (Math.pow(1 + rate, n) - 1);
+      return reply(`🏦 *Loan / EMI*\n\n💰 Amount: PKR ${principal.toLocaleString()}\n📈 Rate: ${m[2]}% annual\n⏳ Tenure: ${n} months\n\n💵 *Monthly EMI: PKR ${Math.round(emi).toLocaleString()}*\n📊 Total: PKR ${Math.round(emi * n).toLocaleString()}\n📉 Interest: PKR ${Math.round(emi * n - principal).toLocaleString()}`);
+    }
+    case 'discount': {
+      const m = /([\d.]+)\s*[, ]\s*([\d.]+)\s*%?/.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}discount 2000 30%`);
+      const price = parseFloat(m[1]), off = parseFloat(m[2]);
+      const save = (price * off) / 100;
+      return reply(`🏷️ *Discount*\n\nOriginal: PKR ${price.toLocaleString()}\nDiscount: ${off}%\n\n✅ *Final: PKR ${(price - save).toLocaleString()}*\n💰 Bachat: PKR ${save.toLocaleString()}`);
+    }
+    case 'split': {
+      const m = /([\d.]+)\s*[, ]\s*(\d+)/.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}split 4500 4`);
+      const total = parseFloat(m[1]), n = parseInt(m[2], 10);
+      return reply(`🧾 *Bill split*\n\nTotal: PKR ${total.toLocaleString()}\nPeople: ${n}\n\n👤 *Per person: PKR ${Math.ceil(total / n).toLocaleString()}*`);
+    }
+    case 'age': {
+      const m = /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}age 2000-05-12`);
+      const b = new Date(+m[1], +m[2] - 1, +m[3]);
+      if (isNaN(b)) return reply('❌ Date sahi nahi.');
+      const now = new Date();
+      let y = now.getFullYear() - b.getFullYear();
+      let mo = now.getMonth() - b.getMonth();
+      if (now.getDate() < b.getDate()) mo--;
+      if (mo < 0) { y--; mo += 12; }
+      const days = Math.floor((now - b) / 86400000);
+      const next = new Date(now.getFullYear(), b.getMonth(), b.getDate());
+      if (next < now) next.setFullYear(next.getFullYear() + 1);
+      const toBday = Math.ceil((next - now) / 86400000);
+      return reply(`🎂 *Age*\n\n📅 DOB: ${b.toDateString()}\n\n🎉 *${y} saal, ${mo} mahine*\n📆 ${days.toLocaleString()} din\n🎈 Agla birthday: *${toBday} din baad*`);
+    }
+    case 'bmi': {
+      const m = /([\d.]+)\s*[, ]\s*([\d.]+)/.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}bmi 70 1.75  (kg, meters)`);
+      const w = parseFloat(m[1]), h = parseFloat(m[2]);
+      const bmi = w / (h * h);
+      const cat = bmi < 18.5 ? '🔵 Underweight' : bmi < 25 ? '🟢 Normal' : bmi < 30 ? '🟠 Overweight' : '🔴 Obese';
+      return reply(`⚖️ *BMI*\n\nWeight: ${w} kg\nHeight: ${h} m\n\n📊 *BMI: ${bmi.toFixed(1)}* — ${cat}\n\n_Healthy range: 18.5–24.9_`);
+    }
+    case 'weekday': {
+      const m = /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}weekday 1990-03-14`);
+      const d = new Date(+m[1], +m[2] - 1, +m[3]);
+      return reply(`📅 *${d.toDateString()}*\n\n👉 ${['Itwar', 'Somwar', 'Mangal', 'Budh', 'Jumeraat', 'Jummah', 'Hafta'][d.getDay()]} tha.`);
+    }
+    case 'datecalc': {
+      const m = /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}datecalc 2026-01-01`);
+      const d = new Date(+m[1], +m[2] - 1, +m[3]);
+      const diff = Math.ceil((d - Date.now()) / 86400000);
+      return reply(`📆 *${d.toDateString()}*\n\n${diff > 0 ? `⏳ *${diff} din baqi*` : diff === 0 ? '🎯 Aaj hi hai!' : `✅ ${Math.abs(diff)} din pehle`}`);
+    }
+    case 'timestamp': {
+      const n = parseInt(arg, 10);
+      if (!n) {
+        const now = Math.floor(Date.now() / 1000);
+        return reply(`🕐 *Now*\n\nUnix: \`${now}\`\nISO: ${new Date().toISOString()}\n\n_${P()}timestamp 1700000000 — convert_`);
+      }
+      const d = new Date(n < 1e12 ? n * 1000 : n);
+      return reply(`🕐 *Timestamp ${n}*\n\n📅 ${d.toUTCString()}\n🇵🇰 ${d.toLocaleString('en-PK', { timeZone: 'Asia/Karachi' })}`);
+    }
+    case 'moonphase': {
+      // met.no gives the lunar phase as a 0-360 angle (farmsense is dead).
+      const today = new Date().toISOString().slice(0, 10);
+      const d = await getJSON(`https://api.met.no/weatherapi/sunrise/3.0/moon?lat=24.86&lon=67.01&date=${today}`);
+      const ang = d.properties?.moonphase;
+      const names = [
+        [22.5, '🌑 New Moon (naya chaand)'],
+        [67.5, '🌒 Waxing Crescent'],
+        [112.5, '🌓 First Quarter'],
+        [157.5, '🌔 Waxing Gibbous'],
+        [202.5, '🌕 Full Moon (poora chaand)'],
+        [247.5, '🌖 Waning Gibbous'],
+        [292.5, '🌗 Last Quarter'],
+        [337.5, '🌘 Waning Crescent'],
+        [360, '🌑 New Moon (naya chaand)'],
+      ];
+      const phase = names.find(([lim]) => ang < lim)?.[1] || '—';
+      const pct = Math.round((1 - Math.abs(180 - ang) / 180) * 100);
+      return reply(`🌙 *Moon phase*
+
+${phase}\n📐 Angle: ${Number(ang).toFixed(1)}°\n💡 Illumination: ~${pct}%\n\n_${today}_`);
+    }
+
+    /* ---------------- encoders ---------------- */
+    case 'morse': {
+      if (!arg) return reply(`❌ Text do. Example: ${P()}morse hello`);
+      const isMorse = /^[.\- /]+$/.test(arg.trim());
+      if (isMorse) {
+        const out = arg.trim().split(/\s+/).map((c) => c.split('/').map((x) => MORSE_REV[x] || '').join('') || (c === '/' ? ' ' : '')).join('');
+        return reply(`📻 *Decoded*\n\n${out.replace(/\//g, ' ')}`);
+      }
+      const out = arg.toLowerCase().split('').map((c) => (c === ' ' ? '/' : MORSE[c] || '')).filter(Boolean).join(' ');
+      return reply(`📻 *Morse*\n\n${out}`);
+    }
+    case 'binary': {
+      if (!arg) return reply(`❌ Text do. Example: ${P()}binary hi`);
+      if (/^[01\s]+$/.test(arg.trim())) {
+        const out = arg.trim().split(/\s+/).map((b) => String.fromCharCode(parseInt(b, 2))).join('');
+        return reply(`🔢 *Decoded*\n\n${out}`);
+      }
+      const out = arg.split('').map((c) => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+      return reply(`🔢 *Binary*\n\n${out}`);
+    }
+    case 'hex': {
+      if (!arg) return reply(`❌ Text do. Example: ${P()}hex hi`);
+      if (/^[0-9a-f\s]+$/i.test(arg.trim()) && arg.replace(/\s/g, '').length % 2 === 0) {
+        const out = arg.trim().split(/\s+/).map((h) => Buffer.from(h, 'hex').toString('utf8')).join(' ');
+        return reply(`🔡 *Decoded*\n\n${out}`);
+      }
+      return reply(`🔡 *Hex*\n\n${Buffer.from(arg).toString('hex').match(/.{1,2}/g).join(' ')}`);
+    }
+    case 'caesar': {
+      const m = /^(\d+)\s+(.+)$/.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}caesar 3 hello`);
+      const shift = parseInt(m[1], 10) % 26;
+      const out = m[2].replace(/[a-z]/gi, (c) => {
+        const base = c <= 'Z' ? 65 : 97;
+        return String.fromCharCode(((c.charCodeAt(0) - base + shift + 26) % 26) + base);
+      });
+      return reply(`🔐 *Caesar cipher (+${shift})*\n\n${out}`);
+    }
+    case 'case': {
+      if (!arg) return reply(`❌ Text do. Example: ${P()}case hello world`);
+      const t = arg.toLowerCase();
+      return reply(`🔤 *Cases*\n\nUPPER: ${arg.toUpperCase()}\nlower: ${t}\nTitle: ${t.replace(/\b\w/g, (c) => c.toUpperCase())}\nSentence: ${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    }
+    case 'reverse': {
+      if (!arg) return reply(`❌ Text do. Example: ${P()}reverse hello`);
+      return reply(`🔄 *Reversed*\n\n${arg.split('').reverse().join('')}`);
+    }
+    case 'palindrome': {
+      if (!arg) return reply(`❌ Text do. Example: ${P()}palindrome madam`);
+      const clean = arg.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const rev = clean.split('').reverse().join('');
+      return reply(`🔁 *${arg}*\n\n${clean === rev ? '✅ Palindrome hai!' : `❌ Palindrome nahi.\nUlta: ${rev}`}`);
+    }
+    case 'lorem': {
+      const n = Math.min(parseInt(arg, 10) || 1, 10);
+      const words = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'.split(' ');
+      const out = Array.from({ length: n }, () => {
+        const len = randInt(20, 40);
+        return Array.from({ length: len }, () => pick(words)).join(' ') + '.';
+      }).join('\n\n');
+      return reply(`📄 *Lorem ${n} paragraph*\n\n${out}`);
+    }
+    case 'wordcount': {
+      if (!arg) return reply(`❌ Text do. Example: ${P()}wordcount hello world`);
+      const words = arg.trim().split(/\s+/).filter(Boolean);
+      return reply(`📊 *Text stats*\n\n📝 Words: *${words.length}*\n🔤 Characters: ${arg.length}\n🔤 (bina space): ${arg.replace(/\s/g, '').length}\n📏 Lines: ${arg.split('\n').length}\n⏱️ Reading: ~${Math.ceil(words.length / 200)} min`);
+    }
+    case 'unixperm': case 'chmod': {
+      const m = /^(\d{3})$/.exec(arg || '');
+      if (!m) return reply(`❌ Format: ${P()}chmod 755`);
+      const map = { 7: 'rwx', 6: 'rw-', 5: 'r-x', 4: 'r--', 3: '-wx', 2: '-w-', 1: '--x', 0: '---' };
+      const d = m[1].split('').map((n) => map[n]).join('');
+      return reply(`🔐 *chmod ${m[1]}*\n\n\`${d}\`\n\n_owner | group | others_`);
+    }
+    case 'jsonfmt': {
+      if (!arg) return reply(`❌ JSON do. Example: ${P()}jsonfmt {"a":1}`);
+      try {
+        const o = JSON.parse(arg);
+        return reply(`🧩 *Formatted JSON*\n\n\`\`\`${JSON.stringify(o, null, 2).slice(0, 2500)}\`\`\``);
+      } catch (e) { return reply(`❌ Invalid JSON: ${e.message.slice(0, 80)}`); }
+    }
+    case 'urlencode': {
+      if (!arg) return reply(`❌ Text do. Example: ${P()}urlencode hello world`);
+      try { return reply(`🔗 *URL encoded*\n\n${encodeURIComponent(arg)}\n\n_Decoded: ${decodeURIComponent(arg)}_`); }
+      catch { return reply(`🔗 *URL encoded*\n\n${encodeURIComponent(arg)}`); }
+    }
+    default:
+      return reply('❓ Unknown utility command');
+  }
+};
+
+module.exports = {
+  commands: [
+    'tempmail', 'myip', 'stopwatch', 'moonphase', 'hours', 'uuid', 'ipinfo', 'whois', 'dns', 'unshort',
+    'pinghost', 'timer', 'randnum', 'randpick', 'shuffle', 'roman', 'percent', 'loan', 'discount', 'split',
+    'age', 'bmi', 'weekday', 'datecalc', 'timestamp', 'morse', 'binary', 'hex', 'caesar', 'case', 
+    'palindrome', 'lorem', 'wordcount', 'chmod', 'jsonfmt', 'urlencode',
+    // extras that belong in this family
+    'unixperm',
+  ],
+  category: '🧰 UTILITY',
+  handler,
+};
