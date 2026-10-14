@@ -14,9 +14,21 @@
  *   - chatbot (AI auto-reply in private chats)
  */
 const config = require('../config');
-const { getJSON, downloadMedia, pick, cleanNumber } = require('../lib/helpers');
+const { getJSON, downloadMedia, pick, cleanNumber, targetOf } = require('../lib/helpers');
 const { isGroupAdmin } = require('../lib/handler');
 const settings = require('../lib/settings');
+
+const ON_WORDS = ['on', 'true', '1', 'enable', 'enabled', 'yes', 'haan', 'han'];
+const OFF_WORDS = ['off', 'false', '0', 'disable', 'disabled', 'no', 'nahi', 'na'];
+const parseOnOff = (a) => {
+  const s = String(a || '').trim().toLowerCase();
+  if (ON_WORDS.includes(s)) return true;
+  if (OFF_WORDS.includes(s)) return false;
+  return null;
+};
+const yn = (v) => (v ? 'ON 🟢' : 'OFF 🔴');
+const antideleteStatus = () => `🛡️ *Anti-Delete*\n▪️ Group: ${yn(config.ANTIDELETE)}\n▪️ Chat/Inbox: ${yn(config.ANTIDELETE_INBOX)}`;
+const autoreactStatus = () => `😀 *Auto-React*\n▪️ Master: ${yn(config.AUTO_REACT)}\n▪️ Group: ${yn(config.AUTO_REACT_GROUP)}\n▪️ Chat: ${yn(config.AUTO_REACT_CHAT)}`;
 
 const LINK_RE = /(https?:\/\/|www\.|chat\.whatsapp\.com|t\.me\/|wa\.me\/|bit\.ly|tinyurl)/i;
 
@@ -194,8 +206,9 @@ async function onMessage(ctx) {
     }
   }
 
-  // ---- auto-react ----
-  if (config.AUTO_REACT && !command && Math.random() < 0.35) {
+  // ---- auto-react (respects group/chat scope) ----
+  const reactScopeOk = isGroup ? config.AUTO_REACT_GROUP : config.AUTO_REACT_CHAT;
+  if (config.AUTO_REACT && reactScopeOk && !command && Math.random() < 0.35) {
     try { await sock.sendMessage(from, { react: { text: pick(config.REACT_EMOJIS), key: m.key } }); } catch { /* ignore */ }
   }
 
@@ -213,17 +226,44 @@ async function onMessage(ctx) {
 const handler = async (ctx) => {
   const { command, reply, arg } = ctx;
 
-  // ---- toggles ----
-  // Supports explicit args: `.antidelete on` -> ON, `.antidelete off` -> OFF.
+  // ---- anti-delete (scoped: group / chat-inbox / all) ----
+  if (command === 'antidelete' || command === 'antideleteinbox') {
+    const parts = String(arg || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+    let scope = ['chat', 'inbox', 'group', 'all', 'status', 'show'].includes(parts[0]) ? parts[0] : null;
+    if (command === 'antideleteinbox') scope = 'inbox';
+    if (scope === 'status' || scope === 'show') return reply(antideleteStatus());
+    const val = parseOnOff(parts[scope ? 1 : 0]);
+    if (scope === 'chat' || scope === 'inbox') config.ANTIDELETE_INBOX = val === null ? !config.ANTIDELETE_INBOX : val;
+    else if (scope === 'group') config.ANTIDELETE = val === null ? !config.ANTIDELETE : val;
+    else if (scope === 'all') { const v = val === null ? !(config.ANTIDELETE || config.ANTIDELETE_INBOX) : val; config.ANTIDELETE = v; config.ANTIDELETE_INBOX = v; }
+    else config.ANTIDELETE = val === null ? !config.ANTIDELETE : val;
+    settings.save();
+    await reply(antideleteStatus());
+    return;
+  }
+
+  // ---- auto-react (scoped: group / chat / all) ----
+  if (command === 'autoreact') {
+    const parts = String(arg || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const scope = ['chat', 'group', 'all', 'status', 'show'].includes(parts[0]) ? parts[0] : null;
+    if (scope === 'status' || scope === 'show') return reply(autoreactStatus());
+    const val = parseOnOff(parts[scope ? 1 : 0]);
+    if (scope === 'chat') config.AUTO_REACT_CHAT = val === null ? !config.AUTO_REACT_CHAT : val;
+    else if (scope === 'group') config.AUTO_REACT_GROUP = val === null ? !config.AUTO_REACT_GROUP : val;
+    else if (scope === 'all') { const v = val === null ? !config.AUTO_REACT : val; config.AUTO_REACT = v; config.AUTO_REACT_GROUP = v; config.AUTO_REACT_CHAT = v; }
+    else config.AUTO_REACT = val === null ? !config.AUTO_REACT : val;
+    settings.save();
+    await reply(autoreactStatus());
+    return;
+  }
+
+  // ---- simple toggles ----
+  // Supports explicit args: `.antispam on` -> ON, `.antispam off` -> OFF.
   // With no arg it flips the current state.
   if (TOGGLES[command]) {
     const key = TOGGLES[command];
-    const a = String(arg || '').trim().toLowerCase();
-    const ON = ['on', 'true', '1', 'enable', 'enabled', 'yes', 'haan', 'han'];
-    const OFF = ['off', 'false', '0', 'disable', 'disabled', 'no', 'nahi', 'na'];
-    if (ON.includes(a)) config[key] = true;
-    else if (OFF.includes(a)) config[key] = false;
-    else config[key] = !config[key];
+    const val = parseOnOff(arg);
+    config[key] = val === null ? !config[key] : val;
     settings.save();
     await reply(`✅ *${command.toUpperCase()}* ab *${config[key] ? 'ON 🟢' : 'OFF 🔴'}* hy.`);
     return;
@@ -324,6 +364,29 @@ const handler = async (ctx) => {
       return;
     }
 
+    case 'pp': case 'profilepic': case 'getdp': {
+      const target = targetOf(ctx);
+      const who = target ? target.jid : ctx.sender;
+      try {
+        const pp = await ctx.sock.profilePictureUrl(who, 'image');
+        await ctx.send(ctx.from, {
+          image: { url: pp },
+          caption: `🖼️ *Profile Picture*\n👤 @${target ? target.num : ctx.senderNum}`,
+          mentions: [who],
+        }, { quoted: ctx.m });
+      } catch { await reply('❌ DP nahi mili ya private hy.'); }
+      return;
+    }
+
+    case 'gpp': case 'groupdp': {
+      if (!ctx.isGroup) return reply('❌ Ye command sirf group me chalti hy.');
+      try {
+        const pp = await ctx.sock.profilePictureUrl(ctx.from, 'image');
+        await ctx.send(ctx.from, { image: { url: pp }, caption: `🖼️ *Group Profile Picture*\n👑 ${config.BOT_NAME}` }, { quoted: ctx.m });
+      } catch { await reply('❌ Group DP nahi mili.'); }
+      return;
+    }
+
     default:
       await reply('❓ Unknown premium command');
   }
@@ -332,6 +395,7 @@ const handler = async (ctx) => {
 module.exports = {
   commands: [
     ...Object.keys(TOGGLES), 'premium', 'readmore', 'vcf', 'say', 'speak', 'voice', 'carbon', 'ss', 'tourl', 'emojimix', 'emix',
+    'pp', 'profilepic', 'getdp', 'gpp', 'groupdp',
   ],
   category: '👑 PREMIUM',
   handler,

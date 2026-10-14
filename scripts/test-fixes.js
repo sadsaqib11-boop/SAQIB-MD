@@ -188,6 +188,59 @@ const fun = require('../plugins/fun');
     ok('applyDefault() uses Mono by default', fonts.applyDefault('A') === fonts.style('A', 12));
   }
 
+  console.log('\n=== premium: scoped anti-delete / autoreact / profile-pic ===');
+  {
+    const premium = require('../plugins/premium');
+    const config = require('../config');
+
+    // anti-delete chat scope
+    config.ANTIDELETE_INBOX = false;
+    let p = mockCtx({ command: 'antidelete', arg: 'chat on' });
+    await premium.handler(p);
+    ok('antidelete chat on -> ANTIDELETE_INBOX=true', config.ANTIDELETE_INBOX === true);
+    ok('antidelete status text shown', /Anti-Delete/.test(p._sent[0]?.text || ''), p._sent[0]?.text);
+
+    p = mockCtx({ command: 'antidelete', arg: 'inbox off' });
+    await premium.handler(p);
+    ok('antidelete inbox off -> ANTIDELETE_INBOX=false', config.ANTIDELETE_INBOX === false);
+
+    // anti-delete all
+    p = mockCtx({ command: 'antidelete', arg: 'all on' });
+    await premium.handler(p);
+    ok('antidelete all on -> both true', config.ANTIDELETE === true && config.ANTIDELETE_INBOX === true);
+
+    // autoreact scopes
+    config.AUTO_REACT_GROUP = true; config.AUTO_REACT_CHAT = true;
+    p = mockCtx({ command: 'autoreact', arg: 'group off' });
+    await premium.handler(p);
+    ok('autoreact group off -> AUTO_REACT_GROUP=false', config.AUTO_REACT_GROUP === false);
+    ok('autoreact chat untouched', config.AUTO_REACT_CHAT === true);
+
+    p = mockCtx({ command: 'autoreact', arg: 'all off' });
+    await premium.handler(p);
+    ok('autoreact all off -> master+group+chat false', !config.AUTO_REACT && !config.AUTO_REACT_GROUP && !config.AUTO_REACT_CHAT);
+
+    p = mockCtx({ command: 'autoreact', arg: 'status' });
+    await premium.handler(p);
+    ok('autoreact status shows scopes', /Group/.test(p._sent[0]?.text || '') && /Chat/.test(p._sent[0]?.text || ''), p._sent[0]?.text);
+
+    // profile-pic command (mock sock.profilePictureUrl)
+    const pp = mockCtx({ command: 'pp', senderNum: '923451234567' });
+    pp.sock = { profilePictureUrl: async () => 'https://example.com/dp.jpg' };
+    await premium.handler(pp);
+    ok('pp sends an image', pp._sent[0]?.content?.image?.url === 'https://example.com/dp.jpg', JSON.stringify(pp._sent[0]?.content));
+
+    const gpp = mockCtx({ command: 'gpp', isGroup: true });
+    gpp.sock = { profilePictureUrl: async () => 'https://example.com/g.jpg' };
+    await premium.handler(gpp);
+    ok('gpp sends group image', gpp._sent[0]?.content?.image?.url === 'https://example.com/g.jpg');
+
+    const gpp2 = mockCtx({ command: 'gpp', isGroup: false });
+    gpp2.sock = { profilePictureUrl: async () => 'https://example.com/g.jpg' };
+    await premium.handler(gpp2);
+    ok('gpp in DM is rejected', /sirf group/i.test(gpp2._sent[0]?.text || ''), gpp2._sent[0]?.text);
+  }
+
   console.log(`\n=== RESULT: ${pass} passed, ${fail} failed ===\n`);
   process.exit(fail ? 1 : 0);
 })();

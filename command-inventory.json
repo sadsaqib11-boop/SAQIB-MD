@@ -1,6 +1,6 @@
 {
-  "total": 1039,
-  "unique": 1039,
+  "total": 1073,
+  "unique": 1073,
   "plugins": [
     {
       "file": "ai.js",
@@ -425,7 +425,7 @@
     {
       "file": "fonts.js",
       "category": "🔠 FONTS",
-      "count": 105,
+      "count": 133,
       "commands": [
         "font1",
         "font2",
@@ -531,7 +531,35 @@
         "font102",
         "font103",
         "font104",
-        "font105"
+        "font105",
+        "mono",
+        "monospace",
+        "code",
+        "bold",
+        "italic",
+        "bolditalic",
+        "script",
+        "boldscript",
+        "fraktur",
+        "doublestruck",
+        "boldfraktur",
+        "sans",
+        "sansbold",
+        "sansitalic",
+        "sansbolditalic",
+        "fullwidth",
+        "smallcaps",
+        "superscript",
+        "circled",
+        "negativesquared",
+        "negativecircled",
+        "squared",
+        "parenthesized",
+        "strikethrough",
+        "cyrillic",
+        "fancy",
+        "greek",
+        "underline"
       ]
     },
     {
@@ -828,7 +856,7 @@
     {
       "file": "premium.js",
       "category": "👑 PREMIUM",
-      "count": 24,
+      "count": 29,
       "commands": [
         "antidelete",
         "antideleteinbox",
@@ -853,7 +881,12 @@
         "ss",
         "tourl",
         "emojimix",
-        "emix"
+        "emix",
+        "pp",
+        "profilepic",
+        "getdp",
+        "gpp",
+        "groupdp"
       ]
     },
     {
@@ -949,7 +982,7 @@
     {
       "file": "settings.js",
       "category": "⚙️ SETTINGS",
-      "count": 34,
+      "count": 35,
       "commands": [
         "mode",
         "prefix",
@@ -984,6 +1017,7 @@
         "sudo",
         "delsudo",
         "listsudo",
+        "setfont",
         "settings"
       ]
     },

@@ -28,6 +28,9 @@ const config = {
   AUTO_READ: bool(process.env.AUTO_READ, false),
   AUTO_TYPING: bool(process.env.AUTO_TYPING, false),
   AUTO_REACT: bool(process.env.AUTO_REACT, false),
+  // Auto-react scope (only meaningful when AUTO_REACT is ON).
+  AUTO_REACT_GROUP: bool(process.env.AUTO_REACT_GROUP, true),
+  AUTO_REACT_CHAT: bool(process.env.AUTO_REACT_CHAT, true),
   WELCOME: bool(process.env.WELCOME, false),
   GOODBYE: bool(process.env.GOODBYE, false),
   ANTILINK: bool(process.env.ANTILINK, false),
