@@ -10,6 +10,10 @@
 
 ## 🚀 Deploy (make it LIVE 24/7)
 
+> ### ✅ This bot is already LIVE
+> **Pairing portal:** https://saqib-md-production.up.railway.app
+> Hosted on Railway (`saqib-md` project) · volume mounted at `/data` for persistent sessions.
+
 The bot needs a host that keeps a **long-running Node process** + **persistent disk** (for WhatsApp sessions). Pick one:
 
 ### Option A — Render (easiest, free tier available)
