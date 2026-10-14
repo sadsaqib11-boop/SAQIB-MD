@@ -12,20 +12,32 @@ const bans = require('../lib/bans');
 
 const SELF_DELETE_MS = 10000; // .vv2 self-message auto-delete delay
 
+/** Unwrap view-once wrappers into the inner media message. */
+function unwrapViewOnce(qm) {
+  if (!qm) return null;
+  return (
+    qm.viewOnceMessage?.message ||
+    qm.viewOnceMessageV2?.message ||
+    qm.viewOnceMessageV2Extension?.message ||
+    qm
+  );
+}
+
 const handler = async (ctx) => {
   const { sock, command, reply, quoted } = ctx;
 
   switch (command) {
     case 'vv': case 'vv2': case 'vv3': {
       if (!quoted) return reply('❌ View-once media ko *reply* kar ke .vv likho.');
-      const qm = quoted.message;
+      const qm = unwrapViewOnce(quoted.message);
       const type = qm.imageMessage ? 'image' : qm.videoMessage ? 'video' : qm.audioMessage ? 'audio' : null;
       if (!type) return reply('❌ Ye view-once media nahi lag raha.');
       const msg = qm.imageMessage || qm.videoMessage || qm.audioMessage;
       const buf = await downloadMedia(msg, type);
       const cap = `🔓 *View-once unlocked*\n👑 ${config.BOT_NAME}`;
       const toSelf = command === 'vv2';
-      const selfJid = cleanNumber(sock.user?.id) + '@s.whatsapp.net';
+      const selfNum = String(sock.user?.id || '').split(':')[0].split('@')[0].replace(/[^0-9]/g, '');
+      const selfJid = selfNum + '@s.whatsapp.net';
       const target = toSelf ? selfJid : ctx.from;
       const opts = toSelf ? {} : { quoted: ctx.m };
 
@@ -129,20 +141,28 @@ const handler = async (ctx) => {
       const num = cleanNumber(ctx.arg);
       if (!num) return reply(`❌ Number do. Example: ${config.PREFIX}pair 923xxxxxxxxxx`);
       try {
-        const code = await sock.requestPairingCode(num);
+        // Use the session manager so this links a NEW number (not the current sock).
+        const bot = require('../lib/bot');
+        const code = await bot.requestPair(num);
         await reply(`🔗 *Pairing Code for +${num}:*\n\n\`\`\`${code}\`\`\``);
-      } catch (e) { await reply('❌ ' + e.message); }
+      } catch (e) { await reply('❌ ' + (e?.message || e)); }
       break;
     }
     case 'broadcast': {
       if (!ctx.arg) return reply(`❌ Message do. Example: ${config.PREFIX}broadcast Salam sab ko!`);
       const groups = await sock.groupFetchAllParticipating();
+      const jids = Object.keys(groups);
+      await reply(`📢 Broadcast ${jids.length} groups ko bhej raha hoon...`);
       let n = 0;
-      for (const jid of Object.keys(groups)) {
-        await sock.sendMessage(jid, { text: `📢 *${config.BOT_NAME} Broadcast*\n\n${ctx.arg}` }).catch(() => {});
-        n++;
+      for (const jid of jids) {
+        try {
+          await sock.sendMessage(jid, { text: `📢 *${config.BOT_NAME} Broadcast*\n\n${ctx.arg}` });
+          n++;
+        } catch { /* skip unreachable */ }
+        // small delay so we don't get rate-limited / flagged as spam
+        await new Promise((r) => setTimeout(r, 1200));
       }
-      await reply(`✅ Broadcast ${n} groups me bhej diya.`);
+      await reply(`✅ Broadcast ${n}/${jids.length} groups me bhej diya.`);
       break;
     }
     case 'blocklist': {
@@ -164,4 +184,5 @@ module.exports = {
   category: '👑 OWNER',
   ownerOnly: true,
   handler,
+  unwrapViewOnce,
 };

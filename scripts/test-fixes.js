@@ -241,6 +241,45 @@ const fun = require('../plugins/fun');
     ok('gpp in DM is rejected', /sirf group/i.test(gpp2._sent[0]?.text || ''), gpp2._sent[0]?.text);
   }
 
+  console.log('\n=== owner: vv unwrap / pair / broadcast / delete ===');
+  {
+    const owner = require('../plugins/owner');
+
+    // unwrapViewOnce unit tests
+    ok('unwrap viewOnceMessage', !!owner.unwrapViewOnce({ viewOnceMessage: { message: { imageMessage: { a: 1 } } } }).imageMessage);
+    ok('unwrap viewOnceMessageV2', !!owner.unwrapViewOnce({ viewOnceMessageV2: { message: { videoMessage: { a: 1 } } } }).videoMessage);
+    ok('unwrap passes plain message through', !!owner.unwrapViewOnce({ imageMessage: { a: 1 } }).imageMessage);
+    ok('unwrap view-once audio', !!owner.unwrapViewOnce({ viewOnceMessageV2Extension: { message: { audioMessage: { a: 1 } } } }).audioMessage);
+    ok('unwrap null-safe', owner.unwrapViewOnce(null) === null);
+
+    // .pair uses session manager
+    const bot = require('../lib/bot');
+    const origPair = bot.requestPair;
+    bot.requestPair = async () => 'ABCD-1234';
+    const pctx = mockCtx({ command: 'pair', arg: '923001234567' });
+    await owner.handler(pctx);
+    ok('pair returns a pairing code', /ABCD-1234/.test(pctx._sent[0]?.text || ''), pctx._sent[0]?.text);
+    bot.requestPair = origPair;
+
+    // .broadcast
+    const bctx = mockCtx({ command: 'broadcast', arg: 'hello' });
+    let sentCount = 0;
+    bctx.sock = {
+      groupFetchAllParticipating: async () => ({ '1@g.us': {}, '2@g.us': {} }),
+      sendMessage: async () => { sentCount++; },
+    };
+    await owner.handler(bctx);
+    ok('broadcast sends to all groups', sentCount === 2, `sent ${sentCount}`);
+    ok('broadcast reports count', /2\/2/.test(bctx._sent[bctx._sent.length - 1]?.text || ''), bctx._sent[bctx._sent.length - 1]?.text);
+
+    // .delete
+    const dctx = mockCtx({ command: 'delete', quotedParticipant: '9231112223334@s.whatsapp.net' });
+    let deleted = null;
+    dctx.sock = { sendMessage: async (jid, content) => { if (content.delete) deleted = content.delete; } };
+    await owner.handler(dctx);
+    ok('delete removes the quoted message', deleted && deleted.id === 'Q1', JSON.stringify(deleted));
+  }
+
   console.log(`\n=== RESULT: ${pass} passed, ${fail} failed ===\n`);
   process.exit(fail ? 1 : 0);
 })();
