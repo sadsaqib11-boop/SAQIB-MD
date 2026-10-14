@@ -216,5 +216,8 @@ app.listen(config.PORT, () => {
 // ---------------------------------------------------------------------------
 bot.startBot().catch((e) => console.error('bot start fail:', e?.message || e));
 
+// SPEED: warm external connections in the background (DNS + TLS pre-connect)
+require('./lib/helpers').warmupHosts().catch(() => {});
+
 process.on('unhandledRejection', (e) => console.error('unhandledRejection:', e?.message || e));
 process.on('uncaughtException', (e) => console.error('uncaughtException:', e?.message || e));

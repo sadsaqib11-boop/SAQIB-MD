@@ -17,7 +17,11 @@ const fonts = require('./fonts');
 const startAt = Date.now();
 
 /* ------------------------------ menu helpers ------------------------------ */
+// SPEED: plugins load once, so the category map + menu texts are memoized
+// instead of being rebuilt (956 commands) on every single message.
+let _cats = null;
 function categories() {
+  if (_cats) return _cats;
   const map = new Map();
   for (const p of require('./_registry').all()) {
     if (p.hidden) continue;
@@ -25,6 +29,7 @@ function categories() {
     if (!map.has(cat)) map.set(cat, []);
     map.get(cat).push(...p.commands);
   }
+  _cats = map;
   return map;
 }
 
@@ -71,50 +76,67 @@ function header() {
 }
 
 /** Send the menu as an image (bot pic) when it fits, else as text. */
+let _picBuf = null;
 async function sendMenu(ctx, text) {
   const pic = path.resolve(config.BOT_PIC);
   try {
     if (text.length <= 1000 && fs.existsSync(pic)) {
-      await ctx.send(ctx.from, { image: fs.readFileSync(pic), caption: text }, { quoted: ctx.m });
+      if (!_picBuf) _picBuf = fs.readFileSync(pic); // SPEED: read the pic once
+      await ctx.send(ctx.from, { image: _picBuf, caption: text }, { quoted: ctx.m });
       return;
     }
   } catch { /* fall back to text */ }
   await ctx.reply(text);
 }
 
+// SPEED: menu texts change only when the date (in the header) rolls over.
+const _menuCache = new Map();
+const _today = () => new Date().toISOString().slice(0, 10);
+function cached(key, build) {
+  const k = _today() + '|' + key;
+  if (!_menuCache.has(k)) _menuCache.set(k, build());
+  return _menuCache.get(k);
+}
+
 function categoriesText() {
-  const cats = categories();
-  let txt = `${header()}\n\n📂 *CATEGORIES* (${cats.size})\n\n`;
-  let i = 1;
-  for (const [cat, cmds] of cats.entries()) {
-    txt += `${i}. *${cat}* — ${cmds.length} cmds\n`;
-    i++;
-  }
-  txt += `\n📖 *${config.PREFIX}menu <category>* — us category ki commands\n`;
-  txt += `📜 *${config.PREFIX}menuall* — saari commands\n\n`;
-  txt += `_*${config.BOT_NAME} — Powered by ${config.OWNER_NAME}*_`;
-  return txt;
+  return cached('cats', () => {
+    const cats = categories();
+    let txt = `${header()}\n\n📂 *CATEGORIES* (${cats.size})\n\n`;
+    let i = 1;
+    for (const [cat, cmds] of cats.entries()) {
+      txt += `${i}. *${cat}* — ${cmds.length} cmds\n`;
+      i++;
+    }
+    txt += `\n📖 *${config.PREFIX}menu <category>* — us category ki commands\n`;
+    txt += `📜 *${config.PREFIX}menuall* — saari commands\n\n`;
+    txt += `_*${config.BOT_NAME} — Powered by ${config.OWNER_NAME}*_`;
+    return txt;
+  });
 }
 
 function categoryText(cat) {
-  const cmds = categories().get(cat) || [];
-  let txt = `${header()}\n\n┌─「 *${cat}* 」\n`;
-  txt += cmds.map((c) => `│ ▹ ${config.PREFIX}${c}`).join('\n');
-  txt += `\n└────────────────\n\n`;
-  txt += `📖 *${config.PREFIX}menu* — categories\n📜 *${config.PREFIX}menuall* — saari commands`;
-  return txt;
+  return cached('cat|' + cat, () => {
+    const cmds = categories().get(cat) || [];
+    let txt = `${header()}\n\n┌─「 *${cat}* 」\n`;
+    txt += cmds.map((c) => `│ ▹ ${config.PREFIX}${c}`).join('\n');
+    txt += `\n└────────────────\n\n`;
+    txt += `📖 *${config.PREFIX}menu* — categories\n📜 *${config.PREFIX}menuall* — saari commands`;
+    return txt;
+  });
 }
 
 function allText() {
-  const cats = categories();
-  let txt = `${header()}\n\n`;
-  for (const [cat, cmds] of cats.entries()) {
-    txt += `┌─「 *${cat}* 」\n`;
-    txt += cmds.map((c) => `│ ▹ ${config.PREFIX}${c}`).join('\n');
-    txt += `\n└────────────────\n\n`;
-  }
-  txt += `_*${config.BOT_NAME} — Powered by ${config.OWNER_NAME}*_`;
-  return txt;
+  return cached('all', () => {
+    const cats = categories();
+    let txt = `${header()}\n\n`;
+    for (const [cat, cmds] of cats.entries()) {
+      txt += `┌─「 *${cat}* 」\n`;
+      txt += cmds.map((c) => `│ ▹ ${config.PREFIX}${c}`).join('\n');
+      txt += `\n└────────────────\n\n`;
+    }
+    txt += `_*${config.BOT_NAME} — Powered by ${config.OWNER_NAME}*_`;
+    return txt;
+  });
 }
 
 /* -------------------------------- handler -------------------------------- */
