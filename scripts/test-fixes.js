@@ -120,6 +120,64 @@ const fun = require('../plugins/fun');
     ok('aura is deterministic', a1._sent[0]?.content?.text === a2._sent[0]?.content?.text);
   }
 
+  console.log('\n=== downloader: ytvideo/song audio-video choice ===');
+  {
+    const downloader = require('../plugins/downloader');
+    const ytdlp = require('../lib/ytdlp');
+    // stub the engine so we can observe which branch runs
+    const calls = [];
+    ytdlp.available = () => true;
+    ytdlp.info = async () => ({ title: 'Test Song' });
+    ytdlp.downloadAudioSmart = async (q) => { calls.push(['audio', q]); return writeTmp(); };
+    ytdlp.downloadVideoSmart = async (q) => { calls.push(['video', q]); return { file: writeTmp(), audio: false }; };
+
+    const ctx = mockCtx({ command: 'ytvideo', arg: 'Test Song' });
+    await downloader.handler(ctx);
+    const prompt = ctx._sent[0]?.text || '';
+    ok('ytvideo prompts for 1/2 choice', /1️⃣/.test(prompt) && /2️⃣/.test(prompt), `got ${prompt}`);
+
+    // user replies "2" -> video branch
+    const replyCtx = mockCtx({ text: '2', command: null });
+    replyCtx.sender = '923001234567@s.whatsapp.net';
+    replyCtx.from = '12345@g.us';
+    const consumed = await interactions.handle(replyCtx);
+    ok('choice reply consumed', consumed === true);
+    ok('video branch ran', calls.some((c) => c[0] === 'video'), JSON.stringify(calls));
+
+    // .song -> reply "1" -> audio branch
+    calls.length = 0;
+    const ctx2 = mockCtx({ command: 'song', arg: 'Test Song' });
+    await downloader.handler(ctx2);
+    const replyCtx2 = mockCtx({ text: '1', command: null });
+    replyCtx2.sender = '923001234567@s.whatsapp.net';
+    replyCtx2.from = '12345@g.us';
+    await interactions.handle(replyCtx2);
+    ok('audio branch ran', calls.some((c) => c[0] === 'audio'), JSON.stringify(calls));
+  }
+
+  console.log('\n=== downloader: surah audio/video + apk + tts ===');
+  {
+    const downloader = require('../plugins/downloader');
+    const c1 = mockCtx({ command: 'surah', arg: '1' });
+    await downloader.handler(c1);
+    ok('surah prompts audio/video', /Audio/.test(c1._sent[0]?.text || '') && /Video/.test(c1._sent[0]?.text || ''), `got ${c1._sent[0]?.text}`);
+    const c2 = mockCtx({ command: 'apk' });
+    await downloader.handler(c2);
+    ok('apk with no arg errors', /naam do/i.test(c2._sent[0]?.text || ''), `got ${c2._sent[0]?.text}`);
+    const c3 = mockCtx({ command: 'tts', arg: 'sad songs' });
+    await downloader.handler(c3);
+    ok('tts starts a search', /TikTok Search|engine/i.test(c3._sent[0]?.text || ''), `got ${c3._sent[0]?.text}`);
+  }
+
   console.log(`\n=== RESULT: ${pass} passed, ${fail} failed ===\n`);
   process.exit(fail ? 1 : 0);
 })();
+
+function writeTmp() {
+  const fs = require('fs');
+  const os = require('os');
+  const path = require('path');
+  const p = path.join(os.tmpdir(), `test_${Date.now()}_${Math.random().toString(36).slice(2)}.mp4`);
+  fs.writeFileSync(p, Buffer.from('test'));
+  return p;
+}
