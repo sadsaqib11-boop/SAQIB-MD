@@ -138,6 +138,41 @@ app.get('/api/commands', (req, res) => {
   res.json({ ok: true, prefix: config.PREFIX, total: totalCmds, categories: cats });
 });
 
+// ---- live diagnostics (no host-log access needed) ----
+const debug = require('./lib/debug');
+app.get('/api/debug', (req, res) => {
+  const n = Math.min(200, parseInt(req.query.n || '80', 10) || 80);
+  res.json({ ok: true, prefix: config.PREFIX, mode: config.MODE, owner: config.OWNER_NUMBER, events: debug.recent(n) });
+});
+app.post('/api/debug/clear', (req, res) => { debug.clear(); res.json({ ok: true }); });
+
+// Force-reconnect every session (self-heal button for the portal / ops).
+app.post('/api/reconnect', async (req, res) => {
+  try { const n = await bot.reconnectAll(); res.json({ ok: true, restarted: n }); }
+  catch (e) { res.status(500).json({ ok: false, error: e?.message || String(e) }); }
+});
+
+// In-process self-test: runs the real command engine (no WhatsApp needed).
+app.get('/api/selftest', async (req, res) => {
+  const results = [];
+  const tests = ['.menu', '.ping', '.alive', '.help'];
+  for (const t of tests) {
+    const sent = [];
+    const sock = {
+      user: { id: '0@s.whatsapp.net' },
+      sendMessage: async (jid, content) => { sent.push(content); return { key: { id: 'x' } }; },
+      readMessages: async () => {}, sendPresenceUpdate: async () => {},
+    };
+    const m = { key: { remoteJid: '0@s.whatsapp.net', id: 'T' + Math.random().toString(36).slice(2, 9) }, message: { conversation: t }, pushName: 'SelfTest' };
+    try {
+      await require('./lib/handler').handleMessage(sock, m, { number: config.OWNER_NUMBER, ownerNumber: config.OWNER_NUMBER });
+      await new Promise((r) => setTimeout(r, 300));
+      results.push({ command: t, ok: sent.length > 0, replies: sent.length });
+    } catch (e) { results.push({ command: t, ok: false, error: e?.message || String(e) }); }
+  }
+  res.json({ ok: results.every((r) => r.ok), results });
+});
+
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 app.listen(config.PORT, () => {
