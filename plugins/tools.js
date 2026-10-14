@@ -2,7 +2,7 @@
  * TOOLS — premium utility commands (weather, translate, qr, wiki, calc, etc.)
  */
 const config = require('../config');
-const { getJSON, getText, pick } = require('../lib/helpers');
+const { getJSON, getText, pick, targetOf } = require('../lib/helpers');
 const crypto = require('crypto');
 const { execFile } = require('child_process');
 const fs = require('fs');
@@ -258,8 +258,9 @@ const handler = async (ctx) => {
       await reply(`🚀\n╭──────╮\n│ ${config.BOT_NAME.slice(0, 6)} │\n╰──────╯\n   🔥🔥🔥\n  🚀 LAUNCH!`);
       break;
     case 'chumi': {
-      const who = ctx.quoted ? (ctx.quoted.key.participant || '').split('@')[0] : null;
-      await reply(`😘 *Chumi!* 💋\n${ctx.pushname} ne ${who ? `@${who}` : 'sab'} ko chumi di!`, who ? { mentions: [who + '@s.whatsapp.net'] } : {});
+      const t = targetOf(ctx);
+      const tag = t ? `@${t.num}` : 'sab';
+      await reply(`😘 *Chumi!* 💋\n${ctx.pushname} ne ${tag} ko chumi di!`, t ? { mentions: [t.jid] } : {});
       break;
     }
     case 'fing': {
@@ -268,8 +269,8 @@ const handler = async (ctx) => {
       break;
     }
     case 'nikal': {
-      const who = ctx.quoted ? (ctx.quoted.key.participant || '').split('@')[0] : null;
-      await reply(`🚪 *NIKAL!* ${who ? `@${who} ` : ''}bahar jao! 😤`, who ? { mentions: [who + '@s.whatsapp.net'] } : {});
+      const t = targetOf(ctx);
+      await reply(`🚪 *NIKAL!* ${t ? `@${t.num} ` : ''}bahar jao! 😤`, t ? { mentions: [t.jid] } : {});
       break;
     }
     case 'nppm': {

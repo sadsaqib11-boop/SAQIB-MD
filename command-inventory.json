@@ -1,6 +1,6 @@
 {
-  "total": 1073,
-  "unique": 1073,
+  "total": 1076,
+  "unique": 1076,
   "plugins": [
     {
       "file": "ai.js",
@@ -602,7 +602,7 @@
     {
       "file": "group.js",
       "category": "👥 GROUP",
-      "count": 36,
+      "count": 38,
       "commands": [
         "tagall",
         "everyone",
@@ -619,6 +619,8 @@
         "ginfo",
         "gcstatus",
         "gcstatus2",
+        "groupstatus",
+        "gcstatuspost",
         "updategcname",
         "updategcdesc",
         "poll",
@@ -982,7 +984,7 @@
     {
       "file": "settings.js",
       "category": "⚙️ SETTINGS",
-      "count": 35,
+      "count": 36,
       "commands": [
         "mode",
         "prefix",
@@ -1018,6 +1020,7 @@
         "delsudo",
         "listsudo",
         "setfont",
+        "reset",
         "settings"
       ]
     },

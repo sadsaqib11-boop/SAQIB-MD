@@ -404,6 +404,47 @@ const fun = require('../plugins/fun');
     interactions.clear('12345@g.us', '923001234567@s.whatsapp.net');
   }
 
+  console.log('\n=== sounds (real ffmpeg audio) ===');
+  {
+    const sounds = require('../plugins/sounds');
+    ok('sounds exports 16 commands', sounds.commands.length === 16, `got ${sounds.commands.length}`);
+
+    let ffmpegOk = true;
+    try {
+      const buf = await sounds.synth('sound');
+      ok('synth(sound) returns non-empty Buffer', Buffer.isBuffer(buf) && buf.length > 500, `len ${buf && buf.length}`);
+      const buf8 = await sounds.synth('sound8');
+      ok('synth(sound8) returns non-empty Buffer', Buffer.isBuffer(buf8) && buf8.length > 500, `len ${buf8 && buf8.length}`);
+      // cache hit returns same buffer
+      const again = await sounds.synth('sound');
+      ok('synth is cached', again === buf);
+    } catch (e) { ffmpegOk = false; console.log('  (ffmpeg unavailable — skipping synth asserts: ' + e.message + ')'); }
+
+    // handler sends audio (or falls back to text) — never throws
+    const ctx = mockCtx({ command: 'sound', quotedParticipant: '9231112223334@s.whatsapp.net' });
+    await sounds.handler(ctx);
+    const s = ctx._sent[0];
+    ok('sound handler emits a message', !!s);
+    if (ffmpegOk) {
+      ok('sound handler sends audio content', s?.type === 'send' && !!s?.content?.audio, `type=${s?.type}`);
+      ok('sound caption mentions target (real number)', /@9231112223334/.test(s?.content?.caption || ''), s?.content?.caption);
+    }
+  }
+
+  console.log('\n=== tools (LID-safe mentions) ===');
+  {
+    const tools = require('../plugins/tools');
+    // resolved LID -> real number
+    const c1 = mockCtx({ command: 'chumi', quotedParticipant: '212223345675336@lid' });
+    await tools.handler(c1);
+    ok('chumi resolved LID uses real number mention', (c1._sent[0]?.mentions?.[0] || '') === '923451234567@s.whatsapp.net', `got ${c1._sent[0]?.mentions?.[0]}`);
+    // unresolved LID -> keep @lid (no fake number)
+    const c2 = mockCtx({ command: 'nikal', quotedParticipant: '999888777666555@lid' });
+    await tools.handler(c2);
+    ok('nikal unresolved LID keeps @lid domain', (c2._sent[0]?.mentions?.[0] || '').endsWith('@lid'), `got ${c2._sent[0]?.mentions?.[0]}`);
+    ok('nikal does not invent a fake number', !/\+?999888777666555@s\.whatsapp\.net/.test(c2._sent[0]?.mentions?.[0] || ''), `got ${c2._sent[0]?.mentions?.[0]}`);
+  }
+
   console.log(`\n=== RESULT: ${pass} passed, ${fail} failed ===\n`);
   process.exit(fail ? 1 : 0);
 })();
