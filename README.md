@@ -1,10 +1,10 @@
 # 🤖 SAQIB-MD — Premium WhatsApp Bot
 
 > A premium, fully-featured WhatsApp bot built with [Baileys](https://github.com/WhiskeySockets/Baileys).
-> **943 commands**, 150+ AI models, media downloaders, group management, audio effects,
+> **956 commands**, 150+ AI models, media downloaders, group management, audio effects,
 > **multi-session pairing (up to 50 numbers)** and a built-in web pairing portal.
 
-![status](https://img.shields.io/badge/status-online-22c55e) ![commands](https://img.shields.io/badge/commands-943-7c5cff) ![node](https://img.shields.io/badge/node-%3E%3D20-339933) ![sessions](https://img.shields.io/badge/sessions-50-22d3ee)
+![status](https://img.shields.io/badge/status-online-22c55e) ![commands](https://img.shields.io/badge/commands-956-7c5cff) ![node](https://img.shields.io/badge/node-%3E%3D20-339933) ![sessions](https://img.shields.io/badge/sessions-50-22d3ee)
 
 ---
 
