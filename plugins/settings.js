@@ -4,6 +4,23 @@
 const config = require('../config');
 const settings = require('../lib/settings');
 
+const ON_WORDS = ['on', 'true', '1', 'enable', 'enabled', 'yes', 'haan', 'han'];
+const OFF_WORDS = ['off', 'false', '0', 'disable', 'disabled', 'no', 'nahi', 'na'];
+/** Parse an explicit on/off arg; returns true/false or null (=> flip). */
+const parseOnOff = (a) => {
+  const v = String(a || '').trim().toLowerCase();
+  if (ON_WORDS.includes(v)) return true;
+  if (OFF_WORDS.includes(v)) return false;
+  return null;
+};
+/** Set a boolean config key from an optional arg (flip when arg is absent). */
+const setFlag = (key, arg) => {
+  const v = parseOnOff(arg);
+  config[key] = v === null ? !config[key] : v;
+  settings.save();
+  return config[key];
+};
+
 const handler = async (ctx) => {
   const { command, reply, arg } = ctx;
 
@@ -71,54 +88,66 @@ const handler = async (ctx) => {
     case 'delpath':
       await reply(`🗑️ Auto-delete downloads: *ON* (temp files har download ke baad delete hoti hain).`);
       break;
-    case 'autoread':
-      config.AUTO_READ = !config.AUTO_READ; settings.save();
-      await reply(`✅ Auto-read: *${config.AUTO_READ ? 'ON 🟢' : 'OFF 🔴'}*`);
+    case 'autoread': {
+      const v = setFlag('AUTO_READ', arg);
+      await reply(`✅ Auto-read: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'autotyping':
-      config.AUTO_TYPING = !config.AUTO_TYPING; settings.save();
-      await reply(`✅ Auto-typing: *${config.AUTO_TYPING ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'autotyping': {
+      const v = setFlag('AUTO_TYPING', arg);
+      await reply(`✅ Auto-typing: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'recording':
-      config.RECORDING = !config.RECORDING; settings.save();
-      await reply(`✅ Recording presence: *${config.RECORDING ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'recording': {
+      const v = setFlag('RECORDING', arg);
+      await reply(`✅ Recording presence: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'statusview':
-      config.STATUSVIEW = !config.STATUSVIEW; settings.save();
-      await reply(`✅ Status view: *${config.STATUSVIEW ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'statusview': {
+      const v = setFlag('STATUSVIEW', arg);
+      await reply(`✅ Status view: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'statuslike':
-      config.AUTO_REACT = !config.AUTO_REACT; settings.save();
-      await reply(`✅ Status like (auto-react): *${config.AUTO_REACT ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'statuslike': {
+      const v = setFlag('AUTO_REACT', arg);
+      await reply(`✅ Status like (auto-react): *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'administration':
-      config.ADMINISTRATION = !config.ADMINISTRATION; settings.save();
-      await reply(`✅ Administration: *${config.ADMINISTRATION ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'administration': {
+      const v = setFlag('ADMINISTRATION', arg);
+      await reply(`✅ Administration: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'mentionreply':
-      config.MENTION_REPLY = !config.MENTION_REPLY; settings.save();
-      await reply(`✅ Mention reply: *${config.MENTION_REPLY ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'mentionreply': {
+      const v = setFlag('MENTION_REPLY', arg);
+      await reply(`✅ Mention reply: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'welcome':
-      config.WELCOME = !config.WELCOME; settings.save();
-      await reply(`✅ Welcome system: *${config.WELCOME ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'welcome': {
+      const v = setFlag('WELCOME', arg);
+      await reply(`✅ Welcome system: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'goodbye':
-      config.GOODBYE = !config.GOODBYE; settings.save();
-      await reply(`✅ Goodbye system: *${config.GOODBYE ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'goodbye': {
+      const v = setFlag('GOODBYE', arg);
+      await reply(`✅ Goodbye system: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'antilink':
-      config.ANTILINK = !config.ANTILINK; settings.save();
-      await reply(`✅ Anti-link: *${config.ANTILINK ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'antilink': {
+      const v = setFlag('ANTILINK', arg);
+      await reply(`✅ Anti-link: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'antistatus':
-      config.AUTOSTATUS = !config.AUTOSTATUS; settings.save();
-      await reply(`✅ Auto-status: *${config.AUTOSTATUS ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'antistatus': {
+      const v = setFlag('AUTOSTATUS', arg);
+      await reply(`✅ Auto-status: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
-    case 'setonline':
-      config.ONLINE = !config.ONLINE; settings.save();
-      await reply(`✅ Online presence: *${config.ONLINE ? 'ON 🟢' : 'OFF 🔴'}*`);
+    }
+    case 'setonline': {
+      const v = setFlag('ONLINE', arg);
+      await reply(`✅ Online presence: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
+    }
     case 'botdp': {
       try {
         const pp = await ctx.sock.profilePictureUrl(ctx.sock.user.id, 'image');

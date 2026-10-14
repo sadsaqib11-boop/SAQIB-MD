@@ -22,7 +22,7 @@ function mockCtx({ command, arg = '', quotedParticipant = null, senderNum = '923
     senderNum,
     pushname: 'Tester',
     text: text || `!${command} ${arg}`.trim(),
-    m: { key: { remoteJid: isGroup ? '12345@g.us' : '923001234567@s.whatsapp.net', id: 'MOCK', fromMe: false } },
+    m: { key: { remoteJid: isGroup ? '12345@g.us' : '923001234567@s.whatsapp.net', id: 'MOCK', fromMe: false }, message: {} },
     quoted: quotedParticipant
       ? { key: { remoteJid: '12345@g.us', id: 'Q1', participant: quotedParticipant }, message: { conversation: 'hi' } }
       : null,
@@ -301,6 +301,61 @@ const fun = require('../plugins/fun');
     await reactions.handler(c3);
     ok('reaction with no target says "tum"', /tum/.test(c3._sent[0]?.content?.text || ''), c3._sent[0]?.content?.text);
     ok('reaction with no target has no mentions', (c3._sent[0]?.content?.mentions || []).length === 0);
+  }
+
+  console.log('\n=== settings: toggles + mode + prefix ===');
+  {
+    const settings = require('../plugins/settings');
+    const config = require('../config');
+
+    let s1 = mockCtx({ command: 'autoread', arg: 'off' });
+    await settings.handler(s1);
+    ok('autoread off -> AUTO_READ=false', config.AUTO_READ === false);
+    let s2 = mockCtx({ command: 'autoread', arg: 'on' });
+    await settings.handler(s2);
+    ok('autoread on -> AUTO_READ=true', config.AUTO_READ === true);
+    config.AUTO_READ = false;
+
+    let s3 = mockCtx({ command: 'autotyping' });
+    await settings.handler(s3);
+    ok('autotyping flips when no arg', config.AUTO_TYPING === true);
+    config.AUTO_TYPING = false;
+
+    let s4 = mockCtx({ command: 'mode', arg: 'private' });
+    await settings.handler(s4);
+    ok('mode private sets MODE', config.MODE === 'private');
+    let s5 = mockCtx({ command: 'mode', arg: 'public' });
+    await settings.handler(s5);
+    ok('mode public sets MODE', config.MODE === 'public');
+
+    let s6 = mockCtx({ command: 'prefix', arg: '!' });
+    await settings.handler(s6);
+    ok('prefix ! sets PREFIX', config.PREFIX === '!');
+    config.PREFIX = '.';
+
+    let s7 = mockCtx({ command: 'mode', arg: 'bogus' });
+    await settings.handler(s7);
+    ok('mode rejects invalid arg', config.MODE === 'public' && /public|private/i.test(s7._sent[0]?.text || ''), s7._sent[0]?.text);
+  }
+
+  console.log('\n=== group: groupstatus ===');
+  {
+    const group = require('../plugins/group');
+    const g = mockCtx({ command: 'groupstatus', arg: 'Salam' });
+    let relayed = null;
+    g.sock = {
+      user: { id: '923106762478:5@s.whatsapp.net' },
+      relayMessage: async (jid, msg) => { relayed = msg; },
+      waUploadToServer: {},
+    };
+    await group.handler(g);
+    ok('groupstatus relays a groupStatusMessageV2', !!(relayed && relayed.groupStatusMessageV2), Object.keys(relayed || {}).join(','));
+    ok('groupstatus replies (success or fallback)', /laga diya|fail/i.test(g._sent[g._sent.length - 1]?.text || ''), g._sent[g._sent.length - 1]?.text);
+
+    const g2 = mockCtx({ command: 'groupstatus' });
+    g2.sock = { user: { id: 'x:1@s.whatsapp.net' }, relayMessage: async () => {}, waUploadToServer: {} };
+    await group.handler(g2);
+    ok('groupstatus with no text/media errors', /Text do|reply karo/i.test(g2._sent[0]?.text || ''), g2._sent[0]?.text);
   }
 
   console.log(`\n=== RESULT: ${pass} passed, ${fail} failed ===\n`);

@@ -3,8 +3,59 @@
  */
 const config = require('../config');
 const { isGroupAdmin } = require('../lib/handler');
+const { downloadMedia } = require('../lib/helpers');
+const { generateWAMessageFromContent, jidNormalizedUser, prepareWAMessageMedia } = require('@whiskeysockets/baileys');
 
 const warns = new Map(); // jid -> Map(user -> count)
+
+/**
+ * Post a WhatsApp *group status* (group story). Baileys has no high-level helper,
+ * so we build the raw protocol message (groupStatusMessageV2 + isGroupStatus).
+ * Falls back to a normal message if the payload is rejected by the server.
+ */
+async function sendGroupStatus(sock, groupJid, { text = '', mediaBuffer = null, mime = '' } = {}) {
+  const senderJid = jidNormalizedUser(sock.user?.id);
+  const contextInfo = {
+    forwardingScore: 0,
+    featureEligibilities: { canBeReshared: true, canReceiveMultiReact: true },
+    pairedMediaType: 0,
+    statusSourceType: 4,
+    statusAttributions: [{ type: 10 }],
+    isGroupStatus: true,
+    statusAudienceMetadata: { audienceType: 1, listEmoji: '\ud83d\udccc', listName: config.BOT_NAME },
+  };
+  if (mediaBuffer) {
+    let mediaInput; let messageKey;
+    if (mime.startsWith('audio') || mime.includes('ogg') || mime.includes('opus')) {
+      mediaInput = { audio: mediaBuffer, mimetype: 'audio/ogg; codecs=opus', ptt: true }; messageKey = 'audioMessage';
+    } else if (mime.startsWith('video') || mime.includes('mp4')) {
+      mediaInput = { video: mediaBuffer, mimetype: 'video/mp4', caption: text }; messageKey = 'videoMessage';
+    } else {
+      mediaInput = { image: mediaBuffer, mimetype: mime || 'image/jpeg', caption: text }; messageKey = 'imageMessage';
+    }
+    const prepared = await prepareWAMessageMedia(mediaInput, { upload: sock.waUploadToServer });
+    prepared[messageKey].contextInfo = contextInfo;
+    await sock.sendMessage(groupJid, prepared);
+    return;
+  }
+  const innerContent = {
+    extendedTextMessage: {
+      text: text || 'Group Story',
+      font: 1,
+      backgroundArgb: (0xFF23313A >>> 0),
+      contextInfo: {
+        forwardingScore: 0,
+        featureEligibilities: { canBeReshared: true, canReceiveMultiReact: true },
+        pairedMediaType: 0,
+        isGroupStatus: true,
+        statusAttributions: [{ type: 6, groupStatus: { authorJid: senderJid } }],
+      },
+    },
+  };
+  const messageContent = { groupStatusMessageV2: { message: innerContent } };
+  const generated = generateWAMessageFromContent(groupJid, messageContent, { userJid: senderJid });
+  await sock.relayMessage(groupJid, generated.message, { messageId: generated.key.id });
+}
 
 const handler = async (ctx) => {
   const { sock, command, reply, from, arg, quoted } = ctx;
@@ -74,6 +125,25 @@ const handler = async (ctx) => {
         ? `\n\ud83d\udd12 Announce: ${meta.announce ? 'ON' : 'OFF'}\n\ud83d\udeaa Locked: ${meta.restrict ? 'ON' : 'OFF'}`
         : '';
       await reply(base + extra, { mentions: meta.owner ? [meta.owner] : [] });
+      break;
+    }
+    case 'groupstatus': case 'gcstatuspost': {
+      const img = quoted?.message?.imageMessage || ctx.m?.message?.imageMessage;
+      const vid = quoted?.message?.videoMessage || ctx.m?.message?.videoMessage;
+      if (!arg && !img && !vid) return reply(`\u274c Text do ya media par reply karo.\nExample: ${config.PREFIX}groupstatus Salam sab ko!`);
+      try {
+        if (img || vid) {
+          const buf = await downloadMedia(img || vid, img ? 'image' : 'video');
+          await sendGroupStatus(sock, from, { text: arg || '', mediaBuffer: buf, mime: img ? 'image/jpeg' : 'video/mp4' });
+        } else {
+          await sendGroupStatus(sock, from, { text: arg });
+        }
+        await reply('\u2705 Group status (story) laga diya.');
+      } catch (e) {
+        // Fallback: at least deliver it as a normal group message.
+        await ctx.send(from, { text: `\ud83d\udccc ${arg || ''}`.trim() }).catch(() => {});
+        await reply('\u26a0\ufe0f Group-status API fail \u2014 normal message bhej diya.');
+      }
       break;
     }
     case 'updategcname':
@@ -207,7 +277,7 @@ const handler = async (ctx) => {
 module.exports = {
   commands: [
     'tagall', 'everyone', 'tag', 'hidetag', 'kick', 'promote', 'demote', 'mute', 'unmute', 'link', 'invite',
-    'revoke', 'ginfo', 'gcstatus', 'gcstatus2', 'updategcname', 'updategcdesc', 'poll', 'del', 'add', 'warn',
+    'revoke', 'ginfo', 'gcstatus', 'gcstatus2', 'groupstatus', 'gcstatuspost', 'updategcname', 'updategcdesc', 'poll', 'del', 'add', 'warn',
     'resetwarn', 'warnings', 'listadmins', 'gcpp', 'out', 'end', 'newgc', 'join', 'requests', 'acceptall',
     'rejectall', 'accept', 'reject', 'chreact', 'chreact2',
   ],
