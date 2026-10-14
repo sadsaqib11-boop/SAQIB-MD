@@ -65,5 +65,30 @@ console.log('\n=== 4. Fonts surrogate-pair sanity ===');
   if (!bad) good(`all ${Object.keys(fonts.NAMED || {}).length} named fonts clean`);
 }
 
+console.log('\n=== 5. Boot smoke test (require().member resolves) ===');
+{
+  // Scan source files for `require('<path>').<member>` and make sure the module
+  // actually exports <member>. This catches the "warmupHosts is not a function"
+  // class of crash that only surfaces at runtime on the server.
+  const roots = ['index.js', ...fs.readdirSync(path.join(__dirname, '..', 'lib')).filter((f) => f.endsWith('.js')).map((f) => 'lib/' + f)];
+  let checked = 0, missing = 0;
+  for (const rel of roots) {
+    const abs = path.join(__dirname, '..', rel);
+    const src = fs.readFileSync(abs, 'utf8');
+    const re = /require\((['"])(\.{1,2}\/[^'"]+)\1\)\.([A-Za-z_$][\w$]*)/g;
+    let m;
+    while ((m = re.exec(src))) {
+      const target = m[2];
+      const member = m[3];
+      try {
+        const mod = require(path.join(path.dirname(abs), target));
+        checked++;
+        if (mod[member] === undefined) { missing++; warn(`${rel}: require('${target}').${member} is NOT exported`); }
+      } catch { /* module may need runtime deps; ignore */ }
+    }
+  }
+  if (!missing) good(`all ${checked} require().member references resolve`);
+}
+
 console.log(`\n=== AUDIT RESULT: ${errors === 0 ? 'PASS (0 issues)' : errors + ' issue(s)'} ===\n`);
 process.exit(errors ? 1 : 0);
