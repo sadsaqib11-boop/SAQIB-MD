@@ -46,6 +46,9 @@ const config = {
   STATUSVIEW: bool(process.env.STATUSVIEW, false),
   ADMINISTRATION: bool(process.env.ADMINISTRATION, false),
   MENTION_REPLY: bool(process.env.MENTION_REPLY, false),
+  // Send an unsolicited "I'm online" greeting to the owner on every connect?
+  // OFF by default (the user asked for NO automatic/unwanted messages).
+  AUTOGREET: bool(process.env.AUTOGREET, false),
 
   // ---- customisable content (persisted) ----
   WELCOME_MSG: process.env.WELCOME_MSG || '👋 Welcome @user to @group!',
@@ -58,6 +61,11 @@ const config = {
 
   TIMEZONE: process.env.TIMEZONE || 'Asia/Karachi',
   PORT: parseInt(process.env.PORT || '3000', 10),
+
+  // ---- fonts ----
+  // Default font style used when a font command is called WITHOUT a style index
+  // (e.g. `.font hello`). "mono" = monospace Unicode (the requested default).
+  DEFAULT_FONT: (process.env.DEFAULT_FONT || 'mono').toLowerCase(),
 
   // ---- session / multi-session ----
   SESSION_DIR: process.env.SESSION_DIR || './session',
