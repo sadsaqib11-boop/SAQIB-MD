@@ -8,6 +8,41 @@
 
 ---
 
+## 🚀 Deploy (make it LIVE 24/7)
+
+The bot needs a host that keeps a **long-running Node process** + **persistent disk** (for WhatsApp sessions). Pick one:
+
+### Option A — Render (easiest, free tier available)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sadsaqib11-boop/SAQIB-MD)
+
+1. Click the button → connect GitHub → **Apply** (uses `render.yaml`, 1 GB disk auto-mounted at `/app/session`).
+2. Open the service URL → enter your WhatsApp number → get the 8-digit code → link it.
+3. ⚠️ Free plan **sleeps after ~15 min idle**; upgrade to *Starter* for true 24/7.
+
+### Option B — Railway
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/sadsaqib11-boop/SAQIB-MD)
+
+1. Click → **Deploy Now** → Railway builds via `Dockerfile` (installs ffmpeg + yt-dlp).
+2. **Add a Volume** mounted at `/app/session` (so logins survive redeploys).
+3. Set env vars: `MODE=public`, `MAX_SESSIONS=50` (all auto/anti toggles stay `false`).
+4. Open the URL → pair your number.
+
+### Option C — Any VPS / Docker
+```bash
+docker build -t saqib-md .
+docker run -d --name saqib-md -p 3000:3000 \
+  -v $PWD/session:/app/session \
+  -e MODE=public -e MAX_SESSIONS=50 \
+  saqib-md
+```
+
+> ❌ **Vercel is NOT suitable** — it is serverless (no persistent process / WebSocket / disk), so a WhatsApp bot cannot run there. Use Render, Railway, Koyeb, Fly.io or a VPS.
+
+### After deploying — pair (this part only you can do)
+Open the deployed URL, enter your number with country code (e.g. `923001234567`), copy the 8-digit code, then in WhatsApp: **Settings → Linked Devices → Link a device → Link with phone number** → enter the code. Up to **50 numbers** can pair this way.
+
+---
+
 ## ✨ Features
 
 - 🔗 **Pairing-code login** (no QR scan) via a beautiful web portal
