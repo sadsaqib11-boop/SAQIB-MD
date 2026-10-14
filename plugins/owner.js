@@ -1,8 +1,16 @@
 /**
  * OWNER — owner-only commands
+ *
+ * .vv2  -> unlocks view-once media and sends it to the bot's OWN chat
+ *          ("Message yourself"), then auto-deletes it after a few seconds.
+ * .vv / .vv3 -> unlocks and sends it to the current chat (normal).
+ * .ban / .unban / .banlist -> block + ignore a user's number.
  */
 const config = require('../config');
 const { downloadMedia, cleanNumber } = require('../lib/helpers');
+const bans = require('../lib/bans');
+
+const SELF_DELETE_MS = 10000; // .vv2 self-message auto-delete delay
 
 const handler = async (ctx) => {
   const { sock, command, reply, quoted } = ctx;
@@ -16,9 +24,20 @@ const handler = async (ctx) => {
       const msg = qm.imageMessage || qm.videoMessage || qm.audioMessage;
       const buf = await downloadMedia(msg, type);
       const cap = `🔓 *View-once unlocked*\n👑 ${config.BOT_NAME}`;
-      if (type === 'image') await ctx.send(ctx.from, { image: buf, caption: cap }, { quoted: ctx.m });
-      else if (type === 'video') await ctx.send(ctx.from, { video: buf, caption: cap }, { quoted: ctx.m });
-      else await ctx.send(ctx.from, { audio: buf, mimetype: 'audio/mpeg' }, { quoted: ctx.m });
+      const toSelf = command === 'vv2';
+      const selfJid = cleanNumber(sock.user?.id) + '@s.whatsapp.net';
+      const target = toSelf ? selfJid : ctx.from;
+      const opts = toSelf ? {} : { quoted: ctx.m };
+
+      let sent;
+      if (type === 'image') sent = await ctx.send(target, { image: buf, caption: cap }, opts);
+      else if (type === 'video') sent = await ctx.send(target, { video: buf, caption: cap }, opts);
+      else sent = await ctx.send(target, { audio: buf, mimetype: 'audio/mpeg' }, opts);
+
+      if (toSelf) {
+        await reply(`✅ View-once tumhari *own chat (yourself)* me bhej diya.\n🕐 ${Math.round(SELF_DELETE_MS / 1000)} sec me auto-delete ho jayega.`);
+        setTimeout(() => { try { sock.sendMessage(target, { delete: sent.key }); } catch { /* ignore */ } }, SELF_DELETE_MS);
+      }
       break;
     }
     case 'forward': {
@@ -30,10 +49,31 @@ const handler = async (ctx) => {
       break;
     }
     case 'block': case 'unblock': {
-      const num = cleanNumber(quoted ? quoted.key.participant : ctx.arg);
+      const num = cleanNumber(quoted ? (quoted.key.participant || quoted.key.remoteJid) : ctx.arg);
       if (!num) return reply('❌ Number do ya reply karo.');
       await sock.updateBlockStatus(num + '@s.whatsapp.net', command === 'block' ? 'block' : 'unblock');
       await reply(`${command === 'block' ? '🚫' : '✅'} +${num} ${command}ed.`);
+      break;
+    }
+    case 'ban': {
+      const num = cleanNumber(quoted ? (quoted.key.participant || quoted.key.remoteJid) : ctx.arg);
+      if (!num) return reply('❌ Number do ya kisi ko reply karo.');
+      bans.add(num);
+      await sock.updateBlockStatus(num + '@s.whatsapp.net', 'block').catch(() => {});
+      await reply(`🚫 +${num} *BAN* kar diya gaya (blocked + ignored).`);
+      break;
+    }
+    case 'unban': {
+      const num = cleanNumber(quoted ? (quoted.key.participant || quoted.key.remoteJid) : ctx.arg);
+      if (!num) return reply('❌ Number do ya kisi ko reply karo.');
+      bans.remove(num);
+      await sock.updateBlockStatus(num + '@s.whatsapp.net', 'unblock').catch(() => {});
+      await reply(`✅ +${num} *UNBAN* ho gaya.`);
+      break;
+    }
+    case 'banlist': {
+      const l = bans.all();
+      await reply(`🚫 *Banlist (${l.length}):*\n\n${l.map((n) => `• +${n}`).join('\n') || '(khali)'}`);
       break;
     }
     case 'delete': {
@@ -68,7 +108,7 @@ const handler = async (ctx) => {
       break;
     }
     case 'getbio': {
-      const num = cleanNumber(quoted ? quoted.key.participant : (ctx.arg || sock.user.id.split(':')[0]));
+      const num = cleanNumber(quoted ? (quoted.key.participant || quoted.key.remoteJid) : (ctx.arg || sock.user.id.split(':')[0]));
       try {
         const s = await sock.fetchStatus(num + '@s.whatsapp.net');
         await reply(`📝 *Bio (+${num}):*\n${s[0]?.status || s?.status || '-'}`);
@@ -120,7 +160,7 @@ const handler = async (ctx) => {
 };
 
 module.exports = {
-  commands: ['vv', 'vv2', 'vv3', 'forward', 'block', 'unblock', 'delete', 'leave', 'fullpp', 'setpp', 'status', 'status2', 'getbio', 'updatebio', 'setname', 'pair', 'broadcast', 'blocklist', 'restart'],
+  commands: ['vv', 'vv2', 'vv3', 'forward', 'block', 'unblock', 'ban', 'unban', 'banlist', 'delete', 'leave', 'fullpp', 'setpp', 'status', 'status2', 'getbio', 'updatebio', 'setname', 'pair', 'broadcast', 'blocklist', 'restart'],
   category: '👑 OWNER',
   ownerOnly: true,
   handler,

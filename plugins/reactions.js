@@ -6,6 +6,36 @@
  */
 const config = require('../config');
 const { getJSON, pick } = require('../lib/helpers');
+const { execFile } = require('child_process');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
+/**
+ * GIF FIX: nekos.best returns animated .gif files. Sending a raw .gif as a
+ * WhatsApp "video" fails on many clients, so we download the gif and remux it
+ * to a tiny mp4 with ffmpeg, then send it with gifPlayback:true. If ffmpeg is
+ * unavailable we fall back to sending the gif URL directly.
+ */
+const ff = (args) => new Promise((res, rej) =>
+  execFile('ffmpeg', args, { timeout: 60000, maxBuffer: 1024 * 1024 * 64 }, (e) => (e ? rej(e) : res())));
+
+async function gifToMp4(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('gif fetch failed');
+  const buf = Buffer.from(await r.arrayBuffer());
+  const id = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const inp = path.join(os.tmpdir(), `gif_${id}.gif`);
+  const out = path.join(os.tmpdir(), `gif_${id}.mp4`);
+  fs.writeFileSync(inp, buf);
+  try {
+    await ff(['-y', '-i', inp, '-movflags', 'faststart', '-pix_fmt', 'yuv420p',
+      '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', '-an', '-crf', '28', out]);
+    return fs.readFileSync(out);
+  } finally {
+    [inp, out].forEach((f) => { try { fs.existsSync(f) && fs.unlinkSync(f); } catch { /* ignore */ } });
+  }
+}
 
 // Commands that have a nekos.best GIF endpoint
 const GIF_ACTIONS = [
@@ -43,11 +73,15 @@ const handler = async (ctx) => {
     try {
       const url = await nekoGif(command);
       if (url) {
-        await ctx.send(ctx.from, {
-          video: { url }, gifPlayback: true,
-          caption: `✨ ${ctx.pushname} ne *${command}* kiya ${tag} ke sath!`,
-          mentions,
-        }, { quoted: ctx.m });
+        const caption = `✨ ${ctx.pushname} ne *${command}* kiya ${tag} ke sath!`;
+        // Download + remux the gif to mp4 so WhatsApp actually plays it.
+        try {
+          const mp4 = await gifToMp4(url);
+          await ctx.send(ctx.from, { video: mp4, gifPlayback: true, caption, mentions }, { quoted: ctx.m });
+        } catch {
+          // ffmpeg unavailable / conversion failed → send the gif URL directly
+          await ctx.send(ctx.from, { video: { url }, gifPlayback: true, caption, mentions }, { quoted: ctx.m });
+        }
         return;
       }
     } catch { /* fall through to emoji */ }

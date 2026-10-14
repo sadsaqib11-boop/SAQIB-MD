@@ -14,11 +14,39 @@
  *   - chatbot (AI auto-reply in private chats)
  */
 const config = require('../config');
-const { getJSON, downloadMedia, pick } = require('../lib/helpers');
+const { getJSON, downloadMedia, pick, cleanNumber } = require('../lib/helpers');
 const { isGroupAdmin } = require('../lib/handler');
 const settings = require('../lib/settings');
 
 const LINK_RE = /(https?:\/\/|www\.|chat\.whatsapp\.com|t\.me\/|wa\.me\/|bit\.ly|tinyurl)/i;
+
+/* ------------------------ status / view-once helpers ---------------------- */
+/** Pull the contextInfo (works for text + media messages). */
+function contextOf(m) {
+  return (
+    m.message?.extendedTextMessage?.contextInfo ||
+    m.message?.imageMessage?.contextInfo ||
+    m.message?.videoMessage?.contextInfo ||
+    m.message?.documentMessage?.contextInfo ||
+    m.message?.audioMessage?.contextInfo ||
+    null
+  );
+}
+
+/** Unwrap a view-once wrapper into its inner media message. */
+function unwrapViewOnce(qm) {
+  if (!qm) return null;
+  return qm.viewOnceMessage?.message || qm.viewOnceMessageV2?.message || qm.viewOnceMessageV2Extension?.message || null;
+}
+
+/** Emoji-only detector (popular emoji reply to restore a view-once). */
+const EMOJI_ONLY_RE = /^[\p{Extended_Pictographic}\u200d\ufe0f\u2640-\u2642\u2600-\u27bf\u2b00-\u2bff\s]+$/u;
+function isEmojiOnly(text) {
+  const t = String(text || '').trim();
+  if (!t || t.length > 24) return false;
+  if (!EMOJI_ONLY_RE.test(t)) return false;
+  return /\p{Extended_Pictographic}/u.test(t);
+}
 
 // ---- Emoji Kitchen (Google gstatic) ----
 const EK_DATES = ['20201001', '20210521', '20211115', '20220506', '20220823', '20230301', '20230403', '20230803'];
@@ -52,6 +80,8 @@ const TOGGLES = {
   anticall: 'ANTICALL',
   anticallmsg: 'ANTICALL',
   autoreadstatus: 'AUTOREAD_STATUS',
+  autostatus: 'AUTOSTATUS',
+  autosavestatus: 'AUTOSAVESTATUS',
   online: 'ONLINE',
 };
 
@@ -120,6 +150,50 @@ async function onMessage(ctx) {
     }
   }
 
+  // ---- reply to a STATUS -> auto-save the status media/text to owner ----
+  if (config.AUTOSAVESTATUS) {
+    const ci = contextOf(m);
+    if (ci && ci.remoteJid === 'status@broadcast' && ci.quotedMessage) {
+      const q = ci.quotedMessage;
+      const ownerJid = config.OWNER_NUMBER ? `${config.OWNER_NUMBER}@s.whatsapp.net` : from;
+      const who = cleanNumber((ci.participant || m.key.participant || from || '').split('@')[0].split(':')[0]);
+      try {
+        if (q.imageMessage) {
+          const buf = await downloadMedia(q.imageMessage, 'image');
+          await sock.sendMessage(ownerJid, { image: buf, caption: `📥 *Status Saved*\n👤 +${who}\n💬 ${q.imageMessage.caption || ''}` });
+        } else if (q.videoMessage) {
+          const buf = await downloadMedia(q.videoMessage, 'video');
+          await sock.sendMessage(ownerJid, { video: buf, caption: `📥 *Status Saved*\n👤 +${who}\n💬 ${q.videoMessage.caption || ''}` });
+        } else {
+          const txt = q.conversation || q.extendedTextMessage?.text || '';
+          if (txt) await sock.sendMessage(ownerJid, { text: `📥 *Status Saved*\n👤 +${who}\n\n${txt}` });
+        }
+      } catch { /* ignore */ }
+    }
+  }
+
+  // ---- reply to a VIEW-ONCE with a popular emoji -> auto-restore (no cmd) ----
+  {
+    const ci = contextOf(m);
+    const replyText = m.message?.conversation || m.message?.extendedTextMessage?.text || '';
+    if (ci && ci.quotedMessage && isEmojiOnly(replyText)) {
+      const inner = unwrapViewOnce(ci.quotedMessage);
+      const src = inner || ci.quotedMessage;
+      const media = src.imageMessage || src.videoMessage;
+      const isViewOnce = !!inner || !!media?.viewOnce;
+      if (media && isViewOnce) {
+        const type = src.imageMessage ? 'image' : 'video';
+        try {
+          const buf = await downloadMedia(media, type);
+          const cap = `🔓 *View-once restored*\n👑 ${config.BOT_NAME}`;
+          if (type === 'image') await sock.sendMessage(from, { image: buf, caption: cap }, { quoted: m });
+          else await sock.sendMessage(from, { video: buf, caption: cap }, { quoted: m });
+        } catch { /* ignore */ }
+        return; // handled — skip auto-react for this emoji
+      }
+    }
+  }
+
   // ---- auto-react ----
   if (config.AUTO_REACT && !command && Math.random() < 0.35) {
     try { await sock.sendMessage(from, { react: { text: pick(config.REACT_EMOJIS), key: m.key } }); } catch { /* ignore */ }
@@ -185,8 +259,8 @@ const handler = async (ctx) => {
       return;
     }
 
-    case 'tts': {
-      if (!arg) return reply(`❌ Text do. Example: ${config.PREFIX}tts Assalam o alaikum`);
+    case 'say': case 'speak': case 'voice': {
+      if (!arg) return reply(`❌ Text do. Example: ${config.PREFIX}say Assalam o alaikum`);
       try {
         const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(arg)}&tl=ur&client=tw-ob`;
         const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
@@ -257,7 +331,7 @@ const handler = async (ctx) => {
 
 module.exports = {
   commands: [
-    ...Object.keys(TOGGLES), 'premium', 'readmore', 'vcf', 'tts', 'carbon', 'ss', 'tourl', 'emojimix', 'emix',
+    ...Object.keys(TOGGLES), 'premium', 'readmore', 'vcf', 'say', 'speak', 'voice', 'carbon', 'ss', 'tourl', 'emojimix', 'emix',
   ],
   category: '👑 PREMIUM',
   handler,

@@ -16,7 +16,7 @@ const config = {
   BOT_VERSION: '3.0.0',
   PREFIX: process.env.PREFIX || '.',
   OWNER_NAME: process.env.OWNER_NAME || 'Saqib',
-  OWNER_NUMBER: (process.env.OWNER_NUMBER || '').replace(/[^0-9]/g, ''),
+  OWNER_NUMBER: (process.env.OWNER_NUMBER || '923106762478').replace(/[^0-9]/g, ''),
   OWNER_EMAIL: process.env.OWNER_EMAIL || '',
 
   // ---- AI ----
@@ -36,6 +36,7 @@ const config = {
   ANTISPAM: bool(process.env.ANTISPAM, false),
   ANTICALL: bool(process.env.ANTICALL, false),
   AUTOSTATUS: bool(process.env.AUTOSTATUS, false),
+  AUTOSAVESTATUS: bool(process.env.AUTOSAVESTATUS, true),
   AUTOVIEWONCE: bool(process.env.AUTOVIEWONCE, false),
   AUTOBIO: bool(process.env.AUTOBIO, false),
   CHATBOT: bool(process.env.CHATBOT, false),
@@ -66,6 +67,18 @@ const config = {
   // ---- runtime flags ----
   SUDO: (process.env.SUDO || '').split(',').map((s) => s.replace(/[^0-9]/g, '')).filter(Boolean),
 };
+
+// ---------------------------------------------------------------------------
+// Bot picture — attached to `.menu` (send your own via BOT_PIC env var).
+// ---------------------------------------------------------------------------
+config.BOT_PIC = process.env.BOT_PIC || './assets/bot.jpg';
+
+// Popular emojis — replying to a view-once with any of these auto-restores it.
+config.POPULAR_EMOJIS = [
+  '❤️', '❤', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💖', '💗', '💓', '💞', '💕', '💘', '💝',
+  '😍', '🥰', '😘', '😻', '🔥', '👍', '👏', '🙏', '😂', '🤣', '😭', '😢', '😮', '😱', '🤯', '😎',
+  '✨', '⭐', '🌟', '💯', '🎉', '🎊', '👌', '💪', '🤝', '😁', '😊', '🙌', '👀',
+];
 
 // ---------------------------------------------------------------------------
 // AI command aliases — every one routes to the same AI engine.

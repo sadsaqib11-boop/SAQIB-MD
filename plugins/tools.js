@@ -157,13 +157,13 @@ const handler = async (ctx) => {
       await reply(`🔑 *Generated Password (${len}):*\n\n\`${pw}\``);
       break;
     }
-    case 'currency': case 'rate': {
+    case 'currency': case 'exchange': case 'fx': {
       const [amount, from, to] = arg.split(' ');
       if (!from || !to) return reply(`❌ Format: ${config.PREFIX}currency 100 USD PKR`);
       try {
-        const r = await getJSON(`https://api.exchangerate-api.com/v4/latest/${from.toUpperCase()}`);
-        const rate = r.rates[to.toUpperCase()];
-        if (!rate) return reply('❌ Currency nahi mili.');
+        const r = await getJSON(`https://open.er-api.com/v6/latest/${from.toUpperCase()}`);
+        const rate = r?.rates?.[to.toUpperCase()];
+        if (!rate) return reply('❌ Currency nahi mili — code check karo (e.g. USD, PKR, INR).');
         await reply(`💱 *${amount || 1} ${from.toUpperCase()} = ${((parseFloat(amount) || 1) * rate).toFixed(2)} ${to.toUpperCase()}*`);
       } catch { await reply('❌ Currency API fail.'); }
       break;
@@ -307,7 +307,7 @@ const handler = async (ctx) => {
 module.exports = {
   commands: [
     'weather', 'wthr', 'translate', 'tr', 'qr', 'shorturl', 'short', 'calc', 'wiki', 'time', 'clock',
-    'ip', 'base64', 'hash', 'password', 'currency', 'news', 'joke2', 'quote2',
+    'ip', 'base64', 'hash', 'password', 'currency', 'exchange', 'fx', 'news', 'joke2', 'quote2',
     'moon', 'type', 'spinner', 'loading', 'cd', 'rocket', 'chumi', 'fing', 'nikal', 'nppm', 'attp',
   ],
   category: '🧰 TOOLS',

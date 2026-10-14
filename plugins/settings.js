@@ -14,8 +14,8 @@ const handler = async (ctx) => {
       await reply(`✅ Bot ab *${arg.toUpperCase()}* mode me hy.${arg === 'private' ? '\n(Owner ke ilawa koi command nahi chala sakta)' : '\n(Sab log commands use kar sakte hain)'}`);
       break;
     }
-    case 'prefix': {
-      if (!arg || arg.length > 2) return reply(`ℹ️ Abhi: "${config.PREFIX}"\n❓ Example: ${config.PREFIX}prefix !`);
+    case 'prefix': case 'setprefix': {
+      if (!arg || arg.length > 2) return reply(`ℹ️ Abhi: "${config.PREFIX}"\n❓ Example: ${config.PREFIX}setprefix !`);
       config.PREFIX = arg; settings.save();
       await reply(`✅ Prefix ab "${arg}" hy.`);
       break;
@@ -170,7 +170,7 @@ const handler = async (ctx) => {
 
 module.exports = {
   commands: [
-    'mode', 'prefix', 'botname', 'ownername', 'ownernumber', 'description', 'stickername',
+    'mode', 'prefix', 'setprefix', 'botname', 'ownername', 'ownernumber', 'description', 'stickername',
     'setwelcome', 'setgoodbye', 'statusemoji', 'reactemojis', 'owneremojis', 'delpath',
     'autoread', 'autotyping', 'recording', 'statusview', 'statuslike', 'administration',
     'mentionreply', 'welcome', 'goodbye', 'antilink', 'autostatus', 'antistatus', 'setonline',

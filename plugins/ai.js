@@ -12,6 +12,14 @@ const STYLE_NOTES = {
   mathgpt: 'Ye maths sawal hy — step by step solve karo.',
 };
 
+/** fetch with an AbortController timeout (keeps AI snappy — never hangs). */
+async function fetchWithTimeout(url, opts = {}, ms = 20000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  try { return await fetch(url, { ...opts, signal: ctrl.signal }); }
+  finally { clearTimeout(t); }
+}
+
 /** Google Gemini — try a list of models so one busy/retired model never breaks AI */
 const GEMINI_MODELS = [config.GEMINI_MODEL, 'gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'].filter((m, i, a) => m && a.indexOf(m) === i);
 
@@ -22,11 +30,11 @@ async function askGemini(prompt, imageBase64 = null) {
   for (const model of GEMINI_MODELS) {
     try {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${config.GEMINI_API_KEY}`;
-      const res = await fetch(url, {
+      const res = await fetchWithTimeout(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts }], generationConfig: { maxOutputTokens: 900 } }),
-      });
+        body: JSON.stringify({ contents: [{ parts }], generationConfig: { maxOutputTokens: 800 } }),
+      }, 18000);
       if (!res.ok) { lastErr = new Error(`AI API error ${res.status}`); continue; }
       const data = await res.json();
       const out = data.candidates?.[0]?.content?.parts?.map((p) => p.text).filter(Boolean).join('');
@@ -39,7 +47,7 @@ async function askGemini(prompt, imageBase64 = null) {
 
 /** Keyless fallback engine (OpenAI-compatible) — works with no API key */
 async function askPollinations(prompt) {
-  const res = await fetch('https://text.pollinations.ai/openai', {
+  const res = await fetchWithTimeout('https://text.pollinations.ai/openai', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -49,7 +57,7 @@ async function askPollinations(prompt) {
         { role: 'user', content: prompt },
       ],
     }),
-  });
+  }, 25000);
   if (!res.ok) throw new Error(`AI API error ${res.status}`);
   const data = await res.json();
   const out = data.choices?.[0]?.message?.content;

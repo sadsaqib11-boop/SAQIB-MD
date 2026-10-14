@@ -27,5 +27,6 @@ build/
 
 # runtime settings (volume-backed)
 saqib-settings.json
+saqib-bans.json
 smoke-result.json
 todo.md
