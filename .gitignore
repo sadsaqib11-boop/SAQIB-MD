@@ -31,3 +31,9 @@ saqib-bans.json
 smoke-result.json
 todo.md
 tmp_railway.sh
+
+# runtime data (lives on the Railway /data volume)
+saqib-settings.json
+saqib-prefixes.json
+saqib-reacts.json
+saqib-langs.json

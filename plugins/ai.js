@@ -2,6 +2,7 @@
  * AI — all AI aliases route to Gemini (if key set) or a keyless engine; plus .imagine (image generation)
  */
 const config = require('../config');
+const lang = require('../lib/lang');
 const { downloadMedia } = require('../lib/helpers');
 const imagegen = require('../lib/imagegen');
 const { aiCache } = require('../lib/cache');
@@ -54,7 +55,7 @@ async function askPollinations(prompt) {
     body: JSON.stringify({
       model: 'openai',
       messages: [
-        { role: 'system', content: `You are ${config.BOT_NAME}, a helpful, friendly WhatsApp assistant. Reply in the user's language (Urdu/Roman Urdu/English). Keep answers clear and useful.` },
+        { role: 'system', content: `You are ${config.BOT_NAME}, a helpful, friendly WhatsApp assistant. ${langLine(prompt)} Keep answers clear and useful.` },
         { role: 'user', content: prompt },
       ],
     }),
@@ -65,8 +66,19 @@ async function askPollinations(prompt) {
   return out ? String(out).trim() : '❌ Koi jawab nahi mila.';
 }
 
+
+/** Language instruction for the AI, from the user's `.botlanguage` choice. */
+function langLine(prompt) {
+  const code = currentLang || 'en';
+  if (code === 'en') return "Reply in English. If the user writes in Roman Urdu, you may reply in Roman Urdu.";
+  const name = (lang.LANGS[code] || [])[0] || 'English';
+  return `Reply ONLY in ${name}.`;
+}
+let currentLang = 'en';
+
 /** Unified AI entry: Gemini if key present, else keyless fallback. Cached for speed. */
-async function askAI(prompt, imageBase64 = null) {
+async function askAI(prompt, imageBase64 = null, senderNum = null) {
+  currentLang = senderNum ? lang.forUser(senderNum) : 'en';
   // Only cache text-only prompts (images are unique).
   const cacheKey = imageBase64 ? null : 'ai:' + prompt.slice(0, 300);
   if (cacheKey) {
@@ -112,7 +124,7 @@ const handler = async (ctx) => {
   if (!prompt) return ctx.reply(`❌ Sawal likho. Example: ${config.PREFIX}${ctx.command} Pakistan ka capital kya hy?`);
   const style = STYLE_NOTES[ctx.command.replace(/[0-9]/g, '')] || '';
   try {
-    const answer = await askAI(style ? `${prompt}\n(${style})` : prompt, img);
+    const answer = await askAI(style ? `${prompt}\n(${style})` : prompt, img, ctx.senderNum);
     await ctx.reply(`🤖 *${config.BOT_NAME} AI*\n\n${answer}`);
   } catch (e) {
     await ctx.reply(`❌ ${e.message}`);

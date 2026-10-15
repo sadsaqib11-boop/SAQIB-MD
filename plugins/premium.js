@@ -17,6 +17,7 @@ const config = require('../config');
 const { getJSON, downloadMedia, pick, cleanNumber, targetOf } = require('../lib/helpers');
 const { isGroupAdmin } = require('../lib/handler');
 const settings = require('../lib/settings');
+const lang = require('../lib/lang');
 const reacts = require('../lib/reacts');
 
 const ON_WORDS = ['on', 'true', '1', 'enable', 'enabled', 'yes', 'haan', 'han'];
@@ -28,7 +29,7 @@ const parseOnOff = (a) => {
   return null;
 };
 const yn = (v) => (v ? 'ON 🟢' : 'OFF 🔴');
-const antideleteStatus = () => `🛡️ *Anti-Delete*\n▪️ Group: ${yn(config.ANTIDELETE)}\n▪️ Chat/Inbox: ${yn(config.ANTIDELETE_INBOX)}`;
+const antideleteStatus = () => `🛡️ *Anti-Delete*\n▪️ Master: ${yn(config.ANTIDELETE)}\n▪️ Group watch: ${yn(config.ANTIDELETE)}\n▪️ Kahan aayega: *${config.ANTIDELETE_TO_CHAT ? 'Chat (jahan delete hua)' : 'Yourself (apni inbox)'}*\n\n_${config.PREFIX}antidelete inbox | ${config.PREFIX}antidelete chat_`;
 const autoreactStatus = () => `😀 *Auto-React*\n▪️ Master: ${yn(config.AUTO_REACT)}\n▪️ Group: ${yn(config.AUTO_REACT_GROUP)}\n▪️ Chat: ${yn(config.AUTO_REACT_CHAT)}`;
 
 const LINK_RE = /(https?:\/\/|www\.|chat\.whatsapp\.com|t\.me\/|wa\.me\/|bit\.ly|tinyurl)/i;
@@ -88,6 +89,9 @@ const TOGGLES = {
   antispam: 'ANTISPAM',
   autoreact: 'AUTO_REACT',
   autoviewonce: 'AUTOVIEWONCE',
+  antiviewonce: 'AUTOVIEWONCE',   // alias — she types `.antiviewonce`
+  antiedit: 'ANTIEDIT',
+  botlanguage: null,
   autobio: 'AUTOBIO',
   chatbot: 'CHATBOT',
   anticall: 'ANTICALL',
@@ -100,7 +104,7 @@ const TOGGLES = {
 
 /* ============================ per-message hook ============================ */
 async function onMessage(ctx) {
-  const { sock, m, from, isGroup, sender, senderNum, text, command, isOwner } = ctx;
+  const { sock, m, from, isGroup, sender, senderNum, text, command, isOwner, session } = ctx;
   const isStatus = from === 'status@broadcast' || m?.key?.remoteJid === 'status@broadcast';
 
   // ---- auto-status: view incoming statuses ----
@@ -158,7 +162,12 @@ async function onMessage(ctx) {
         if (media) {
           const type = img ? 'image' : 'video';
           const buf = await downloadMedia(media, type);
-          const target = config.OWNER_NUMBER ? `${config.OWNER_NUMBER}@s.whatsapp.net` : from;
+          // Destination = the user's OWN inbox ("yourself"), i.e. their own chat
+          // with themselves — NOT the chat it was sent in, and not just the
+          // owner's number. `session.number` is the paired number; fall back to
+          // the owner number / the current chat if it is somehow missing.
+          const selfNum = session?.number || config.OWNER_NUMBER || ctx.senderNum;
+          const target = selfNum ? `${selfNum}@s.whatsapp.net` : from;
           const cap = `👁️ *View-Once Saved*\n👤 +${ctx.senderNum}\n💬 ${media.caption || ''}`;
           if (type === 'image') await sock.sendMessage(target, { image: buf, caption: cap });
           else await sock.sendMessage(target, { video: buf, caption: cap });
@@ -236,19 +245,144 @@ async function onMessage(ctx) {
 const handler = async (ctx) => {
   const { command, reply, arg, senderNum } = ctx;
 
-  // ---- anti-delete (scoped: group / chat-inbox / all) ----
+  // ---- anti-delete ----
+  //   .antidelete              -> master on/off
+  //   .antidelete inbox        -> WHERE: the deleted message is sent to YOUR OWN
+  //                               chat with yourself (private inbox)
+  //   .antidelete chat         -> WHERE: the deleted message is sent back into
+  //                               the chat it was actually deleted in
+  //   .antidelete group        -> watch GROUPS
+  //   .antidelete all          -> everything on/off
+  // The inbox/chat choice is the destination; it is independent of whether
+  // groups or DMs are watched.
   if (command === 'antidelete' || command === 'antideleteinbox') {
     const parts = String(arg || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
-    let scope = ['chat', 'inbox', 'group', 'all', 'status', 'show'].includes(parts[0]) ? parts[0] : null;
-    if (command === 'antideleteinbox') scope = 'inbox';
-    if (scope === 'status' || scope === 'show') return reply(antideleteStatus());
+    const scope = ['chat', 'inbox', 'group', 'all', 'status', 'show', 'where']
+      .includes(parts[0]) ? parts[0] : null;
+    if (scope === 'status' || scope === 'show' || scope === 'where') return reply(antideleteStatus());
+
+    // Destination: inbox (yourself) or chat (where it happened).
+    if (scope === 'inbox' || scope === 'chat') {
+      const v = parseOnOff(parts[1]);
+      // `.antidelete inbox` -> destination = YOUR OWN inbox  (ANTIDELETE_TO_CHAT = false)
+      // `.antidelete chat`  -> destination = where it was deleted (ANTIDELETE_TO_CHAT = true)
+      // Bare (no on/off) means "use this destination" — so it sets, not toggles.
+      config.ANTIDELETE_TO_CHAT = v === null ? (scope === 'chat') : v;
+      // Choosing a destination implies turning the feature on.
+      if (v === null || v === true) config.ANTIDELETE = true;
+      settings.save();
+      await reply(
+        `✅ Anti-delete ab *${config.ANTIDELETE_TO_CHAT ? 'CHAT me' : 'YOURSELF (inbox) me'}* aayega.\n` +
+        `_(jahan delete hua wahi: \`${config.PREFIX}antidelete chat\` | apni inbox: \`${config.PREFIX}antidelete inbox\`)_`
+      );
+      return;
+    }
+
+    if (command === 'antideleteinbox') { config.ANTIDELETE = true; config.ANTIDELETE_TO_CHAT = false; settings.save(); await reply(antideleteStatus()); return; }
+
     const val = parseOnOff(parts[scope ? 1 : 0]);
-    if (scope === 'chat' || scope === 'inbox') config.ANTIDELETE_INBOX = val === null ? !config.ANTIDELETE_INBOX : val;
-    else if (scope === 'group') config.ANTIDELETE = val === null ? !config.ANTIDELETE : val;
+    if (scope === 'group') config.ANTIDELETE = val === null ? !config.ANTIDELETE : val;
     else if (scope === 'all') { const v = val === null ? !(config.ANTIDELETE || config.ANTIDELETE_INBOX) : val; config.ANTIDELETE = v; config.ANTIDELETE_INBOX = v; }
     else config.ANTIDELETE = val === null ? !config.ANTIDELETE : val;
     settings.save();
     await reply(antideleteStatus());
+    return;
+  }
+
+  // ---- anti-edit: catch a message being EDITED and show old vs new ----
+  if (command === 'antiedit') {
+    const parts = String(arg || '').trim().split(/\s+/).filter(Boolean);
+    const sub = (parts[0] || '').toLowerCase();
+    if (!parts.length || sub === 'show' || sub === 'status') {
+      return reply(
+        `✏️ *ANTI-EDIT*\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `▪️ Abhi: *${config.ANTIEDIT ? 'ON 🟢' : 'OFF 🔴'}*\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `*Batao kya karna hy?*\n` +
+        `▪️ \`${config.PREFIX}antiedit on\` — edited messages pakro\n` +
+        `▪️ \`${config.PREFIX}antiedit off\` — band karo\n` +
+        `_(edit hone par purana + naya text dono aayenge)_`
+      );
+    }
+    const val = parseOnOff(sub);
+    if (val === null) return reply(`❓ \`${config.PREFIX}antiedit on\` ya \`${config.PREFIX}antiedit off\` likho.`);
+    config.ANTIEDIT = val;
+    settings.save();
+    return reply(`✅ Anti-Edit ab *${val ? 'ON 🟢' : 'OFF 🔴'}* hy.`);
+  }
+
+  // ---- bot language (100+ languages) ----
+  //   .botlanguage              -> show current + hint
+  //   .botlanguage list [n]     -> browse all languages (paginated)
+  //   .botlanguage <code|name>  -> set the bot's language for YOU
+  //   .botlanguage reset        -> back to English
+  if (command === 'botlanguage' || command === 'lang' || command === 'language') {
+    const parts = String(arg || '').trim().split(/\s+/).filter(Boolean);
+    const sub = (parts[0] || '').toLowerCase();
+    const me = lang.infoFor(senderNum);
+
+    if (!parts.length) {
+      await reply(
+        `🌍 *BOT LANGUAGE*\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `▪️ Abhi: *${me.name}* (${me.native}) — \`${me.code}\`\n` +
+        `▪️ Total: *${Object.keys(lang.LANGS).length}* languages\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `\`${config.PREFIX}botlanguage list\` — sab dekho\n` +
+        `\`${config.PREFIX}botlanguage ur\` — Urdu laga do\n` +
+        `\`${config.PREFIX}botlanguage english\` — English\n` +
+        `\`${config.PREFIX}botlanguage reset\` — default`
+      );
+      return;
+    }
+
+    if (sub === 'list' || sub === 'all') {
+      const page = Math.max(1, parseInt(parts[1], 10) || 1);
+      const per = 30;
+      const entries = Object.entries(lang.LANGS);
+      const total = Math.ceil(entries.length / per);
+      const slice = entries.slice((page - 1) * per, page * per);
+      if (!slice.length) return reply(`❌ Page ${page} nahi hy. Total ${total} pages.`);
+      await reply(
+        `🌍 *LANGUAGES* (${entries.length}) — page ${page}/${total}\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        slice.map(([c, [en, nat]]) => `▪️ \`${c}\` — ${en}${nat !== en ? ` (${nat})` : ''}`).join('\n') +
+        `\n━━━━━━━━━━━━━━━\n\`${config.PREFIX}botlanguage list ${page + 1}\` — agla page`
+      );
+      return;
+    }
+
+    if (sub === 'reset' || sub === 'default') {
+      lang.reset(senderNum);
+      await reply('✅ Language *English* par wapas aa gayi.');
+      return;
+    }
+
+    // exact code first, then fuzzy search by name
+    const code = lang.set(senderNum, sub);
+    if (code) {
+      const [en, nat] = lang.LANGS[code];
+      await reply(`✅ Bot ki language ab *${en}* (${nat}) hy.\n_AI replies isi language me aayenge._`);
+      return;
+    }
+    const hits = lang.search(parts.join(' '));
+    if (hits.length === 1) {
+      const [c, [en, nat]] = hits[0];
+      lang.set(senderNum, c);
+      await reply(`✅ Bot ki language ab *${en}* (${nat}) hy.`);
+      return;
+    }
+    if (hits.length > 1) {
+      return reply(
+        `🤔 *${hits.length}* languages mili — exact code likho:\n` +
+        hits.slice(0, 15).map(([c, [en]]) => `▪️ \`${c}\` — ${en}`).join('\n')
+      );
+    }
+    await reply(
+      `❌ \`${parts[0]}\` nahi mili.\n` +
+      `\`${config.PREFIX}botlanguage list\` se sab ${Object.keys(lang.LANGS).length} languages dekho.`
+    );
     return;
   }
 
@@ -291,11 +425,87 @@ const handler = async (ctx) => {
   // ---- simple toggles ----
   // Supports explicit args: `.antispam on` -> ON, `.antispam off` -> OFF.
   // With no arg it flips the current state.
+  // ---- anti-call (special: asks instead of guessing, and supports a message) ----
+  //   .anticall              -> bot ASKS "on ya off?" instead of flipping blindly
+  //   .anticall on / off     -> set it
+  //   .anticall message <txt>-> custom text sent when a call is rejected
+  //   .anticall message clear-> stop sending any text (silent reject)
+  //   .anticall show         -> current state
+  if (command === 'anticall' || command === 'anticallmsg') {
+    const parts = String(arg || '').trim().split(/\s+/).filter(Boolean);
+    const sub = (parts[0] || '').toLowerCase();
+
+    if (!parts.length) {
+      return reply(
+        `📵 *ANTI-CALL*\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `▪️ Abhi: *${config.ANTICALL ? 'ON 🟢' : 'OFF 🔴'}*\n` +
+        `▪️ Message: ${config.ANTICALL_MSG ? `_${config.ANTICALL_MSG}_` : '_koi nahi (chup chap reject)_'}\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `*Batao kya karna hy:*\n` +
+        `▪️ \`${config.PREFIX}anticall on\` — calls reject karo\n` +
+        `▪️ \`${config.PREFIX}anticall off\` — calls aane do\n` +
+        `▪️ \`${config.PREFIX}anticall message <text>\` — apna message lagao\n` +
+        `▪️ \`${config.PREFIX}anticall message clear\` — message hatao`
+      );
+    }
+
+    if (sub === 'show' || sub === 'status') {
+      return reply(`📵 Anti-Call: *${config.ANTICALL ? 'ON 🟢' : 'OFF 🔴'}*\n💬 Message: ${config.ANTICALL_MSG || '_koi nahi_'}`);
+    }
+
+    if (sub === 'message' || sub === 'msg') {
+      const rest = parts.slice(1).join(' ').trim();
+      if (!rest) return reply(`❌ Message likho: \`${config.PREFIX}anticall message Aap call na karein.\``);
+      if (['clear', 'reset', 'none', 'off', 'hatao'].includes(rest.toLowerCase())) {
+        config.ANTICALL_MSG = '';
+        settings.save();
+        return reply('✅ Anti-Call message hata diya — ab call chup chap reject hogi.');
+      }
+      config.ANTICALL_MSG = rest;
+      settings.save();
+      return reply(`✅ Anti-Call message set: _${rest}_\n_(call reject hone par ye bheja jayega)_`);
+    }
+
+    const val = parseOnOff(sub);
+    if (val === null) {
+      return reply(`❓ Samajh nahi aaya. \`${config.PREFIX}anticall on\` ya \`${config.PREFIX}anticall off\` likho.`);
+    }
+    config.ANTICALL = val;
+    settings.save();
+    return reply(`✅ Anti-Call ab *${val ? 'ON 🟢' : 'OFF 🔴'}* hy.`);
+  }
+
+  // ---- every other on/off toggle ----
+  // Bare `.antilink` used to silently FLIP the setting, which is confusing (she
+  // typed `.anticall` expecting a question and got "off"). Now: no argument =>
+  // ask which one; explicit on/off => set it. Same style for every toggle.
   if (TOGGLES[command]) {
     const key = TOGGLES[command];
     const val = parseOnOff(arg);
-    config[key] = val === null ? !config[key] : val;
+    if (val === null) {
+      return reply(
+        `⚙️ *${command.toUpperCase()}*\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `▪️ Abhi: *${config[key] ? 'ON 🟢' : 'OFF 🔴'}*\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `Batao kya karna hy?\n` +
+        `▪️ \`${config.PREFIX}${command} on\`\n` +
+        `▪️ \`${config.PREFIX}${command} off\``
+      );
+    }
+    config[key] = val;
     settings.save();
+
+    // `.online` needs a LIVE presence update. markOnlineOnConnect only applies
+    // when the socket is first created, so flipping the flag on an already
+    // connected socket did nothing at all — which is why .online looked broken.
+    if (key === 'ONLINE') {
+      try {
+        await ctx.sock.sendPresenceUpdate(config.ONLINE ? 'available' : 'unavailable');
+      } catch { /* ignore */ }
+    }
+
     await reply(`✅ *${command.toUpperCase()}* ab *${config[key] ? 'ON 🟢' : 'OFF 🔴'}* hy.`);
     return;
   }

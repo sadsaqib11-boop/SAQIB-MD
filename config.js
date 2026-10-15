@@ -174,6 +174,16 @@ config.AUDIO_FX = {
 // gemini-*-image model), so the Gemini image path is opt-in. Leave this off and
 // images come from the free pollinations community models in ~10s instead of
 // waiting ~45s for a call that can never succeed.
+// Anti-delete destination: false = the user's OWN inbox ("yourself"),
+// true = the chat the message was actually deleted in.
+config.ANTIDELETE_TO_CHAT = bool(process.env.ANTIDELETE_TO_CHAT, false);
+
+// Optional text sent to someone whose call was rejected. Empty = stay silent.
+config.ANTICALL_MSG = process.env.ANTICALL_MSG || '';
+
+// Anti-edit: catch a message being EDITED (not deleted) and show old vs new.
+config.ANTIEDIT = bool(process.env.ANTIEDIT, false);
+
 config.GEMINI_IMAGE_ENABLED = bool(process.env.GEMINI_IMAGE_ENABLED, false);
 
 config.REACT_EMOJIS = ['🔥', '⚡', '❤️', '😍', '👏', '💯', '🎉', '🤩', '😎', '💫', '✨', '🙌', '🥰', '😇', '💥'];

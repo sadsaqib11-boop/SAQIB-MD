@@ -220,6 +220,11 @@ bot.startBot().catch((e) => console.error('bot start fail:', e?.message || e));
 
 // SPEED: warm external connections in the background (DNS + TLS pre-connect)
 require('./lib/helpers').warmupHosts().catch(() => {});
+// SPEED: pre-generate the myth images in the background so the first user to
+// type 💋earthquake / 💋dragonfire gets an instant cached image instead of
+// waiting ~10s. Fully optional — failures are ignored, and WARM_IMAGES=0
+// switches it off.
+try { require('./scripts/warm-images'); } catch { /* ignore */ }
 
 process.on('unhandledRejection', (e) => console.error('unhandledRejection:', e?.message || e));
 process.on('uncaughtException', (e) => console.error('uncaughtException:', e?.message || e));
