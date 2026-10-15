@@ -3,6 +3,7 @@
  */
 const config = require('../config');
 const { downloadMedia } = require('../lib/helpers');
+const imagegen = require('../lib/imagegen');
 const { aiCache } = require('../lib/cache');
 
 const STYLE_NOTES = {
@@ -85,11 +86,15 @@ async function askAI(prompt, imageBase64 = null) {
 const handler = async (ctx) => {
   const { command } = ctx;
 
-  // ---- .imagine : AI image generation (no key needed) ----
+  // ---- .imagine : AI image generation ----
   if (command === 'imagine' || command === 'image' || command === 'img') {
     if (!ctx.arg) return ctx.reply(`❌ Prompt likho. Example: ${config.PREFIX}imagine a cyberpunk cat`);
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(ctx.arg)}?width=1024&height=1024&nologo=true`;
-    await ctx.send(ctx.from, { image: { url }, caption: `🎨 *${config.BOT_NAME} Imagine*\n📝 ${ctx.arg}` }, { quoted: ctx.m });
+    await imagegen.sendGeneratedImage(
+      ctx,
+      ctx.arg,
+      `🎨 *${config.BOT_NAME} Imagine*\n📝 ${ctx.arg}`,
+      { width: 1024, height: 1024 }
+    );
     return;
   }
 

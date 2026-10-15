@@ -3,6 +3,7 @@
  * Every style maps to a prompt flavour.
  */
 const config = require('../config');
+const img = require('../lib/imagegen');
 
 const STYLES = {
   advglow: 'advanced glowing neon text effect, dark background',
@@ -39,10 +40,12 @@ const handler = async (ctx) => {
   if (!arg) return reply(`❌ Text do. Example: ${config.PREFIX}${command} SAQIB-MD`);
   const flavour = STYLES[command] || 'stunning 3d text logo';
   const prompt = `${arg} text logo, ${flavour}, high quality, 4k, centered`;
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true`;
-  try {
-    await ctx.send(ctx.from, { image: { url }, caption: `🎨 *${arg}* — ${command} logo\n👑 ${config.BOT_NAME}` }, { quoted: ctx.m });
-  } catch { await reply('❌ Logo banane me error aaya.'); }
+  await img.sendGeneratedImage(
+    ctx,
+    prompt,
+    `🎨 *${arg}* — ${command} logo\n👑 ${config.BOT_NAME}`,
+    { width: 1024, height: 1024 }
+  );
 };
 
 module.exports = {

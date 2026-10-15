@@ -8,6 +8,7 @@ const fs = require('fs');
 const config = require('./config');
 // Load persisted runtime overrides (toggles survive restarts/redeploys).
 require('./lib/settings').load();
+require('./lib/prefixes').load();
 require('./lib/bans').load();
 const registry = require('./plugins/_registry');
 const bot = require('./lib/bot');

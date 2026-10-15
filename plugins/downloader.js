@@ -31,11 +31,20 @@ const run = (cmd, args) => new Promise((res, rej) => execFile(cmd, args, { timeo
 
 async function sendMedia(ctx, filePath, caption, asAudio) {
   const stat = fs.statSync(filePath);
-  if (stat.size > MAX_MEDIA_BYTES) { try { fs.unlinkSync(filePath); } catch { /* ignore */ } throw new Error('File 64MB se bara hy — chhoti video try karo.'); }
   const buf = fs.readFileSync(filePath);
   try {
-    if (asAudio) await ctx.send(ctx.from, { audio: buf, mimetype: 'audio/mpeg', ptt: false }, { quoted: ctx.m });
-    else await ctx.send(ctx.from, { video: buf, caption, mimetype: 'video/mp4' }, { quoted: ctx.m });
+    if (asAudio) {
+      await ctx.send(ctx.from, { audio: buf, mimetype: 'audio/mpeg', ptt: false }, { quoted: ctx.m });
+      return;
+    }
+    // BIG FILES: WhatsApp's audio/video cap is ~64MB. She asked for NO limit —
+    // anything too big for a video goes out as a DOCUMENT instead of failing.
+    if (buf.length > MAX_MEDIA_BYTES) {
+      await sendDoc(ctx, buf, `${(caption.split('\n')[0] || 'video').replace(/[^\w\s.-]/g, '').trim().slice(0, 60) || 'video'}.mp4`, 'video/mp4');
+      await ctx.reply('📄 File 64MB se bari thi — *document* me bhej di.').catch(() => {});
+      return;
+    }
+    await ctx.send(ctx.from, { video: buf, caption, mimetype: 'video/mp4' }, { quoted: ctx.m });
   } finally { try { fs.unlinkSync(filePath); } catch { /* ignore */ } }
 }
 
@@ -44,7 +53,7 @@ async function sendDoc(ctx, buf, fileName, mimetype) {
   await ctx.send(ctx.from, { document: buf, mimetype: mimetype || 'application/octet-stream', fileName }, { quoted: ctx.m });
 }
 
-/** Download the first result (audio or video) with a SoundCloud fallback. */
+/** Download the first result (audio or video). */
 async function ytSearchDownload(ctx, query, asAudio) {
   if (!ytdlp.available()) return ctx.reply('❌ Downloader engine (yt-dlp) available nahi hy.');
   const input = String(query).trim();
@@ -54,10 +63,20 @@ async function ytSearchDownload(ctx, query, asAudio) {
   if (asAudio) {
     const file = await ytdlp.downloadAudioSmart(input);
     await sendMedia(ctx, file, `🎵 *${meta.title || query}*\n👑 ${config.BOT_NAME}`, true);
-  } else {
-    const { file, audio } = await ytdlp.downloadVideoSmart(input);
-    await sendMedia(ctx, file, `🎬 *${meta.title || query}*\n👑 ${config.BOT_NAME}`, audio);
+    return;
   }
+  // VIDEO: she asked for video, so never silently hand back an audio file.
+  // If YouTube is blocked we try the alternate routes first, and only then
+  // tell her honestly instead of sending a surprise MP3.
+  const { file, audio } = await ytdlp.downloadVideoSmart(input);
+  if (audio) {
+    try { fs.unlinkSync(file); } catch { /* ignore */ }
+    return ctx.reply(
+      '❌ *Video* nahi mil saki (YouTube ne block kiya).\n' +
+      '🎵 Audio mil sakti hy — `' + config.PREFIX + 'song ' + query + '` try karo.'
+    );
+  }
+  await sendMedia(ctx, file, `🎬 *${meta.title || query}*\n👑 ${config.BOT_NAME}`, false);
 }
 
 /**

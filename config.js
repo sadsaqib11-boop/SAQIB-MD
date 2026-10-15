@@ -22,6 +22,15 @@ const config = {
   // ---- AI ----
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
   GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+  // YouTube cookies (Netscape cookies.txt) — fixes "Sign in to confirm you're not a bot".
+  YT_COOKIES: process.env.YT_COOKIES || '',
+  GEMINI_IMAGE_MODEL: process.env.GEMINI_IMAGE_MODEL || 'imagen-4.0-generate-001',
+  // Keyed pollinations — removes the per-IP 402 limit on image generation.
+  POLLINATIONS_API_KEY: process.env.POLLINATIONS_API_KEY || '',
+  // FREE models (no pollen cost) — these are what make image generation work
+  // without a paid budget. flux-2-dev-free is the best quality of the free set.
+  POLLINATIONS_IMAGE_MODEL: process.env.POLLINATIONS_IMAGE_MODEL || 'community/scriptsnsenses-sys/flux-2-dev-free',
+  POLLINATIONS_IMAGE_FALLBACK: process.env.POLLINATIONS_IMAGE_FALLBACK || 'community/scriptsnsenses-sys/sdxl-lightning-free',
 
   // ---- behaviour (ALL OFF BY DEFAULT) ----
   MODE: process.env.MODE || 'public', // public | private

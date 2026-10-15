@@ -3,6 +3,7 @@
  */
 const config = require('../config');
 const settings = require('../lib/settings');
+const prefixes = require('../lib/prefixes');
 
 const ON_WORDS = ['on', 'true', '1', 'enable', 'enabled', 'yes', 'haan', 'han'];
 const OFF_WORDS = ['off', 'false', '0', 'disable', 'disabled', 'no', 'nahi', 'na'];
@@ -32,9 +33,25 @@ const handler = async (ctx) => {
       break;
     }
     case 'prefix': case 'setprefix': {
-      if (!arg || arg.length > 2) return reply(`ℹ️ Abhi: "${config.PREFIX}"\n❓ Example: ${config.PREFIX}setprefix !`);
-      config.PREFIX = arg; settings.save();
-      await reply(`✅ Prefix ab "${arg}" hy.`);
+      // PER-USER: this only ever changes the CALLER's own prefix. Another
+      // user's prefix is untouched.
+      if (!arg) {
+        const own = prefixes.has(ctx.senderNum);
+        return reply(
+          `ℹ️ *Aap ka prefix:* "${ctx.prefix}"\n` +
+          (own ? `_(aap ka apna — sirf aap par lagu)_\n` : `_(default — sab ke liye_)\n`) +
+          `❓ ${ctx.prefix}setprefix !   → apna prefix badlein\n` +
+          `❓ ${ctx.prefix}setprefix reset → default par wapas`
+        );
+      }
+      if (arg.toLowerCase() === 'reset') {
+        prefixes.set(ctx.senderNum, null);
+        await reply(`✅ Aap ka prefix default par wapas: "${config.PREFIX}"`);
+        break;
+      }
+      if (arg.length > 2) return reply(`❌ Prefix 1-2 character ka ho. Example: ${ctx.prefix}setprefix !`);
+      prefixes.set(ctx.senderNum, arg);
+      await reply(`✅ *Aap ka* prefix ab "${arg}" hy.\n_Baqi users ka prefix wahi rahega — is se unhe koi farq nahi padega._`);
       break;
     }
     case 'botname':

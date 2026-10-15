@@ -2,6 +2,7 @@
  * TOOLS — premium utility commands (weather, translate, qr, wiki, calc, etc.)
  */
 const config = require('../config');
+const img = require('../lib/imagegen');
 const { getJSON, getText, pick, targetOf } = require('../lib/helpers');
 const crypto = require('crypto');
 const { execFile } = require('child_process');
@@ -287,10 +288,7 @@ const handler = async (ctx) => {
       if (!arg) return reply(`❌ Text do. Example: ${config.PREFIX}attp SAQIB`);
       try {
         const prompt = `${arg} glowing neon text, dark background, centered, high quality`;
-        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&nologo=true`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('gen fail');
-        const buf = Buffer.from(await res.arrayBuffer());
+        const buf = await img.generateImage(prompt, { width: 512, height: 512 });
         const stamp = Date.now();
         const inp = path.join(os.tmpdir(), `attp_${stamp}.png`);
         const out = path.join(os.tmpdir(), `attp_${stamp}.webp`);

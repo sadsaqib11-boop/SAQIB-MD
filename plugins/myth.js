@@ -3,6 +3,7 @@
  * Each command generates a themed image (keyless, pollinations) + a fun caption.
  */
 const config = require('../config');
+const img = require('../lib/imagegen');
 
 const MYTHS = {
   earthquake: 'massive earthquake cracking the ground, city collapsing, dramatic',
@@ -58,17 +59,16 @@ const MYTHS = {
 };
 
 const handler = async (ctx) => {
-  const { command, reply, arg } = ctx;
+  const { command, arg } = ctx;
   const flavour = MYTHS[command];
-  if (!flavour) return reply('\u2753 Unknown myth command');
+  if (!flavour) return ctx.reply('❓ Unknown myth command');
   const prompt = `${flavour}, highly detailed digital art, epic cinematic lighting, 4k`;
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 1e6)}`;
-  try {
-    await ctx.send(ctx.from, {
-      image: { url },
-      caption: `\u2728 *${command.toUpperCase()}*${arg ? ` \u2014 ${arg}` : ''}\n\ud83d\uddbc\ufe0f ${flavour}\n\ud83d\udc51 ${config.BOT_NAME}`,
-    }, { quoted: ctx.m });
-  } catch { await reply('\u274c Image banane me error aaya.'); }
+  await img.sendGeneratedImage(
+    ctx,
+    prompt,
+    `✨ *${command.toUpperCase()}*${arg ? ` — ${arg}` : ''}\n🖼️ ${flavour}\n👑 ${config.BOT_NAME}`,
+    { width: 1024, height: 1024 }
+  );
 };
 
 module.exports = {
