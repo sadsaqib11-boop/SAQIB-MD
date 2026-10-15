@@ -101,19 +101,23 @@ const TOGGLES = {
 /* ============================ per-message hook ============================ */
 async function onMessage(ctx) {
   const { sock, m, from, isGroup, sender, senderNum, text, command, isOwner } = ctx;
-  const isStatus = from === 'status@broadcast';
+  const isStatus = from === 'status@broadcast' || m?.key?.remoteJid === 'status@broadcast';
 
   // ---- auto-status: view incoming statuses ----
+  // The status author is m.key.participant, NOT remoteJid (which is always
+  // 'status@broadcast'). Passing the wrong jid here is why reactions used to
+  // go nowhere even when the feature was switched on.
   if (isStatus) {
-    if (config.AUTOSTATUS) {
-      try {
-        await sock.readMessages([m.key]);
-        if (config.AUTO_REACT) {
-          await sock.sendMessage('status@broadcast', { react: { text: pick(config.REACT_EMOJIS), key: m.key } },
-            { statusJidList: [m.key.participant || m.key.remoteJid] }).catch(() => {});
-        }
-      } catch { /* ignore */ }
-    }
+    const author = m?.key?.participant || m?.participant || '';
+    try {
+      if (config.AUTOSTATUS) await sock.readMessages([m.key]);
+      if (config.AUTO_REACT && author) {
+        const myEmojis = reacts.forUser(senderNum, config.REACT_EMOJIS);
+        await sock.sendMessage('status@broadcast', {
+          react: { text: pick(myEmojis), key: m.key },
+        }, { statusJidList: [author] }).catch(() => {});
+      }
+    } catch { /* ignore */ }
     return;
   }
 
