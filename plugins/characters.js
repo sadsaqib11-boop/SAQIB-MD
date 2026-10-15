@@ -10,6 +10,7 @@
  */
 const config = require('../config');
 const { getJSON, pick, randInt, targetOf } = require('../lib/helpers');
+const contacts = require('../lib/contacts');
 
 // role -> [emoji, line]
 const ROLES = {
@@ -228,8 +229,8 @@ const handler = async (ctx) => {
   if (RATINGS[command]) {
     const [emoji, label] = RATINGS[command];
     const who = target ? target.num : ctx.senderNum;
-    const whoTag = target ? tag : `@${ctx.senderNum}`;
-    const whoMentions = target ? mentions : [`${ctx.senderNum}@s.whatsapp.net`];
+    const whoTag = target ? tag : `@${contacts.displayNum(ctx.senderNum)}`;
+    const whoMentions = target ? mentions : [`${contacts.resolve(ctx.sender)}`];
     const pct = scoreFor(who, command);
     const bar = '█'.repeat(Math.round(pct / 10)) + '░'.repeat(10 - Math.round(pct / 10));
     return ctx.send(ctx.from, {

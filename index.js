@@ -214,9 +214,34 @@ app.listen(config.PORT, () => {
 });
 
 // ---------------------------------------------------------------------------
+// Self-healing: give the error reporter a way to reach the owner on WhatsApp.
+// It messages the owner ONLY when a command throws, deduped to one report per
+// 10 minutes per distinct error, so it can never spam.
+// ---------------------------------------------------------------------------
+const selfheal = require('./lib/selfheal');
+selfheal.setNotifier(async (text) => {
+  const num = config.OWNER_NUMBER;
+  if (!num) return;
+  const sock = bot.getSock();
+  if (!sock) return;
+  await sock.sendMessage(`${num}@s.whatsapp.net`, { text });
+});
+
+// ---------------------------------------------------------------------------
 // Start the bot (restores every saved session)
 // ---------------------------------------------------------------------------
 bot.startBot().catch((e) => console.error('bot start fail:', e?.message || e));
+
+// 24/7: ping ourselves so the host never idles the container out. Cheap (one
+// localhost request a minute), no external traffic, no cost.
+const SELF_PING_MS = Number(process.env.SELF_PING_MS || 60 * 1000);
+if (SELF_PING_MS > 0) {
+  const ping = setInterval(() => {
+    const req = require('http').get({ host: '127.0.0.1', port: config.PORT, path: '/health' }, (r) => r.resume());
+    req.on('error', () => {});
+  }, SELF_PING_MS);
+  if (ping.unref) ping.unref();
+}
 
 // SPEED: warm external connections in the background (DNS + TLS pre-connect)
 require('./lib/helpers').warmupHosts().catch(() => {});

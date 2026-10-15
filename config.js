@@ -14,7 +14,9 @@ const config = {
   // ---- identity ----
   BOT_NAME: process.env.BOT_NAME || 'SAQIB-MD',
   BOT_VERSION: '3.0.0',
-  PREFIX: process.env.PREFIX || '.',
+  // DEFAULT prefix is a plain dot. An emoji prefix is painful to type in
+  // groups, so the default stays '.' unless the OWNER changes it themselves.
+  PREFIX: process.env.PREFIX && process.env.PREFIX.trim() ? process.env.PREFIX : '.',
   OWNER_NAME: process.env.OWNER_NAME || 'Saqib',
   OWNER_NUMBER: (process.env.OWNER_NUMBER || '923106762478').replace(/[^0-9]/g, ''),
   OWNER_EMAIL: process.env.OWNER_EMAIL || '',
@@ -34,7 +36,8 @@ const config = {
 
   // ---- behaviour (ALL OFF BY DEFAULT) ----
   MODE: process.env.MODE || 'public', // public | private
-  AUTO_READ: bool(process.env.AUTO_READ, false),
+  // DEFAULT ON: reading incoming messages shows the double blue tick.
+  AUTO_READ: bool(process.env.AUTO_READ, true),
   AUTO_TYPING: bool(process.env.AUTO_TYPING, false),
   AUTO_REACT: bool(process.env.AUTO_REACT, false),
   // Auto-react scope (only meaningful when AUTO_REACT is ON).
@@ -53,7 +56,8 @@ const config = {
   AUTOBIO: bool(process.env.AUTOBIO, false),
   CHATBOT: bool(process.env.CHATBOT, false),
   AUTOREAD_STATUS: bool(process.env.AUTOREAD_STATUS, false),
-  ONLINE: bool(process.env.ONLINE, false),
+  // DEFAULT ON: the bot stays online 24/7.
+  ONLINE: bool(process.env.ONLINE, true),
   RECORDING: bool(process.env.RECORDING, false),
   STATUSVIEW: bool(process.env.STATUSVIEW, false),
   ADMINISTRATION: bool(process.env.ADMINISTRATION, false),

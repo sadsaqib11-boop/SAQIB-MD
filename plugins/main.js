@@ -61,17 +61,18 @@ function findCategory(query) {
   return best;
 }
 
+/** A clean, modern header — fewer boxes, easier to read on a phone. */
 function header() {
-  // Render the bot name in the configured default font (default: Mono).
   let name = config.BOT_NAME;
   try { name = fonts.applyDefault(config.BOT_NAME); } catch { /* keep plain */ }
+  const when = new Date().toLocaleString('en-PK', { timeZone: config.TIMEZONE, hour12: true });
   return (
-    `╭─❖ *${name}* ❖─╮\n` +
-    `│ 🤖 Bot: ${config.BOT_NAME} v${config.BOT_VERSION}\n` +
-    `│ 👑 Owner: ${config.OWNER_NAME}\n` +
-    `│ 📅 ${new Date().toLocaleString('en-PK', { timeZone: config.TIMEZONE })}\n` +
-    `│ 🔥 Prefix: "${config.PREFIX}"\n` +
-    `╰──────────────────╯`
+    `┏━━━━━━━━━━━━━━━━━━━┓\n` +
+    `┃  ✨ *${name}*  ✨\n` +
+    `┗━━━━━━━━━━━━━━━━━━━┛\n` +
+    `  ⚡ v${config.BOT_VERSION}   👑 ${config.OWNER_NAME}\n` +
+    `  🕒 ${when}\n` +
+    `  💠 Prefix: *${config.PREFIX}*`
   );
 }
 
@@ -101,15 +102,22 @@ function cached(key, build) {
 function categoriesText() {
   return cached('cats', () => {
     const cats = categories();
-    let txt = `${header()}\n\n📂 *CATEGORIES* (${cats.size})\n\n`;
+    const total = [...cats.values()].reduce((n, c) => n + c.length, 0);
+    let txt = `${header()}\n\n`;
+    txt += `╭─「 📂 *CATEGORIES* 」\n`;
     let i = 1;
     for (const [cat, cmds] of cats.entries()) {
-      txt += `${i}. *${cat}* — ${cmds.length} cmds\n`;
+      txt += `│ ${String(i).padStart(2, '0')}. *${cat}*\n`;
+      txt += `│      ╰─ ${cmds.length} commands\n`;
       i++;
     }
-    txt += `\n📖 *${config.PREFIX}menu <category>* — us category ki commands\n`;
-    txt += `📜 *${config.PREFIX}menuall* — saari commands\n\n`;
-    txt += `_*${config.BOT_NAME} — Powered by ${config.OWNER_NAME}*_`;
+    txt += `╰───────────────────\n\n`;
+    txt += `📊 *Total:* ${total} commands\n\n`;
+    txt += `╭─「 💡 *USE KAISE KAREIN* 」\n`;
+    txt += `│ ▸ ${config.PREFIX}menu <category>\n│      ╰─ category ki commands\n`;
+    txt += `│ ▸ ${config.PREFIX}menuall\n│      ╰─ saari commands\n`;
+    txt += `╰───────────────────\n\n`;
+    txt += `_✨ ${config.BOT_NAME} — by ${config.OWNER_NAME}_`;
     return txt;
   });
 }
@@ -117,10 +125,22 @@ function categoriesText() {
 function categoryText(cat) {
   return cached('cat|' + cat, () => {
     const cmds = categories().get(cat) || [];
-    let txt = `${header()}\n\n┌─「 *${cat}* 」\n`;
-    txt += cmds.map((c) => `│ ▹ ${config.PREFIX}${c}`).join('\n');
-    txt += `\n└────────────────\n\n`;
-    txt += `📖 *${config.PREFIX}menu* — categories\n📜 *${config.PREFIX}menuall* — saari commands`;
+    let txt = `${header()}\n\n`;
+    txt += `╭─「 *${cat}* 」\n`;
+    txt += `│ 📦 ${cmds.length} commands\n`;
+    txt += `╰───────────────────\n\n`;
+    // two commands per line when they are short, so the list is half as long
+    const p = config.PREFIX;
+    const rows = [];
+    for (let i = 0; i < cmds.length; i += 2) {
+      const a = `▸ ${p}${cmds[i]}`;
+      const b = cmds[i + 1] ? `▸ ${p}${cmds[i + 1]}` : '';
+      rows.push(b ? `${a.padEnd(26)}${b}` : a);
+    }
+    txt += rows.join('\n');
+    txt += `\n\n╭─「 💡 」\n`;
+    txt += `│ ${p}menu — categories\n│ ${p}menuall — saari commands\n`;
+    txt += `╰───────────────────`;
     return txt;
   });
 }
@@ -241,13 +261,44 @@ const handler = async (ctx) => {
       await reply(`🧹 *Clear done!*\n\n🗑️ ${before} stored messages hata diye.\n🧠 AI cache bhi clear ho gaya.`);
       break;
     }
+    // ---- .clearcommand : wipe MY OWN inbox (my chat with myself) ------------
+    // She asked for exactly this: clear the messages in "yourself" — the user's
+    // own self-chat — not the current group or DM. Works by deleting our own
+    // outgoing messages from that chat, newest first, with a short gap so
+    // WhatsApp accepts each revoke.
+    case 'clearcommand':
+    case 'clearinbox':
+    case 'clearall': {
+      const target = `${ctx.senderNum}@s.whatsapp.net`;   // "yourself" = own number
+      const n = Number(ctx.arg) || 30;                     // how many to try
+      await reply(`🧹 *Aap ka inbox (yourself) saaf kar raha hoon…*\n_${n} messages tak_`);
+      let done = 0;
+      try {
+        // fetch the most recent messages in that chat, then delete our own ones
+        const store = await ctx.sock.fetchMessageHistory?.(n, ctx.m.key, 0).catch(() => null);
+        const msgs = (store?.messages || []).filter((x) => x?.key?.remoteJid === target && x.key.fromMe);
+        for (const mk of msgs) {
+          try {
+            await ctx.sock.sendMessage(target, { delete: mk.key });
+            done += 1;
+            await new Promise((r) => setTimeout(r, 350));  // be gentle, avoid rate limits
+          } catch { /* skip this one */ }
+        }
+      } catch { /* ignore */ }
+      await reply(
+        done
+          ? `✅ *Inbox saaf!*\n\n🗑️ ${done} messages hata diye.`
+          : `ℹ️ Kuch nahi hata saka.\n\n_Note: WhatsApp sirf apne bheje hue messages delete karne deta hy, aur history fetch har device par kaam nahi karta._`
+      );
+      break;
+    }
     default:
       await reply('❓ Unknown main command');
   }
 };
 
 module.exports = {
-  commands: ['menu', 'help', 'menuall', 'ping', 'alive', 'uptime', 'owner', 'id', 'getpp', 'githubstalk', 'define', 'yts', 'praytime', 'runtime', 'repo', 'clear'],
+  commands: ['menu', 'help', 'menuall', 'ping', 'alive', 'uptime', 'owner', 'id', 'getpp', 'githubstalk', 'define', 'yts', 'praytime', 'runtime', 'repo', 'clear', 'clearcommand', 'clearinbox', 'clearall'],
   category: '🔎 MAIN',
   handler,
 };

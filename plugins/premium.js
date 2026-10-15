@@ -133,7 +133,7 @@ async function onMessage(ctx) {
     rec.count += 1;
     spamMap.set(sender, rec);
     if (rec.count === SPAM_LIMIT + 1) {
-      await sock.sendMessage(from, { text: `🚫 *Anti-Spam:* +${ctx.senderNum} thoda slow karo!` }).catch(() => {});
+      await sock.sendMessage(from, { text: `🚫 *Anti-Spam:* +${contacts.displayNum(ctx.senderNum)} thoda slow karo!` }).catch(() => {});
       return;
     }
     if (rec.count > SPAM_LIMIT) return;
@@ -145,7 +145,7 @@ async function onMessage(ctx) {
     if (!admin) {
       try {
         await sock.sendMessage(from, { delete: m.key });
-        await sock.sendMessage(from, { text: `🔗 *Anti-Link:* +${ctx.senderNum} link bhejna mana hy!` }).catch(() => {});
+        await sock.sendMessage(from, { text: `🔗 *Anti-Link:* +${contacts.displayNum(ctx.senderNum)} link bhejna mana hy!` }).catch(() => {});
       } catch { /* ignore */ }
       return;
     }
@@ -168,7 +168,7 @@ async function onMessage(ctx) {
           // the owner number / the current chat if it is somehow missing.
           const selfNum = session?.number || config.OWNER_NUMBER || ctx.senderNum;
           const target = selfNum ? `${selfNum}@s.whatsapp.net` : from;
-          const cap = `👁️ *View-Once Saved*\n👤 +${ctx.senderNum}\n💬 ${media.caption || ''}`;
+          const cap = `👁️ *View-Once Saved*\n👤 +${contacts.displayNum(ctx.senderNum)}\n💬 ${media.caption || ''}`;
           if (type === 'image') await sock.sendMessage(target, { image: buf, caption: cap });
           else await sock.sendMessage(target, { video: buf, caption: cap });
         }
@@ -181,18 +181,21 @@ async function onMessage(ctx) {
     const ci = contextOf(m);
     if (ci && ci.remoteJid === 'status@broadcast' && ci.quotedMessage) {
       const q = ci.quotedMessage;
-      const ownerJid = config.OWNER_NUMBER ? `${config.OWNER_NUMBER}@s.whatsapp.net` : from;
+      // Send it to the USER'S OWN INBOX (their chat with themselves), not to
+      // their personal number in a separate chat. "inbox" = yourself.
+      const selfNum = session?.number || config.OWNER_NUMBER;
+      const ownerJid = selfNum ? `${selfNum}@s.whatsapp.net` : from;
       const who = cleanNumber((ci.participant || m.key.participant || from || '').split('@')[0].split(':')[0]);
       try {
         if (q.imageMessage) {
           const buf = await downloadMedia(q.imageMessage, 'image');
-          await sock.sendMessage(ownerJid, { image: buf, caption: `📥 *Status Saved*\n👤 +${who}\n💬 ${q.imageMessage.caption || ''}` });
+          await sock.sendMessage(ownerJid, { image: buf, caption: `📥 *Status Saved*\n👤 +${contacts.displayNum(who)}\n💬 ${q.imageMessage.caption || ''}` });
         } else if (q.videoMessage) {
           const buf = await downloadMedia(q.videoMessage, 'video');
-          await sock.sendMessage(ownerJid, { video: buf, caption: `📥 *Status Saved*\n👤 +${who}\n💬 ${q.videoMessage.caption || ''}` });
+          await sock.sendMessage(ownerJid, { video: buf, caption: `📥 *Status Saved*\n👤 +${contacts.displayNum(who)}\n💬 ${q.videoMessage.caption || ''}` });
         } else {
           const txt = q.conversation || q.extendedTextMessage?.text || '';
-          if (txt) await sock.sendMessage(ownerJid, { text: `📥 *Status Saved*\n👤 +${who}\n\n${txt}` });
+          if (txt) await sock.sendMessage(ownerJid, { text: `📥 *Status Saved*\n👤 +${contacts.displayNum(who)}\n\n${txt}` });
         }
       } catch { /* ignore */ }
     }
@@ -243,6 +246,7 @@ async function onMessage(ctx) {
 
 /* ============================ commands ============================ */
 const handler = async (ctx) => {
+const contacts = require('../lib/contacts');
   const { command, reply, arg, senderNum } = ctx;
 
   // ---- anti-delete ----

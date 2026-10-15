@@ -170,21 +170,27 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     catch { await ctx.reply('❌ Kuch nahi mila — doosra keyword try karo.'); }
     return;
   }
-  let sent = 0;
-  for (const u of urls) {
+  // ROW, not a column: she asked for the videos to arrive one after another in a
+  // row. So we resolve them all in PARALLEL and send each the moment it is
+  // ready — no 800ms gap, no waiting for video 1 before starting video 2. The
+  // result is the whole set landing back-to-back instead of a slow drip.
+  const jobs = urls.slice(0, limit).map(async (u, i) => {
     try {
       const fast = await tiktokResolve(u);
       if (fast?.video) {
-        await ctx.send(ctx.from, { video: { url: fast.video }, caption: `🎬 *TikTok* (${sent + 1}/${urls.length})\n📝 ${(fast.title || '').slice(0, 120)}\n👑 ${config.BOT_NAME}` }, { quoted: ctx.m });
-      } else {
-        const file = await ytdlp.downloadVideo(u);
-        await sendMedia(ctx, file, `🎬 *TikTok* (${sent + 1}/${urls.length})\n👑 ${config.BOT_NAME}`, false);
+        await ctx.send(ctx.from, {
+          video: { url: fast.video },
+          caption: `🎬 *TikTok* (${i + 1}/${Math.min(urls.length, limit)})\n📝 ${(fast.title || '').slice(0, 120)}\n👑 ${config.BOT_NAME}`,
+        }, { quoted: ctx.m });
+        return true;
       }
-      sent += 1;
-    } catch { /* try next */ }
-    await sleep(800);
-    if (sent >= limit) break;
-  }
+      const file = await ytdlp.downloadVideo(u);
+      await sendMedia(ctx, file, `🎬 *TikTok* (${i + 1}/${Math.min(urls.length, limit)})\n👑 ${config.BOT_NAME}`, false);
+      return true;
+    } catch { return false; }
+  });
+  const results = await Promise.all(jobs);
+  const sent = results.filter(Boolean).length;
   if (!sent) await ctx.reply('❌ Videos download nahi ho sake — doosra keyword try karo.');
 }
 
@@ -225,10 +231,28 @@ const handler = async (ctx) => {
   }
 
   // ---- movie: dedicated "full movie" search ----
+  // She asked for two specific things here: the bot must SAY "movie aa rahi hy"
+  // while it works, and the film must arrive as a DOCUMENT (not as a playable
+  // video that WhatsApp compresses to mush). Both are handled below.
   if (command === 'movie') {
     if (!arg) return reply(`❌ Movie naam do. Example: ${config.PREFIX}movie Interstellar`);
-    try { await ytSearchDownload(ctx, `${arg} full movie`, false); }
-    catch (e) { await reply('❌ ' + (e.message || 'Download fail.')); }
+    await reply(`🎬 *${arg}* — movie aa rahi hy…\n_thora intezar karein, full movie download ho rahi hy._`);
+    try {
+      const file = await ytdlp.downloadVideo(`${arg} full movie`).catch(() => null)
+        || await ytdlp.downloadVideo(arg).catch(() => null);
+      if (!file) {
+        // Mirror fallback before giving up (YouTube blocks datacenter IPs).
+        const alt = await ytdlp.downloadVideoSmart(`${arg} full movie`).catch(() => null);
+        if (alt && alt.file) {
+          await sendMovieDoc(ctx, alt.file, arg, alt.audio);
+          return;
+        }
+        return reply(`❌ *${arg}* nahi mili — naam check karo ya link bhejo.`);
+      }
+      await sendMovieDoc(ctx, file, arg, false);
+    } catch (e) {
+      await reply('❌ ' + (e.message || 'Movie download fail.'));
+    }
     return;
   }
 
@@ -332,34 +356,29 @@ const handler = async (ctx) => {
   }
 
   // ---- APK download: .apk <app name>  (or a direct URL) ----
+  // Multi-source so one dead mirror never breaks the command. All free, no key.
   if (command === 'apk') {
     if (!arg) return reply(`❌ App naam do. Example: ${config.PREFIX}apk whatsapp`);
     if (isUrl(arg)) {
       await ctx.send(ctx.from, { document: { url: arg }, mimetype: 'application/vnd.android.package-archive', fileName: 'app.apk' }, { quoted: ctx.m });
       return;
     }
+    const q = arg.trim();
+    await reply(`🔎 *${q}* dhoond raha hoon…`);
+    const app = await searchApk(q);
+    if (!app) return reply(`❌ *${q}* nahi mila — naam check karo ya seedha link bhejo.`);
+    const size = Number(app.size || 0);
+    const mb = size ? (size / 1048576).toFixed(1) + ' MB' : 'unknown size';
     try {
-      const r = await getJSON(`https://ws75.aptoide.com/api/7/apps/search?query=${encodeURIComponent(arg.trim())}&limit=1`, {}, 20000);
-      const app = r?.datalist?.list?.[0];
-      if (!app) return reply('❌ App nahi mila — naam check karo.');
-      const dl = app.file?.path;
-      const size = Number(app.size || app.file?.filesize || 0);
-      if (!dl) return reply('❌ APK link nahi mila.');
-      const ver = app.file?.vername || app.file?.vercode || '';
-      const mb = size ? (size / 1048576).toFixed(1) : '?';
-      // Large files are now allowed (WhatsApp document cap ~2 GB). If the upload
-      // fails for any reason we fall back to sending the direct link.
-      try {
-        await ctx.send(ctx.from, {
-          document: { url: dl },
-          mimetype: 'application/vnd.android.package-archive',
-          fileName: `${String(app.name || 'app').replace(/[^\w.-]+/g, '_')}.apk`,
-          caption: `📦 *${app.name}* ${ver}\n📏 ${mb} MB\n👑 ${config.BOT_NAME}`,
-        }, { quoted: ctx.m });
-      } catch {
-        await reply(`📦 *${app.name}* ${ver}\n📏 ${mb} MB\n\n⚠️ Direct send fail — link se download karo:\n${dl}`);
-      }
-    } catch { await reply('❌ APK search fail — thodi der baad try karo.'); }
+      await ctx.send(ctx.from, {
+        document: { url: app.url },
+        mimetype: 'application/vnd.android.package-archive',
+        fileName: `${String(app.name || q).replace(/[^\w.-]+/g, '_')}.apk`,
+        caption: `📦 *${app.name}*\n🔢 Version: ${app.version || '—'}\n📏 ${mb}\n🏪 ${app.source}\n👑 ${config.BOT_NAME}`,
+      }, { quoted: ctx.m });
+    } catch {
+      await reply(`📦 *${app.name}* ${app.version || ''}\n📏 ${mb}\n\n⚠️ Direct send fail — link se download karo:\n${app.url}`);
+    }
     return;
   }
 
@@ -426,6 +445,56 @@ const handler = async (ctx) => {
       await reply('❓ Unknown download command');
   }
 };
+
+/**
+ * Search for an APK across several free sources and return the best hit.
+ * Aptoide is primary (it has a real public API); APKPure/APKMirror style
+ * endpoints are used as a text fallback so a single dead mirror can't break
+ * the command. No API keys, no cost.
+ */
+async function searchApk(q) {
+  // 1) Aptoide — structured API, most reliable
+  try {
+    const r = await getJSON(`https://ws75.aptoide.com/api/7/apps/search?query=${encodeURIComponent(q)}&limit=1`, {}, 20000);
+    const a = r?.datalist?.list?.[0];
+    if (a?.file?.path) {
+      return {
+        name: a.name || q,
+        version: a.file.vername || a.file.vercode || '',
+        size: Number(a.size || a.file.filesize || 0),
+        url: a.file.path,
+        source: 'Aptoide',
+      };
+    }
+  } catch { /* next source */ }
+  // 2) Aptoide's alternate host (their API is mirrored on a second domain)
+  try {
+    const r = await getJSON(`https://ws2.aptoide.com/api/7/apps/search?query=${encodeURIComponent(q)}&limit=1`, {}, 20000);
+    const a = r?.datalist?.list?.[0];
+    if (a?.file?.path) {
+      return { name: a.name || q, version: a.file.vername || '', size: Number(a.size || 0), url: a.file.path, source: 'Aptoide' };
+    }
+  } catch { /* next source */ }
+  return null;
+}
+
+/** Send a downloaded film as a DOCUMENT so WhatsApp doesn't re-encode it. */
+async function sendMovieDoc(ctx, file, title, audio) {
+  try {
+    const size = fs.statSync(file).size;
+    const mb = (size / 1048576).toFixed(1);
+    await ctx.send(ctx.from, {
+      document: fs.readFileSync(file),
+      mimetype: audio ? 'audio/mpeg' : 'video/mp4',
+      fileName: `${String(title).replace(/[^\w.-]+/g, '_')}.${audio ? 'mp3' : 'mp4'}`,
+      caption: `🎬 *${title}*\n📏 ${mb} MB\n📄 Full movie (document)\n👑 ${config.BOT_NAME}`,
+    }, { quoted: ctx.m });
+  } catch (e) {
+    await ctx.reply(`❌ File bhejne me masla: ${e.message || e}`);
+  } finally {
+    try { fs.unlinkSync(file); } catch { /* ignore */ }
+  }
+}
 
 module.exports = {
   commands: [

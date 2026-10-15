@@ -243,6 +243,7 @@ function auraFor(num) {
 }
 
 const handler = async (ctx) => {
+const contacts = require('../lib/contacts');
   const { command, reply, arg } = ctx;
   // Real target: replied-to user → @mention → number arg → else sender.
   // `targetOf` resolves LIDs to real numbers and returns the correct JID domain,
@@ -250,8 +251,8 @@ const handler = async (ctx) => {
   const target = targetOf(ctx);
   const tagNum = target ? target.num : ctx.senderNum;
   // Print-safe tag: unresolved LIDs show the person's name, never fake digits.
-  const tag = target ? target.tag : `@${ctx.senderNum}`;
-  const tagJid = target ? target.jid : `${ctx.senderNum}@s.whatsapp.net`;
+  const tag = target ? target.tag : `@${contacts.displayNum(ctx.senderNum)}`;
+  const tagJid = target ? target.jid : contacts.resolve(ctx.sender);
   const mention = (txt) => ctx.send(ctx.from, { text: txt, mentions: [tagJid] }, { quoted: ctx.m });
 
   switch (command) {

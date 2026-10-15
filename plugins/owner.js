@@ -24,6 +24,7 @@ function unwrapViewOnce(qm) {
 }
 
 const handler = async (ctx) => {
+const appeals = require('../lib/appeals');
   const { sock, command, reply, quoted } = ctx;
 
   switch (command) {
@@ -75,12 +76,42 @@ const handler = async (ctx) => {
       await reply(`🚫 +${num} *BAN* kar diya gaya (blocked + ignored).`);
       break;
     }
+    // ---- .unban -----------------------------------------------------------
+    // Two different jobs share this command, because users ask for both:
+    //   .unban <number>            -> lift OUR ban (block + ignore) on a user
+    //   .unban <platform> appeal   -> that platform's OWN appeal route
+    // The second one exists because "unban me from Instagram/WhatsApp" is a
+    // completely different thing from our bot's ban list, and each platform
+    // has its own address. No API, all static text.
     case 'unban': {
+      const a = String(ctx.arg || '').trim();
+      // .unban whatsapp appeal   /   .unban appeal instagram
+      const words = a.toLowerCase().split(/\s+/).filter(Boolean);
+      const wantsAppeal = words.includes('appeal') || words.includes('unblock') || words.includes('help');
+      if (wantsAppeal) {
+        const platform = words.filter((w) => w !== 'appeal' && w !== 'unblock' && w !== 'help').join(' ');
+        const info = appeals.lookup(platform);
+        if (!info) {
+          return reply(
+            `📮 *Ban Appeal*\n\nKis platform ka? Example:\n` +
+            `${config.PREFIX}unban whatsapp appeal\n${config.PREFIX}unban instagram appeal\n\n` +
+            `_Available:_ ${appeals.listAll()}`
+          );
+        }
+        return reply(appeals.render(info));
+      }
       const num = cleanNumber(quoted ? (quoted.key.participant || quoted.key.remoteJid) : ctx.arg);
-      if (!num) return reply('❌ Number do ya kisi ko reply karo.');
+      if (!num) {
+        return reply(
+          `ℹ️ *Unban kaise karein?*\n\n` +
+          `▸ *${config.PREFIX}unban <number>* — is bot ka ban hatao\n` +
+          `▸ *${config.PREFIX}unban <platform> appeal* — us app se unban ka tareeqa\n\n` +
+          `_Platforms:_ ${appeals.listAll()}`
+        );
+      }
       bans.remove(num);
       await sock.updateBlockStatus(num + '@s.whatsapp.net', 'unblock').catch(() => {});
-      await reply(`✅ +${num} *UNBAN* ho gaya.`);
+      await reply(`✅ +${cleanNumber(num) || num} *UNBAN* ho gaya.`);
       break;
     }
     case 'banlist': {
