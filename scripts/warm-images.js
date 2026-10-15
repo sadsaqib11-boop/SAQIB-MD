@@ -1,8 +1,8 @@
 // Pre-generate the MYTH images at boot so the FIRST user hit is instant instead
 // of 8-14s. Runs 25s after start, one image at a time, so it never competes with
 // a real user's request during boot.
-const img = require('/workspace/saqib-md/lib/imagegen.js');
-const myth = require('/workspace/saqib-md/plugins/myth.js');
+const img = require('../lib/imagegen.js');
+const myth = require('../plugins/myth.js');
 
 const PROMPTS = {
   alchemist: 'an alchemist in a laboratory, glowing potions',
@@ -34,7 +34,7 @@ const PROMPTS = {
 
 (async () => {
   if (String(process.env.WARM_IMAGES || '1') === '0') return;
-  await new Promise((r) => setTimeout(r, 25000));
+  await new Promise((r) => setTimeout(r, 45000));
   const names = Object.keys(PROMPTS).filter((n) => myth.commands.includes(n));
   console.log('[warm] pre-generating', names.length, 'myth images');
   for (const n of names) {
@@ -43,7 +43,7 @@ const PROMPTS = {
         { width: 1024, height: 1024 });
       console.log('[warm] ok', n);
     } catch { /* skip */ }
-    await new Promise((r) => setTimeout(r, 1200));
+    await new Promise((r) => setTimeout(r, 3000));
   }
   console.log('[warm] done');
 })();

@@ -15,7 +15,7 @@ const STYLE_NOTES = {
 };
 
 /** fetch with an AbortController timeout (keeps AI snappy — never hangs). */
-async function fetchWithTimeout(url, opts = {}, ms = 20000) {
+async function fetchWithTimeout(url, opts = {}, ms = 12000) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
   try { return await fetch(url, { ...opts, signal: ctrl.signal }); }
@@ -36,7 +36,7 @@ async function askGemini(prompt, imageBase64 = null) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts }], generationConfig: { maxOutputTokens: 800 } }),
-      }, 18000);
+      }, 10000);
       if (!res.ok) { lastErr = new Error(`AI API error ${res.status}`); continue; }
       const data = await res.json();
       const out = data.candidates?.[0]?.content?.parts?.map((p) => p.text).filter(Boolean).join('');
@@ -59,7 +59,7 @@ async function askPollinations(prompt) {
         { role: 'user', content: prompt },
       ],
     }),
-  }, 25000);
+  }, 12000);
   if (!res.ok) throw new Error(`AI API error ${res.status}`);
   const data = await res.json();
   const out = data.choices?.[0]?.message?.content;
