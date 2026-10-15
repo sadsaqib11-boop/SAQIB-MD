@@ -247,10 +247,42 @@ const handler = async (ctx) => {
     interactions.set(ctx.from, ctx.sender, 'choice', {
       options: [
         { run: async (c) => {
-          try { await c.send(c.from, { audio: { url: `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${n}.mp3` }, mimetype: 'audio/mpeg', ptt: false }, { quoted: c.m }); }
-          catch { await c.reply('❌ Surah audio fail.'); }
+          // Direct CDN — no yt-dlp, no YouTube bot-check, answers in ~1s.
+          const pad = String(n).padStart(3, '0');
+          const sources = [
+            `https://cdn.mp3quran.net/audio/mishary-alafasy/r1/${pad}.mp3`,
+            `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${n}.mp3`,
+          ];
+          for (const url of sources) {
+            try {
+              await c.send(c.from, { audio: { url }, mimetype: 'audio/mpeg', ptt: false }, { quoted: c.m });
+              return;
+            } catch { /* try the next source */ }
+          }
+          await c.reply('❌ Surah audio fail — dobara try karo.');
         } },
         { run: async (c) => {
+          // Video used to go straight to a YouTube search, which is slow and is
+          // exactly what YouTube's "sign in to confirm you're not a bot" check
+          // blocks — that is why the video never arrived. Try the direct CDN
+          // sources first and only fall back to YouTube.
+          const pad = String(n).padStart(3, '0');
+          const direct = [
+            `https://cdn.mp3quran.net/video/mishary-alafasy/${pad}.mp4`,
+            `https://cdn.islamic.network/quran/video-surah/ar.alafasy/${n}.mp4`,
+          ];
+          for (const url of direct) {
+            try {
+              await c.reply(`🎬 Surah ${name} video la raha hoon…`);
+              const r = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(15000) });
+              if (!r.ok) continue;
+              const len = Number(r.headers.get('content-length') || 0);
+              if (len && len < 100 * 1024) continue; // too small to be a real video
+              await c.send(c.from, { video: { url }, mimetype: 'video/mp4', caption: `📖 *Surah ${name}*\n👑 ${config.BOT_NAME}` }, { quoted: c.m });
+              return;
+            } catch { /* try the next source */ }
+          }
+          // Fallback: YouTube search (may be blocked — say so honestly).
           try { await ytSearchDownload(c, `Surah ${name} Quran recitation Alafasy`, false); }
           catch (e) { await c.reply('❌ ' + (e.message || 'Surah video fail.')); }
         } },

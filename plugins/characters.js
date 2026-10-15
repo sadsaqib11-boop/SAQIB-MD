@@ -201,7 +201,9 @@ const handler = async (ctx) => {
 
   // Resolve the target: replied-to person → @mention → phone-number arg.
   const target = targetOf(ctx);
-  const tag = target ? `@${target.num}` : null;
+  // `target.tag` is name-safe: an unresolved LID prints the display name
+  // instead of digits that WhatsApp would render against the wrong contact.
+  const tag = target ? target.tag : null;
   const mentions = target ? [target.jid] : [];
 
   // ---- .fool — the TARGET is the fool (never the sender) ----

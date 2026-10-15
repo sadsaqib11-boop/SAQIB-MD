@@ -170,6 +170,12 @@ config.AUDIO_FX = {
 };
 
 // Auto-react emoji pool
+// Google's image models are NOT on the free tier (quota limit 0 for every
+// gemini-*-image model), so the Gemini image path is opt-in. Leave this off and
+// images come from the free pollinations community models in ~10s instead of
+// waiting ~45s for a call that can never succeed.
+config.GEMINI_IMAGE_ENABLED = bool(process.env.GEMINI_IMAGE_ENABLED, false);
+
 config.REACT_EMOJIS = ['🔥', '⚡', '❤️', '😍', '👏', '💯', '🎉', '🤩', '😎', '💫', '✨', '🙌', '🥰', '😇', '💥'];
 
 module.exports = config;

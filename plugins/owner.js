@@ -145,8 +145,15 @@ const handler = async (ctx) => {
       try {
         // Use the session manager so this links a NEW number (not the current sock).
         const bot = require('../lib/bot');
+        await reply('⏳ Code ban raha hy, 2-3 second...');
         const code = await bot.requestPair(num);
-        await reply(`🔗 *Pairing Code for +${num}:*\n\n\`\`\`${code}\`\`\``);
+        // Send the code ALONE so it can be copied with one tap — no label, no
+        // extra text wrapped around it, and never inside a code block (some
+        // clients make backtick-wrapped text hard to long-press).
+        await ctx.send(ctx.from, { text: code }, { quoted: ctx.m });
+        await ctx.send(ctx.from, {
+          text: '📲 Ye code WhatsApp me daalo:\n*Linked Devices → Link with phone number*\n\n_Code 45 second me expire ho jata hy._',
+        });
       } catch (e) { await reply('❌ ' + (e?.message || e)); }
       break;
     }

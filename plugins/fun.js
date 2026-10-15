@@ -249,12 +249,14 @@ const handler = async (ctx) => {
   // so mentions never render a fake number like +212223345675336.
   const target = targetOf(ctx);
   const tagNum = target ? target.num : ctx.senderNum;
+  // Print-safe tag: unresolved LIDs show the person's name, never fake digits.
+  const tag = target ? target.tag : `@${ctx.senderNum}`;
   const tagJid = target ? target.jid : `${ctx.senderNum}@s.whatsapp.net`;
   const mention = (txt) => ctx.send(ctx.from, { text: txt, mentions: [tagJid] }, { quoted: ctx.m });
 
   switch (command) {
-    case 'roast': return mention(`@${tagNum} 🔥 ${pick(ROASTS)}`);
-    case 'compliment': return mention(`@${tagNum} ${pick(COMPLIMENTS)}`);
+    case 'roast': return mention(`${tag} 🔥 ${pick(ROASTS)}`);
+    case 'compliment': return mention(`${tag} ${pick(COMPLIMENTS)}`);
     case 'quote': return reply(`💬 *Quote:*\n\n${pick(QUOTES)}`);
     case 'shayari': return reply(`🌹 *Shayari:*\n\n${pick(SHAYARI)}`);
     case 'joke': case 'bacha': return reply(`😂 ${pick(JOKES)}`);
@@ -283,11 +285,11 @@ const handler = async (ctx) => {
     }
     case 'aura': {
       const { score, tier, bar } = auraFor(tagNum);
-      return mention(`@${tagNum} ⚡ *AURA: ${score}*\n${bar}\n🏅 Rank: *${tier.title}*\n${tier.note}`);
+      return mention(`${tag} ⚡ *AURA: ${score}*\n${bar}\n🏅 Rank: *${tier.title}*\n${tier.note}`);
     }
     case 'rate': case 'character': {
       const pct = (hashNum('rate' + tagNum) % 41) + 60; // 60-100, deterministic
-      return mention(`@${tagNum} ⭐ *Rate: ${pct}/100*\n${pct > 85 ? 'Top class! 🏆' : pct > 70 ? 'Solid banda hy 💯' : 'Aur mehnat karo 😎'}`);
+      return mention(`${tag} ⭐ *Rate: ${pct}/100*\n${pct > 85 ? 'Top class! 🏆' : pct > 70 ? 'Solid banda hy 💯' : 'Aur mehnat karo 😎'}`);
     }
     case 'truth': return reply(`🕵️ *TRUTH:* ${pick(TRUTHS)}`);
     case 'dare': return reply(`😈 *DARE:* ${pick(DARES)}`);

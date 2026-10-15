@@ -17,6 +17,7 @@ const config = require('../config');
 const { getJSON, downloadMedia, pick, cleanNumber, targetOf } = require('../lib/helpers');
 const { isGroupAdmin } = require('../lib/handler');
 const settings = require('../lib/settings');
+const reacts = require('../lib/reacts');
 
 const ON_WORDS = ['on', 'true', '1', 'enable', 'enabled', 'yes', 'haan', 'han'];
 const OFF_WORDS = ['off', 'false', '0', 'disable', 'disabled', 'no', 'nahi', 'na'];
@@ -99,7 +100,7 @@ const TOGGLES = {
 
 /* ============================ per-message hook ============================ */
 async function onMessage(ctx) {
-  const { sock, m, from, isGroup, sender, text, command, isOwner } = ctx;
+  const { sock, m, from, isGroup, sender, senderNum, text, command, isOwner } = ctx;
   const isStatus = from === 'status@broadcast';
 
   // ---- auto-status: view incoming statuses ----
@@ -207,9 +208,14 @@ async function onMessage(ctx) {
   }
 
   // ---- auto-react (respects group/chat scope) ----
+  // NOTE: this used to be gated behind `Math.random() < 0.35`, so roughly two out
+  // of three messages got no reaction at all — that randomness was the whole
+  // "reacts to some messages, not others" complaint. Auto-react now fires on
+  // every eligible message; the setting itself is the on/off switch.
   const reactScopeOk = isGroup ? config.AUTO_REACT_GROUP : config.AUTO_REACT_CHAT;
-  if (config.AUTO_REACT && reactScopeOk && !command && Math.random() < 0.35) {
-    try { await sock.sendMessage(from, { react: { text: pick(config.REACT_EMOJIS), key: m.key } }); } catch { /* ignore */ }
+  const myEmojis = require('../lib/reacts').forUser(senderNum, config.REACT_EMOJIS);
+  if (config.AUTO_REACT && reactScopeOk && !command) {
+    try { await sock.sendMessage(from, { react: { text: pick(myEmojis), key: m.key } }); } catch { /* ignore */ }
   }
 
   // ---- chatbot (AI auto-reply, private chats only, non-command) ----
@@ -224,7 +230,7 @@ async function onMessage(ctx) {
 
 /* ============================ commands ============================ */
 const handler = async (ctx) => {
-  const { command, reply, arg } = ctx;
+  const { command, reply, arg, senderNum } = ctx;
 
   // ---- anti-delete (scoped: group / chat-inbox / all) ----
   if (command === 'antidelete' || command === 'antideleteinbox') {
@@ -255,6 +261,27 @@ const handler = async (ctx) => {
     settings.save();
     await reply(autoreactStatus());
     return;
+  }
+
+  // ---- .setreact — each user picks their OWN auto-react emojis ----
+  if (command === 'setreact' || command === 'myreact' || command === 'reacts') {
+    const raw = String(arg || '').trim();
+    if (!raw) {
+      const mine = reacts.forUser(senderNum, config.REACT_EMOJIS);
+      return reply(
+        `😀 *Tumhare auto-react emojis*\n${mine.join(' ')}\n\n` +
+        `Badalne ke liye: \`${config.PREFIX}setreact 🔥 ❤️ 🎉\`\n` +
+        `Default par wapas: \`${config.PREFIX}setreact reset\``
+      );
+    }
+    if (/^(reset|default|clear|off)$/i.test(raw)) {
+      reacts.reset(senderNum);
+      return reply(`✅ Tumhare react emojis *default* par wapas aa gaye: ${config.REACT_EMOJIS.join(' ')}`);
+    }
+    const list = raw.split(/[\s,]+/).map((x) => x.trim()).filter(Boolean);
+    if (!list.length) return reply(`❌ Emojis likho. Example: \`${config.PREFIX}setreact 🔥 ❤️ 🎉\``);
+    if (!reacts.set(senderNum, list)) return reply('❌ Emojis save nahi ho sake, dobara try karo.');
+    return reply(`✅ *Ho gaya!* Ab tumhare auto-react emojis:\n${reacts.forUser(senderNum, config.REACT_EMOJIS).join(' ')}\n\n_(${config.PREFIX}setreact reset se default wapas)_`);
   }
 
   // ---- simple toggles ----
@@ -396,6 +423,7 @@ module.exports = {
   commands: [
     ...Object.keys(TOGGLES), 'premium', 'readmore', 'vcf', 'say', 'speak', 'voice', 'carbon', 'ss', 'tourl', 'emojimix', 'emix',
     'pp', 'profilepic', 'getdp', 'gpp', 'groupdp',
+    'setreact', 'myreact', 'reacts',
   ],
   category: '👑 PREMIUM',
   handler,
