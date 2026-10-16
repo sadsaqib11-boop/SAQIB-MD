@@ -19,6 +19,7 @@ const { isGroupAdmin } = require('../lib/handler');
 const settings = require('../lib/settings');
 const lang = require('../lib/lang');
 const reacts = require('../lib/reacts');
+const { cachedProfilePic } = require('../lib/cache');
 
 const ON_WORDS = ['on', 'true', '1', 'enable', 'enabled', 'yes', 'haan', 'han'];
 const OFF_WORDS = ['off', 'false', '0', 'disable', 'disabled', 'no', 'nahi', 'na'];
@@ -613,7 +614,7 @@ const contacts = require('../lib/contacts');
       const target = targetOf(ctx);
       const who = target ? target.jid : ctx.sender;
       try {
-        const pp = await ctx.sock.profilePictureUrl(who, 'image');
+        const pp = await cachedProfilePic(ctx.sock, who, 'image');
         await ctx.send(ctx.from, {
           image: { url: pp },
           caption: `🖼️ *Profile Picture*\n👤 @${target ? target.num : ctx.senderNum}`,
@@ -623,10 +624,10 @@ const contacts = require('../lib/contacts');
       return;
     }
 
-    case 'gpp': case 'groupdp': {
+    case 'gpp': case 'groupdp': case 'getgcdp': {
       if (!ctx.isGroup) return reply('❌ Ye command sirf group me chalti hy.');
       try {
-        const pp = await ctx.sock.profilePictureUrl(ctx.from, 'image');
+        const pp = await cachedProfilePic(ctx.sock, ctx.from, 'image');
         await ctx.send(ctx.from, { image: { url: pp }, caption: `🖼️ *Group Profile Picture*\n👑 ${config.BOT_NAME}` }, { quoted: ctx.m });
       } catch { await reply('❌ Group DP nahi mili.'); }
       return;
@@ -640,7 +641,7 @@ const contacts = require('../lib/contacts');
 module.exports = {
   commands: [
     ...Object.keys(TOGGLES), 'premium', 'readmore', 'vcf', 'say', 'speak', 'voice', 'carbon', 'ss', 'tourl', 'emojimix', 'emix',
-    'pp', 'profilepic', 'getdp', 'gpp', 'groupdp',
+    'pp', 'profilepic', 'getdp', 'gpp', 'groupdp', 'getgcdp',
     'setreact', 'myreact', 'reacts',
   ],
   category: '💎 PREMIUM',

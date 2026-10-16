@@ -176,8 +176,9 @@ const handler = async (ctx) => {
       try { if (ctx.sock.user?.id) candidates.push(ctx.sock.user.id); } catch { /* ignore */ }
       try { if (ctx.session?.number) candidates.push(`${ctx.session.number}@s.whatsapp.net`); } catch { /* ignore */ }
       let pp = null;
+      const { cachedProfilePic } = require('../lib/cache');
       for (const c of candidates) {
-        try { pp = await ctx.sock.profilePictureUrl(c, 'image'); if (pp) break; } catch { /* try next */ }
+        try { pp = await cachedProfilePic(ctx.sock, c, 'image'); if (pp) break; } catch { /* try next */ }
       }
       const cap = `🤖 *${config.BOT_NAME}* DP`;
       if (pp) {

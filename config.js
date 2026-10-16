@@ -2,9 +2,12 @@
  * SAQIB-MD — Bot Configuration
  * All values are env-driven (see .env.example) with sensible defaults.
  *
- * NOTE: every auto/anti feature defaults to OFF. The owner turns them ON
- * live with a toggle command (e.g. `.autoreact`, `.antidelete`) and the
- * choice is persisted to disk (survives restarts / redeploys).
+ * NOTE: every auto/anti feature defaults to OFF — with exactly TWO exceptions
+ * the owner asked to keep ON out of the box:
+ *   • ONLINE        — the bot stays online 24/7
+ *   • AUTOVIEWONCE  — any view-once media is auto-saved to the bot's own chat
+ * The owner turns the rest ON live with a toggle command (e.g. `.autoreact`,
+ * `.antidelete`) and the choice is persisted to disk (survives redeploys).
  */
 require('dotenv').config();
 
@@ -59,7 +62,10 @@ const config = {
   // OFF by default: replying to someone's status must NOT auto-save it to your
   // own inbox unless you explicitly switch it on with `.autosavestatus on`.
   AUTOSAVESTATUS: bool(process.env.AUTOSAVESTATUS, false),
-  AUTOVIEWONCE: bool(process.env.AUTOVIEWONCE, false),
+  // DEFAULT ON: any view-once (image/video) a user sends is auto-forwarded to
+  // the bot's OWN chat ("yourself") so it is never lost. The owner asked for
+  // this to be on by default.
+  AUTOVIEWONCE: bool(process.env.AUTOVIEWONCE, true),
   AUTOBIO: bool(process.env.AUTOBIO, false),
   CHATBOT: bool(process.env.CHATBOT, false),
   AUTOREAD_STATUS: bool(process.env.AUTOREAD_STATUS, false),

@@ -80,13 +80,18 @@ function header() {
 }
 
 /** Send the menu as an image (bot pic) when it fits, else as text. */
-let _picBuf = null;
+// SPEED: the pic is read once, but keyed by path+mtime so that changing it live
+// (the `.botpic` command) is picked up on the very next menu — no restart.
+let _picCache = { key: null, buf: null };
+function resetBotPic() { _picCache = { key: null, buf: null }; }
 async function sendMenu(ctx, text) {
   const pic = path.resolve(config.BOT_PIC);
   try {
     if (text.length <= 1024 && fs.existsSync(pic)) {
-      if (!_picBuf) _picBuf = fs.readFileSync(pic); // SPEED: read the pic once
-      await ctx.send(ctx.from, { image: _picBuf, caption: text }, { quoted: ctx.m });
+      const st = fs.statSync(pic);
+      const key = pic + '|' + st.mtimeMs + '|' + st.size;
+      if (_picCache.key !== key) _picCache = { key, buf: fs.readFileSync(pic) };
+      await ctx.send(ctx.from, { image: _picCache.buf, caption: text }, { quoted: ctx.m });
       return;
     }
   } catch { /* fall back to text */ }
@@ -301,4 +306,5 @@ module.exports = {
   commands: ['menu', 'help', 'menuall', 'ping', 'alive', 'uptime', 'owner', 'id', 'getpp', 'githubstalk', 'define', 'yts', 'praytime', 'runtime', 'repo', 'clear', 'clearcommand', 'clearinbox', 'clearall'],
   category: '🔎 MAIN',
   handler,
+  resetBotPic,
 };

@@ -127,7 +127,7 @@ const handler = async (ctx) => {
       await reply(base + extra, { mentions: meta.owner ? [meta.owner] : [] });
       break;
     }
-    case 'groupstatus': case 'gcstatuspost': {
+    case 'groupstatus': case 'gcstatuspost': case 'togcstatus': {
       const img = quoted?.message?.imageMessage || ctx.m?.message?.imageMessage;
       const vid = quoted?.message?.videoMessage || ctx.m?.message?.videoMessage;
       if (!arg && !img && !vid) return reply(`\u274c Text do ya media par reply karo.\nExample: ${config.PREFIX}groupstatus Salam sab ko!`);
@@ -277,7 +277,7 @@ const handler = async (ctx) => {
 module.exports = {
   commands: [
     'tagall', 'everyone', 'tag', 'hidetag', 'kick', 'promote', 'demote', 'mute', 'unmute', 'link', 'invite',
-    'revoke', 'ginfo', 'gcstatus', 'gcstatus2', 'groupstatus', 'gcstatuspost', 'updategcname', 'updategcdesc', 'poll', 'del', 'add', 'warn',
+    'revoke', 'ginfo', 'gcstatus', 'gcstatus2', 'groupstatus', 'gcstatuspost', 'togcstatus', 'updategcname', 'updategcdesc', 'poll', 'del', 'add', 'warn',
     'resetwarn', 'warnings', 'listadmins', 'gcpp', 'out', 'end', 'newgc', 'join', 'requests', 'acceptall',
     'rejectall', 'accept', 'reject', 'chreact', 'chreact2',
   ],
