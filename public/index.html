@@ -188,6 +188,7 @@
       <button id="tokenBtn">Unlock</button>
     </div>
     <div id="sessions"><div class="empty">Loading…</div></div>
+    <button id="testBtn" class="copy" style="margin-top:14px">📨 Send test message to owner</button>
   </div>
 
   <footer>
@@ -318,6 +319,15 @@ $('tokenBtn').addEventListener('click', () => {
   refreshSessions();
 });
 $('token').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('tokenBtn').click(); });
+$('testBtn').addEventListener('click', async () => {
+  const btn = $('testBtn'); const old = btn.textContent; btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const r = await fetch(API + '/api/test-send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: getToken() }) });
+    const d = await r.json();
+    alert(d.ok ? '✅ Test message sent to +' + String(d.to || '').split('@')[0] : '❌ ' + (d.error || 'failed'));
+  } catch (e) { alert('❌ ' + e.message); }
+  btn.disabled = false; btn.textContent = old;
+});
 refreshStatus(); refreshCommands(); refreshSessions();
 setInterval(refreshStatus, 8000);
 setInterval(refreshSessions, 10000);

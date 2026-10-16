@@ -201,6 +201,25 @@ app.post('/api/reconnect', async (req, res) => {
   catch (e) { res.status(500).json({ ok: false, error: e?.message || String(e) }); }
 });
 
+// Owner-only: send a REAL WhatsApp message from the bot to a number. This is
+// the end-to-end proof that the live pipeline works (not a mock). Defaults to
+// the owner number.
+app.post('/api/test-send', async (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ ok: false, error: 'Unauthorized — owner token required.' });
+  const to = String(req.body?.number || config.OWNER_NUMBER || '').replace(/[^0-9]/g, '');
+  const text = String(req.body?.text || `✅ *${config.BOT_NAME}* live test — bot kaam kar raha hy!\n💠 Prefix: ${config.PREFIX}\n🕒 ${new Date().toISOString()}`);
+  if (!to) return res.status(400).json({ ok: false, error: 'number required' });
+  try {
+    const sock = bot.getSock();
+    if (!sock) return res.status(503).json({ ok: false, error: 'no connected session' });
+    const jid = `${to}@s.whatsapp.net`;
+    const sent = await sock.sendMessage(jid, { text });
+    res.json({ ok: true, to: jid, id: sent?.key?.id || null });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e?.message || String(e) });
+  }
+});
+
 // In-process self-test: runs the real command engine (no WhatsApp needed).
 app.get('/api/selftest', async (req, res) => {
   const results = [];
