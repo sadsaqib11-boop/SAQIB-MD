@@ -137,7 +137,7 @@ async function tiktokSearch(query, limit = 5) {
       const html = await getText(`https://www.bing.com/videos/search?q=${encodeURIComponent(v)}`, { headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9', 'Cookie': 'SRCHHPGUSR=SRCHLANG=en' } }, 20000);
       collect(html);
     } catch { /* next */ }
-    await sleep(400);
+    await sleep(150);
   }
 
   // Backend 2: DuckDuckGo (direct then Jina reader proxy)
