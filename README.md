@@ -185,7 +185,7 @@ Every model name routes to the same AI engine. `.ai` `.bot` `.gpt` `.gpt4` `.gpt
 `.sticker` `.s` `.toimg` `.toimage` `.tomp3` `.toptt` `.bass` `.deep` `.smooth` `.fat` `.tupai` `.blown` `.radio` `.robot` `.chipmunk` `.nightcore` `.earrape` `.reverse` `.slow` `.fast` `.baby` `.demon` `.vaporwave` `.echo` `.karaoke` `.8d` `.tremolo` `.vibrato`
 
 ### 🐉 MYTH & LEGENDS (50)
-`.earthquake` `.tsunami` `.volcano` `.tornado` `.hurricane` `.alieninvasion` `.zombie` `.vampire` `.werewolf` `.wizardmagic` `.fairy` `.mermaid` `.dragonfire` `.phoenix` `.pegasus` `.centaur` `.griffin` `.cyborg` `.ninja` `.samurai` `.viking` `.pirate` `.knight` `.gladiator` `.spartan` `.pharaoh` `.mayan` `.atlantis` `.olympus` `.valhalla` `.shaman` `.witchspell` `.necromancer` `.alchemist` `.monk` `.yogi` `.guru` `.sage` `.mystic` `.oracle` `.sorcerer` `.enchanter` `.conjurer` `.illusionist` `.diviner` `.seer` `.prophet` `.astral` `.medium` `.telepath`
+`.earthquake` `.tsunami` `.volcano` `.tornado` `.hurricane` `.alieninvasion` `.zombie` `.vampire` `.werewolf` `.wizardmagic` `.fairy` `.mermaid` `.dragonfire` `.phoenix` `.pegasus` `.centaur` `.griffin` `.cyborg` `.ninja` `.samurai` `.viking` `.pirate` `.knight` `.gladiator` `.spartan` `.pharaoh` `.mayan` `.atlantis` `.olympus` `.valhalla` `.shaman` `.witchspell` `.necromancer` `.alchemist` `.monk` `.yogi` `.guru` `.sage` `.mystic` `.oracle` `.sorcerer` `.enchanter` `.conjurer` `.illusionist` `.diviner` `.seer` `.astral` `.medium` `.telepath`
 
 ### 👑 OWNER (19)
 `.vv` `.vv2` `.vv3` `.forward` `.block` `.unblock` `.delete` `.leave` `.fullpp` `.setpp` `.status` `.status2` `.getbio` `.updatebio` `.setname` `.pair` `.broadcast` `.blocklist` `.restart`

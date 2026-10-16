@@ -189,9 +189,17 @@ const handler = async (ctx) => {
   return reply(`❓ Element command samajh nahi aaya. \`${P()}elementlist\` dekho.`);
 };
 
+// Element symbols whose bare name collides with a real command in another
+// plugin. Those plugins must win, so we never register the bare symbol here:
+//   s  -> media.js      (.s  = sticker)
+//   cd -> tools.js      (.cd = countdown)
+//   no -> reactions.js  (.no = ❌ reaction)
+// The element is still reachable via `.element s` / `.element cd` / `.element no`.
+const RESERVED = new Set(['s', 'cd', 'no']);
+
 module.exports = {
   commands: ['element', 'elementlist', 'periodictable', 'atomicnumber', 'atomicmass', 'elementcategory',
-    ...SYMS.map((s) => s.toLowerCase())],
+    ...SYMS.map((s) => s.toLowerCase()).filter((c) => !RESERVED.has(c))],
   category: '🔬 SCIENCE',
   handler,
 };

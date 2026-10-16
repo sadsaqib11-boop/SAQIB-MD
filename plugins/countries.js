@@ -257,7 +257,11 @@ const handler = async (ctx) => {
 };
 
 module.exports = {
-  commands: ['country', 'countryinfo', 'countrylist', 'flag', 'capital', 'currency', 'callingcode', 'region', 'biggestcity', 'languages', 'area', 'population', ...KEYS],
+  // `currency` is owned by tools.js (conversion: `.currency 100 USD PKR`); the
+  // country card already prints each country's currency.
+  // `chad` is owned by characters.js (`.chad` rating); use `.country chad` for
+  // the country card so the two never fight over the same command.
+  commands: ['country', 'countryinfo', 'countrylist', 'flag', 'capital', 'callingcode', 'region', 'biggestcity', 'languages', 'area', 'population', ...KEYS.filter((k) => k !== 'chad')],
   category: '🌍 INFO',
   handler,
 };

@@ -211,8 +211,10 @@ const handler = async (ctx) => {
 };
 
 module.exports = {
+  // `.dua` is owned by islamic.js; here we only expose the per-dua aliases
+  // (`dua_sleep`, `dua_waking`, …) so the two plugins never collide.
   commands: [
-    'name99', 'names', 'nameslist', 'prophet', 'dua',
+    'name99', 'names', 'nameslist', 'prophet',
     ...Object.keys(NAMES).map((k) => `name_${k}`),
     ...Object.keys(PROPHETS).map((k) => `prophet_${k}`),
     ...Object.keys(DUAS).map((k) => `dua_${k}`),

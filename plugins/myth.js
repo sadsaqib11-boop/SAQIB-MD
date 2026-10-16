@@ -52,7 +52,6 @@ const MYTHS = {
   illusionist: 'illusionist performing magic on a stage',
   diviner: 'diviner reading tarot cards by candlelight',
   seer: 'seer gazing into a glowing orb, prophecy',
-  prophet: 'ancient prophet in the desert, divine light',
   astral: 'astral projection, soul floating in space',
   medium: 'spiritual medium contacting spirits, seance',
   telepath: 'telepath with glowing mind, psychic energy',

@@ -63,7 +63,7 @@ const fun = require('../plugins/fun');
     ok('fool sends a message', !!s);
     const mention = s?.content?.mentions?.[0] || '';
     ok('unresolved LID mention keeps @lid domain', mention.endsWith('@lid'), `got ${mention}`);
-    ok('fool text mentions the target', /@999888777666555/.test(s?.content?.text || ''), `got ${s?.content?.text}`);
+    ok('fool text is name-safe (display name, no fake @number)', /Tester/.test(s?.content?.text || '') && !/@\d{10,}/.test(s?.content?.text || ''), `got ${s?.content?.text}`);
     ok('fool does NOT call the sender a fool', !/@923001234567/.test(s?.content?.text || ''));
   }
   {
@@ -206,12 +206,12 @@ const fun = require('../plugins/fun');
     config.ANTIDELETE_INBOX = false;
     let p = mockCtx({ command: 'antidelete', arg: 'chat on' });
     await premium.handler(p);
-    ok('antidelete chat on -> ANTIDELETE_INBOX=true', config.ANTIDELETE_INBOX === true);
-    ok('antidelete status text shown', /Anti-Delete/.test(p._sent[0]?.text || ''), p._sent[0]?.text);
+    ok('antidelete chat on -> ANTIDELETE_TO_CHAT=true', config.ANTIDELETE_TO_CHAT === true);
+    ok('antidelete status text shown', /Anti-delete/i.test(p._sent[0]?.text || ''), p._sent[0]?.text);
 
     p = mockCtx({ command: 'antidelete', arg: 'inbox off' });
     await premium.handler(p);
-    ok('antidelete inbox off -> ANTIDELETE_INBOX=false', config.ANTIDELETE_INBOX === false);
+    ok('antidelete inbox off -> ANTIDELETE_TO_CHAT=false', config.ANTIDELETE_TO_CHAT === false);
 
     // anti-delete all
     p = mockCtx({ command: 'antidelete', arg: 'all on' });
@@ -267,7 +267,8 @@ const fun = require('../plugins/fun');
     bot.requestPair = async () => 'ABCD-1234';
     const pctx = mockCtx({ command: 'pair', arg: '923001234567' });
     await owner.handler(pctx);
-    ok('pair returns a pairing code', /ABCD-1234/.test(pctx._sent[0]?.text || ''), pctx._sent[0]?.text);
+    const pairText = pctx._sent.map((m) => m?.text || m?.content?.text || '').join('\n');
+    ok('pair returns a pairing code', /ABCD-1234/.test(pairText), pairText);
     bot.requestPair = origPair;
 
     // .broadcast
@@ -316,6 +317,7 @@ const fun = require('../plugins/fun');
   {
     const settings = require('../plugins/settings');
     const config = require('../config');
+    const prefixes = require('../lib/prefixes');
 
     let s1 = mockCtx({ command: 'autoread', arg: 'off' });
     await settings.handler(s1);
@@ -339,8 +341,9 @@ const fun = require('../plugins/fun');
 
     let s6 = mockCtx({ command: 'prefix', arg: '!' });
     await settings.handler(s6);
-    ok('prefix ! sets PREFIX', config.PREFIX === '!');
-    config.PREFIX = '.';
+    ok('prefix ! sets PER-USER prefix', prefixes.forUser(s6.senderNum) === '!');
+    ok('prefix ! leaves global PREFIX untouched', config.PREFIX === '.');
+    prefixes.set(s6.senderNum, null);
 
     let s7 = mockCtx({ command: 'mode', arg: 'bogus' });
     await settings.handler(s7);
