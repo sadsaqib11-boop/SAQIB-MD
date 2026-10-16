@@ -113,16 +113,32 @@ async function onMessage(ctx) {
   // go nowhere even when the feature was switched on.
   if (isStatus) {
     const author = m?.key?.participant || m?.participant || '';
-    try {
-      if (config.AUTOSTATUS) await sock.readMessages([m.key]);
-      if (config.AUTO_REACT && author) {
+    // Fire-and-forget: viewing + reacting to a status must never hold the hook.
+    try { if (config.AUTOSTATUS) sock.readMessages([m.key]).catch(() => {}); } catch { /* ignore */ }
+    if (config.AUTO_REACT && author) {
+      try {
         const myEmojis = reacts.forUser(senderNum, config.REACT_EMOJIS);
-        await sock.sendMessage('status@broadcast', {
+        sock.sendMessage('status@broadcast', {
           react: { text: pick(myEmojis), key: m.key },
         }, { statusJidList: [author] }).catch(() => {});
-      }
-    } catch { /* ignore */ }
+      } catch { /* ignore */ }
+    }
     return;
+  }
+
+  // ---- auto-react (FAST PATH — runs FIRST, before any slow I/O) ----
+  // SPEED: this used to sit at the very END of the hook, behind anti-link
+  // network lookups, view-once media downloads and status saves — so the
+  // reaction only fired after all of that finished. It now runs immediately
+  // (and is NOT awaited), which makes auto-react feel instant.
+  {
+    const reactScopeOk = isGroup ? config.AUTO_REACT_GROUP : config.AUTO_REACT_CHAT;
+    if (config.AUTO_REACT && reactScopeOk && !command) {
+      try {
+        const myEmojis = reacts.forUser(senderNum, config.REACT_EMOJIS);
+        sock.sendMessage(from, { react: { text: pick(myEmojis), key: m.key } }).catch(() => {});
+      } catch { /* ignore */ }
+    }
   }
 
   // ---- anti-spam ----
@@ -223,16 +239,7 @@ async function onMessage(ctx) {
     }
   }
 
-  // ---- auto-react (respects group/chat scope) ----
-  // NOTE: this used to be gated behind `Math.random() < 0.35`, so roughly two out
-  // of three messages got no reaction at all — that randomness was the whole
-  // "reacts to some messages, not others" complaint. Auto-react now fires on
-  // every eligible message; the setting itself is the on/off switch.
-  const reactScopeOk = isGroup ? config.AUTO_REACT_GROUP : config.AUTO_REACT_CHAT;
-  const myEmojis = require('../lib/reacts').forUser(senderNum, config.REACT_EMOJIS);
-  if (config.AUTO_REACT && reactScopeOk && !command) {
-    try { await sock.sendMessage(from, { react: { text: pick(myEmojis), key: m.key } }); } catch { /* ignore */ }
-  }
+  // (auto-react now runs at the TOP of this hook — see the FAST PATH block.)
 
   // ---- chatbot (AI auto-reply, private chats only, non-command) ----
   if (config.CHATBOT && !command && !isGroup && text && !isOwner) {
