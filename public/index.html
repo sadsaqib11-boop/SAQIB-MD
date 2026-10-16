@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#05060a" />
 <title>SAQIB-MD • Premium WhatsApp Bot</title>
 <meta name="description" content="SAQIB-MD — Premium WhatsApp Bot. Link up to 50 WhatsApp numbers with an 8-digit pairing code." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
@@ -10,17 +11,20 @@
   :root{
     --bg:#05060a; --bg2:#0b0e17; --card:rgba(20,24,38,.72); --line:rgba(120,140,255,.16);
     --txt:#e8ecff; --muted:#8b93b8; --accent:#7c5cff; --accent2:#22d3ee; --ok:#22c55e; --warn:#f59e0b; --err:#ef4444;
+    --pad:clamp(14px,4vw,28px);
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
+  html{height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%}
   body{
     font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
     background:radial-gradient(1200px 700px at 15% -10%,rgba(124,92,255,.22),transparent 55%),
                radial-gradient(1000px 600px at 100% 0%,rgba(34,211,238,.16),transparent 50%),
                linear-gradient(180deg,var(--bg),var(--bg2));
-    color:var(--txt); min-height:100vh; display:flex; flex-direction:column; align-items:center;
-    padding:28px 16px 60px; overflow-x:hidden;
+    color:var(--txt); min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center;
+    padding:var(--pad) var(--pad) calc(var(--pad) + 40px); overflow-x:hidden;
+    overflow-wrap:anywhere; word-break:break-word;
   }
+  body.locked{overflow:hidden}
   body::before{
     content:""; position:fixed; inset:0; pointer-events:none; opacity:.5;
     background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
@@ -28,80 +32,87 @@
     background-size:44px 44px; mask-image:radial-gradient(circle at 50% 20%,#000 0%,transparent 75%);
   }
   .wrap{width:100%; max-width:960px; position:relative; z-index:1}
-  header{display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:26px; flex-wrap:wrap}
-  .brand{display:flex; align-items:center; gap:12px}
+  header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:clamp(18px,4vw,26px); flex-wrap:wrap}
+  .brand{display:flex; align-items:center; gap:12px; min-width:0}
   .logo{
-    width:52px;height:52px;border-radius:15px;display:grid;place-items:center;font-size:26px;
+    width:clamp(44px,11vw,52px);height:clamp(44px,11vw,52px);border-radius:15px;display:grid;place-items:center;
+    font-size:clamp(22px,6vw,26px);flex:none;
     background:linear-gradient(135deg,var(--accent),var(--accent2)); box-shadow:0 10px 30px rgba(124,92,255,.45);
   }
-  .brand h1{font-size:22px;letter-spacing:.5px}
-  .brand p{font-size:12.5px;color:var(--muted);margin-top:2px}
-  .pill{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;padding:8px 14px;border-radius:999px;
+  .brand h1{font-size:clamp(18px,5vw,22px);letter-spacing:.5px}
+  .brand p{font-size:clamp(11px,3vw,12.5px);color:var(--muted);margin-top:2px}
+  .headright{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:8px;font-size:clamp(11px,3vw,12.5px);padding:8px 14px;border-radius:999px;
     border:1px solid var(--line); background:rgba(255,255,255,.03)}
-  .dot{width:9px;height:9px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 4px rgba(245,158,11,.15)}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 4px rgba(245,158,11,.15);flex:none}
   .dot.on{background:var(--ok);box-shadow:0 0 0 4px rgba(34,197,94,.15)}
   .dot.off{background:var(--err);box-shadow:0 0 0 4px rgba(239,68,68,.15)}
+  .lockbtn{cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--txt);
+    border-radius:999px;padding:8px 14px;font-size:clamp(11px,3vw,12.5px);font-weight:700;font-family:inherit;box-shadow:none}
+  .lockbtn:hover{background:rgba(255,255,255,.09)}
 
-  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:22px}
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(14px,3vw,22px)}
   @media(max-width:820px){.grid{grid-template-columns:1fr}}
   .card{
-    background:var(--card); border:1px solid var(--line); border-radius:22px; padding:26px;
-    backdrop-filter:blur(14px); box-shadow:0 24px 60px rgba(0,0,0,.45);
+    background:var(--card); border:1px solid var(--line); border-radius:22px; padding:clamp(18px,4.5vw,26px);
+    backdrop-filter:blur(14px); box-shadow:0 24px 60px rgba(0,0,0,.45); min-width:0;
   }
-  .card h2{font-size:18px;margin-bottom:6px;display:flex;align-items:center;gap:9px}
-  .card .sub{color:var(--muted);font-size:13.5px;margin-bottom:20px;line-height:1.5}
+  .card h2{font-size:clamp(16px,4.4vw,18px);margin-bottom:6px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .card .sub{color:var(--muted);font-size:clamp(12.5px,3.4vw,13.5px);margin-bottom:clamp(14px,3.5vw,20px);line-height:1.55}
 
-  label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:.3px}
-  .field{display:flex;gap:0;align-items:stretch}
-  .field input{border-top-right-radius:0;border-bottom-right-radius:0;border-right:none}
-  .field button{border-top-left-radius:0;border-bottom-left-radius:0;padding-left:20px;padding-right:20px}
+  label{display:block;font-size:clamp(12px,3.2vw,13px);color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:.3px}
+  .field{display:flex;gap:0;align-items:stretch;width:100%}
+  .field input{border-top-right-radius:0;border-bottom-right-radius:0;border-right:none;min-width:0}
+  .field button{border-top-left-radius:0;border-bottom-left-radius:0;padding-left:clamp(14px,4vw,20px);padding-right:clamp(14px,4vw,20px);flex:none}
   input{
     flex:1;padding:15px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(5,7,14,.7);
-    color:var(--txt);font-size:15.5px;outline:none;transition:.2s;font-family:inherit;
+    color:var(--txt);font-size:16px;outline:none;transition:.2s;font-family:inherit;min-width:0;width:100%;
   }
   input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(124,92,255,.16)}
   button{
-    cursor:pointer;border:none;border-radius:14px;padding:15px 22px;font-size:15px;font-weight:700;font-family:inherit;
+    cursor:pointer;border:none;border-radius:14px;padding:15px 22px;font-size:clamp(14px,3.8vw,15px);font-weight:700;font-family:inherit;
     color:#fff;background:linear-gradient(135deg,var(--accent),#5b3df0);transition:.18s;white-space:nowrap;
     box-shadow:0 12px 28px rgba(124,92,255,.4);
   }
   button:hover{transform:translateY(-1px);filter:brightness(1.08)}
   button:active{transform:translateY(0)}
   button:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
-  .hint{font-size:12px;color:var(--muted);margin-top:10px}
+  .hint{font-size:clamp(11px,3vw,12px);color:var(--muted);margin-top:10px;line-height:1.5}
 
   .codebox{
     margin-top:22px;border-radius:18px;border:1px dashed rgba(124,92,255,.5);background:rgba(124,92,255,.07);
-    padding:22px;text-align:center;display:none;
+    padding:clamp(16px,4vw,22px);text-align:center;display:none;
   }
   .codebox.show{display:block;animation:pop .35s ease}
   @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
-  .code{font-size:38px;font-weight:800;letter-spacing:8px;color:#fff;font-family:'Courier New',monospace;
-    text-shadow:0 0 24px rgba(124,92,255,.7);margin:6px 0 4px}
-  .copy{margin-top:14px;background:rgba(255,255,255,.08);box-shadow:none;padding:10px 16px;font-size:13px}
-  .steps{margin-top:20px;font-size:13.5px;color:var(--muted);line-height:1.9}
+  .code{font-size:clamp(26px,9vw,38px);font-weight:800;letter-spacing:clamp(3px,1.6vw,8px);color:#fff;font-family:'Courier New',monospace;
+    text-shadow:0 0 24px rgba(124,92,255,.7);margin:6px 0 4px;word-break:break-all}
+  .copy{margin-top:14px;background:rgba(255,255,255,.08);box-shadow:none;padding:10px 16px;font-size:clamp(12px,3.2vw,13px)}
+  .steps{margin-top:20px;font-size:clamp(12.5px,3.3vw,13.5px);color:var(--muted);line-height:1.9}
   .steps b{color:var(--txt)}
-  .msg{margin-top:16px;font-size:13.5px;padding:12px 14px;border-radius:12px;display:none}
+  .msg{margin-top:16px;font-size:clamp(12.5px,3.3vw,13.5px);padding:12px 14px;border-radius:12px;display:none}
   .msg.err{display:block;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#fca5a5}
   .msg.ok{display:block;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#86efac}
 
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
-  .stat{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:14px}
+  @media(max-width:380px){.stats{grid-template-columns:1fr}}
+  .stat{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
   .stat .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
-  .stat .v{font-size:17px;font-weight:700;margin-top:5px;word-break:break-all}
+  .stat .v{font-size:clamp(15px,4.2vw,17px);font-weight:700;margin-top:5px;word-break:break-all}
   .feat{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-  .chip{font-size:12px;padding:7px 12px;border-radius:999px;background:rgba(124,92,255,.12);border:1px solid var(--line);color:#c7ccff}
-  footer{margin-top:34px;color:var(--muted);font-size:12.5px;text-align:center;line-height:1.8}
+  .chip{font-size:clamp(11px,3vw,12px);padding:7px 12px;border-radius:999px;background:rgba(124,92,255,.12);border:1px solid var(--line);color:#c7ccff}
+  footer{margin-top:34px;color:var(--muted);font-size:clamp(11.5px,3vw,12.5px);text-align:center;line-height:1.8}
   footer a{color:var(--accent2);text-decoration:none}
   .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:8px}
   @keyframes sp{to{transform:rotate(360deg)}}
 
   /* sessions */
-  .sessions-card{margin-top:22px}
+  .sessions-card{margin-top:clamp(14px,3vw,22px)}
   .sess{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border-radius:14px;
-    background:rgba(255,255,255,.03);border:1px solid var(--line);margin-bottom:10px}
-  .sess .num{font-weight:700;font-size:15px}
-  .sess .meta{font-size:12px;color:var(--muted);margin-top:2px}
+    background:rgba(255,255,255,.03);border:1px solid var(--line);margin-bottom:10px;flex-wrap:wrap}
+  .sess>div:first-child{min-width:0}
+  .sess .num{font-weight:700;font-size:clamp(14px,3.8vw,15px)}
+  .sess .meta{font-size:clamp(11px,3vw,12px);color:var(--muted);margin-top:2px}
   .badge{font-size:11px;padding:4px 10px;border-radius:999px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
   .badge.connected{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.35)}
   .badge.pairing{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.35)}
@@ -109,11 +120,42 @@
   .badge.error{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.35)}
   .rm{cursor:pointer;border:none;background:rgba(239,68,68,.14);color:#fca5a5;border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:700;box-shadow:none}
   .rm:hover{background:rgba(239,68,68,.25)}
-  .empty{color:var(--muted);font-size:13.5px;padding:8px 0}
+  .empty{color:var(--muted);font-size:clamp(12.5px,3.3vw,13.5px);padding:8px 0;line-height:1.6}
+
+  /* ---- lock screen ---- */
+  .lock{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
+    padding:20px;background:rgba(4,5,10,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  .lock.hidden{display:none}
+  .lockcard{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:24px;
+    padding:clamp(22px,6vw,34px);box-shadow:0 30px 80px rgba(0,0,0,.6);text-align:center;animation:pop .3s ease}
+  .locklogo{width:64px;height:64px;margin:0 auto 16px;border-radius:20px;display:grid;place-items:center;font-size:30px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 12px 34px rgba(124,92,255,.5)}
+  .lockcard h2{font-size:clamp(19px,5vw,22px);margin-bottom:8px}
+  .lockcard p{color:var(--muted);font-size:clamp(12.5px,3.4vw,13.5px);line-height:1.6;margin-bottom:20px}
+  .lockcard .field{max-width:340px;margin:0 auto}
+  .lockcard .msg{text-align:left}
+  .shake{animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 </style>
 <script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
 </head>
-<body>
+<body class="locked">
+
+<!-- Password lock screen -->
+<div id="lock" class="lock">
+  <div class="lockcard" id="lockCard">
+    <div class="locklogo">🔒</div>
+    <h2>SAQIB-MD</h2>
+    <p>Ye portal password se protected hy.<br/>Aage barhne ke liye password daalo.</p>
+    <div class="field">
+      <input id="lockPass" type="password" placeholder="Portal password" autocomplete="current-password" />
+      <button id="lockBtn">Unlock</button>
+    </div>
+    <div id="lockMsg" class="msg"></div>
+    <div class="hint" style="margin-top:14px">Password bhool gaye? Railway me <b>PORTAL_PASSWORD</b> set karo.</div>
+  </div>
+</div>
+
 <div class="wrap">
   <header>
     <div class="brand">
@@ -123,7 +165,10 @@
         <p>Premium WhatsApp Bot • v3.0.0 • Multi-Session</p>
       </div>
     </div>
-    <div class="pill"><span id="statusDot" class="dot"></span><span id="statusText">Checking…</span></div>
+    <div class="headright">
+      <div class="pill"><span id="statusDot" class="dot"></span><span id="statusText">Checking…</span></div>
+      <button id="relockBtn" class="lockbtn" title="Lock portal">🔒 Lock</button>
+    </div>
   </header>
 
   <div class="grid">
@@ -200,7 +245,57 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const API = '';
+const LOCK_KEY = 'saqib_portal_pass';
+const TOKEN_KEY = 'saqib_admin_token';
 
+/* ---------------- password lock screen ---------------- */
+function lockErr(text) {
+  const m = $('lockMsg'); m.textContent = text; m.className = 'msg err';
+  const c = $('lockCard'); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
+}
+async function authPortal(pass) {
+  try {
+    const r = await fetch(API + '/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: pass }) });
+    const d = await r.json();
+    return !!d.ok;
+  } catch { return false; }
+}
+function showLock() {
+  document.body.classList.add('locked');
+  $('lock').classList.remove('hidden');
+  $('lockPass').value = '';
+  setTimeout(() => $('lockPass').focus(), 60);
+}
+function unlockPortal(pass) {
+  if (pass) { localStorage.setItem(LOCK_KEY, pass); localStorage.setItem(TOKEN_KEY, pass); $('token').value = pass; }
+  document.body.classList.remove('locked');
+  $('lock').classList.add('hidden');
+  refreshStatus(); refreshCommands(); refreshSessions();
+}
+async function initPortal() {
+  try {
+    const r = await fetch(API + '/api/portal');
+    const d = await r.json();
+    if (!d.locked) { unlockPortal(); return; }
+    const saved = (localStorage.getItem(LOCK_KEY) || '').trim();
+    if (saved && await authPortal(saved)) { unlockPortal(saved); return; }
+    if (saved) localStorage.removeItem(LOCK_KEY);
+    showLock();
+  } catch { showLock(); }
+}
+$('lockBtn').addEventListener('click', async () => {
+  const pass = ($('lockPass').value || '').trim();
+  if (!pass) return lockErr('❌ Password daalo.');
+  const btn = $('lockBtn'); btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
+  const ok = await authPortal(pass);
+  btn.disabled = false; btn.textContent = 'Unlock';
+  if (ok) unlockPortal(pass);
+  else lockErr('❌ Galat password. Dobara try karo.');
+});
+$('lockPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('lockBtn').click(); });
+$('relockBtn').addEventListener('click', () => { localStorage.removeItem(LOCK_KEY); showLock(); });
+
+/* ---------------- status / commands ---------------- */
 async function refreshStatus() {
   try {
     const r = await fetch(API + '/api/status');
@@ -223,7 +318,7 @@ async function refreshCommands() {
     $('feat').innerHTML = cats.map(c => `<span class="chip">${c}</span>`).join('');
   } catch {}
 }
-function getToken() { return (localStorage.getItem('saqib_admin_token') || '').trim(); }
+function getToken() { return (localStorage.getItem(TOKEN_KEY) || '').trim(); }
 async function refreshSessions() {
   const token = getToken();
   try {
@@ -243,7 +338,7 @@ async function refreshSessions() {
           <div class="num">+${s.number}</div>
           <div class="meta">Owner: +${s.owner || s.number}${s.since ? ' • since ' + new Date(s.since).toLocaleString() : ''}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <span class="badge ${s.status}">${s.status}</span>
           <button class="rm" data-num="${s.number}">Remove</button>
         </div>
@@ -259,6 +354,8 @@ async function refreshSessions() {
 function showMsg(text, type) {
   const m = $('msg'); m.textContent = text; m.className = 'msg ' + type;
 }
+
+/* ---------------- pairing ---------------- */
 $('pairBtn').addEventListener('click', async () => {
   const number = ($('num').value || '').replace(/[^0-9]/g, '');
   if (number.length < 8) return showMsg('❌ Sahi number likho (country code ke sath).', 'err');
@@ -315,7 +412,7 @@ $('copyBtn').addEventListener('click', () => {
 $('num').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('pairBtn').click(); });
 $('token').value = getToken();
 $('tokenBtn').addEventListener('click', () => {
-  localStorage.setItem('saqib_admin_token', ($('token').value || '').trim());
+  localStorage.setItem(TOKEN_KEY, ($('token').value || '').trim());
   refreshSessions();
 });
 $('token').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('tokenBtn').click(); });
@@ -328,9 +425,11 @@ $('testBtn').addEventListener('click', async () => {
   } catch (e) { alert('❌ ' + e.message); }
   btn.disabled = false; btn.textContent = old;
 });
-refreshStatus(); refreshCommands(); refreshSessions();
-setInterval(refreshStatus, 8000);
-setInterval(refreshSessions, 10000);
+
+/* ---------------- boot ---------------- */
+initPortal();
+setInterval(() => { if (!document.body.classList.contains('locked')) refreshStatus(); }, 8000);
+setInterval(() => { if (!document.body.classList.contains('locked')) refreshSessions(); }, 10000);
 </script>
 </body>
 </html>

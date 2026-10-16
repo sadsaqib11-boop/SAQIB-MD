@@ -24,6 +24,10 @@ const config = {
   // (the list of linked numbers + the remove button). Defaults to the owner
   // number so it works out of the box; set ADMIN_TOKEN in Railway to change it.
   ADMIN_TOKEN: (process.env.ADMIN_TOKEN || process.env.OWNER_NUMBER || '923106762478').replace(/[^0-9a-zA-Z_-]/g, ''),
+  // Password for the web portal lock screen. Defaults to the owner token so it
+  // works out of the box; set PORTAL_PASSWORD in Railway to change it, or set
+  // PORTAL_PASSWORD=off to make the portal public (no lock screen at all).
+  PORTAL_PASSWORD: String(process.env.PORTAL_PASSWORD || process.env.ADMIN_TOKEN || process.env.OWNER_NUMBER || '923106762478').trim(),
 
   // ---- AI ----
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',

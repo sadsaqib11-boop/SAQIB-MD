@@ -100,10 +100,30 @@ app.get('/api/status', (req, res) => {
 // Connected numbers are private: only the owner (who knows ADMIN_TOKEN) may
 // list them or remove a session. Everyone else only sees the count.
 const ADMIN_TOKEN = String(config.ADMIN_TOKEN || '');
-function isAdmin(req) {
-  const t = String(req.query?.token || req.headers['x-admin-token'] || req.body?.token || '').trim();
-  return !!t && !!ADMIN_TOKEN && t === ADMIN_TOKEN;
+// Password that protects the whole portal (lock screen). "off"/"none"/"0"
+// disables the lock screen entirely.
+const PORTAL_PASSWORD_RAW = String(config.PORTAL_PASSWORD || '').trim();
+const PORTAL_LOCKED = !!PORTAL_PASSWORD_RAW && !['off', 'none', '0', 'false', 'disable', 'disabled'].includes(PORTAL_PASSWORD_RAW.toLowerCase());
+const PORTAL_PASSWORD = PORTAL_LOCKED ? PORTAL_PASSWORD_RAW : '';
+function tokenOk(t) {
+  const v = String(t || '').trim();
+  if (!v) return false;
+  return (!!ADMIN_TOKEN && v === ADMIN_TOKEN) || (!!PORTAL_PASSWORD && v === PORTAL_PASSWORD);
 }
+function isAdmin(req) {
+  return tokenOk(req.query?.token || req.headers['x-admin-token'] || req.body?.token);
+}
+
+// Portal metadata — tells the frontend whether to show the lock screen.
+app.get('/api/portal', (req, res) => {
+  res.json({ ok: true, locked: PORTAL_LOCKED, name: config.BOT_NAME, version: config.BOT_VERSION });
+});
+
+// Validate the portal password (used by the lock screen).
+app.post('/api/auth', (req, res) => {
+  if (!PORTAL_LOCKED) return res.json({ ok: true, locked: false });
+  res.json({ ok: tokenOk(req.body?.token), locked: true });
+});
 
 app.get('/api/sessions', (req, res) => {
   const all = bot.listSessions();
