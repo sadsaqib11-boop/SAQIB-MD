@@ -132,6 +132,11 @@ const EL = {
 const SYMS = Object.keys(EL);
 const BY_NAME = {};
 for (const [s, v] of Object.entries(EL)) BY_NAME[v[0].toLowerCase()] = s;
+// lowercase symbol -> proper-case key ("he" -> "He", "fe" -> "Fe"). The bare
+// element commands are registered lowercased, so we MUST look them up this way
+// (a plain `.toUpperCase()` misses every two-letter symbol).
+const BY_SYM = {};
+for (const s of SYMS) BY_SYM[s.toLowerCase()] = s;
 
 function card(sym) {
   const [name, num, mass, cat] = EL[sym];
@@ -173,7 +178,7 @@ const handler = async (ctx) => {
   // field lookups
   if (command === 'atomicnumber' || command === 'atomicmass' || command === 'elementcategory') {
     if (!q) return reply(`❓ Element likho. Example: \`${P()}${command} gold\``);
-    let sym = EL[q] ? q : (EL[q.toUpperCase()] || BY_NAME[q.toLowerCase()]);
+    let sym = EL[q] ? q : (BY_SYM[q.toLowerCase()] || BY_NAME[q.toLowerCase()]);
     if (!sym) sym = SYMS.find((s) => EL[s][0].toLowerCase().includes(q.toLowerCase()));
     if (!sym) return reply(`❌ \`${q}\` nahi mila.`);
     const [name, num, mass, cat] = EL[sym];
@@ -183,8 +188,7 @@ const handler = async (ctx) => {
   }
 
   // one command per element symbol: .h .he .au … (lowercased)
-  const up = command.toUpperCase();
-  if (EL[up] && command.length <= 3) return reply(card(up));
+  if (command.length <= 3 && BY_SYM[command]) return reply(card(BY_SYM[command]));
 
   return reply(`❓ Element command samajh nahi aaya. \`${P()}elementlist\` dekho.`);
 };

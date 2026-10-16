@@ -159,6 +159,28 @@ const DUAS = {
 const handler = async (ctx) => {
   const { command, arg, reply } = ctx;
 
+  // --- per-item aliases: .name_rahman / .prophet_adam / .dua_sleep ---
+  // These are registered as real commands, so they MUST reply (they used to
+  // fall through silently). Each forwards to its data card.
+  if (command.startsWith('name_')) {
+    const key = command.slice(5);
+    if (NAMES[key]) {
+      const [ar, en] = NAMES[key];
+      return reply(`✨ *${ar}*\n━━━━━━━━━━━━━━━\n▪️ Meaning: ${en}\n▪️ Total names: ${Object.keys(NAMES).length}\n\n_${P()}names list — sab dekhne ke liye_`);
+    }
+  }
+  if (command.startsWith('prophet_')) {
+    const key = command.slice(8);
+    if (PROPHETS[key]) return reply(`🕌 *Prophet*\n━━━━━━━━━━━━━━━\n${PROPHETS[key]}`);
+  }
+  if (command.startsWith('dua_')) {
+    const key = command.slice(4);
+    if (DUAS[key]) {
+      const [title, text] = DUAS[key];
+      return reply(`🤲 *${title}*\n━━━━━━━━━━━━━━━\n_${text}_`);
+    }
+  }
+
   // --- 99 names: .name99 rahman  OR  .names  (random) ---
   if (command === 'name99' || command === 'names') {
     const key = String(arg || '').toLowerCase().replace(/[^a-z]/g, '');

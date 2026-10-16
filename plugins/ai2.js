@@ -81,7 +81,7 @@ async function ask(prompt, system) {
 
 const handler = async (ctx) => {
   const { command, reply, arg } = ctx;
-
+  try {
   switch (command) {
     case 'ocr': {
       const q = ctx.quoted || ctx.m;
@@ -321,6 +321,9 @@ const handler = async (ctx) => {
     default:
       return reply('❓ Unknown AI command');
   }
+  } catch {
+    return reply('🤖 AI abhi busy hai ya network slow hai. Thori der baad try karo.');
+  }
 };
 
 module.exports = {
@@ -331,6 +334,6 @@ module.exports = {
     'sentiment', 'compare', 'decide', 'plan', 'dream', 'hook', 'expand', 'seo', 'essay', 'tweet',
     'detectai', 'persona', 'voiceai',
   ],
-  category: '🤖 AI SMART',
+  category: '🧠 AI SMART',
   handler,
 };

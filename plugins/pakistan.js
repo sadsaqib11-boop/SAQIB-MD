@@ -40,8 +40,10 @@ const handler = async (ctx) => {
         const r = d.rates;
         return reply(`💵 *Currency rates (1 USD)*\n\n🇵🇰 PKR: *${r.PKR}*\n🇮🇳 INR: ${r.INR}\n🇦🇪 AED: ${r.AED}\n🇸🇦 SAR: ${r.SAR}\n🇬🇧 GBP: ${r.GBP}\n🇪🇺 EUR: ${r.EUR}\n\n_Updated: ${d.time_last_update_utc?.slice(5, 16)}_`);
       } catch {
-        const c = await getJSON('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
-        return reply(`💵 *1 USD*\n\n🇵🇰 PKR: *${c.usd.pkr}*\n🇦🇪 AED: ${c.usd.aed}\n🇸🇦 SAR: ${c.usd.sar}\n🇬🇧 GBP: ${c.usd.gbp}\n\n_${c.date}_`);
+        try {
+          const c = await getJSON('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
+          return reply(`💵 *1 USD*\n\n🇵🇰 PKR: *${c.usd.pkr}*\n🇦🇪 AED: ${c.usd.aed}\n🇸🇦 SAR: ${c.usd.sar}\n🇬🇧 GBP: ${c.usd.gbp}\n\n_${c.date}_`);
+        } catch { return reply('❌ Currency rates nahi mile. Thori der baad try karo.'); }
       }
     }
     case 'gold': {
@@ -154,10 +156,12 @@ const handler = async (ctx) => {
       } catch { return reply('❌ City nahi mili.'); }
     }
     case 'earthquake2': case 'quake': {
-      const d = await getJSON('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson');
-      const q = (d.features || []).slice(0, 4);
-      if (!q.length) return reply('✅ Is hafte koi bara zalzala nahi aaya.');
-      return reply(`🌍 *Recent earthquakes*\n\n` + q.map((x) => `• M${x.properties.mag} — ${x.properties.place}\n  _${new Date(x.properties.time).toUTCString().slice(5, 22)}_`).join('\n'));
+      try {
+        const d = await getJSON('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson');
+        const q = (d.features || []).slice(0, 4);
+        if (!q.length) return reply('✅ Is hafte koi bara zalzala nahi aaya.');
+        return reply(`🌍 *Recent earthquakes*\n\n` + q.map((x) => `• M${x.properties.mag} — ${x.properties.place}\n  _${new Date(x.properties.time).toUTCString().slice(5, 22)}_`).join('\n'));
+      } catch { return reply('❌ Earthquake data nahi mila. Thori der baad try karo.'); }
     }
 
     /* ---------------- PK content ---------------- */

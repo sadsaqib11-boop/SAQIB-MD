@@ -643,7 +643,7 @@ module.exports = {
     'pp', 'profilepic', 'getdp', 'gpp', 'groupdp',
     'setreact', 'myreact', 'reacts',
   ],
-  category: '👑 PREMIUM',
+  category: '💎 PREMIUM',
   handler,
   onMessage,
 };

@@ -262,6 +262,6 @@ module.exports = {
   // `chad` is owned by characters.js (`.chad` rating); use `.country chad` for
   // the country card so the two never fight over the same command.
   commands: ['country', 'countryinfo', 'countrylist', 'flag', 'capital', 'callingcode', 'region', 'biggestcity', 'languages', 'area', 'population', ...KEYS.filter((k) => k !== 'chad')],
-  category: '🌍 INFO',
+  category: '🌍 COUNTRIES',
   handler,
 };

@@ -87,9 +87,11 @@ const handler = async (ctx) => {
   switch (command) {
     /* ---------------- QURAN ---------------- */
     case 'ayat': {
-      const d = await getJSON('https://api.quran.com/api/v4/verses/random?translations=158&fields=text_uthmani');
-      const v = d.verse;
-      return reply(`📖 *Ayah of the day*\n\n${v.text_uthmani}\n\n_${clean(v.translations?.[0]?.text)}_\n\n— ${v.verse_key}`);
+      try {
+        const d = await getJSON('https://api.quran.com/api/v4/verses/random?translations=158&fields=text_uthmani');
+        const v = d.verse;
+        return reply(`📖 *Ayah of the day*\n\n${v.text_uthmani}\n\n_${clean(v.translations?.[0]?.text)}_\n\n— ${v.verse_key}`);
+      } catch { return reply('❌ Ayah abhi nahi mili. Thori der baad try karo.'); }
     }
     case 'quran': case 'tafsir': {
       if (!arg) return reply(`❌ Surah:ayah do. Example: ${P()}quran 2:255`);
@@ -129,14 +131,18 @@ const handler = async (ctx) => {
 
     /* ---------------- HADITH ---------------- */
     case 'hadith': {
-      const h = await randomHadith(arg ? arg.toLowerCase() : null);
-      return reply(`📜 *${h.book} — Hadith #${h.no}*\n\n${h.text}`);
+      try {
+        const h = await randomHadith(arg ? arg.toLowerCase() : null);
+        return reply(`📜 *${h.book} — Hadith #${h.no}*\n\n${h.text}`);
+      } catch { return reply('❌ Hadith abhi nahi mili. Thori der baad try karo.'); }
     }
     case 'sahaba': {
       const names = ['Abu Bakr Siddique (RA)', 'Umar Farooq (RA)', 'Usman Ghani (RA)', 'Ali (RA)', 'Bilal (RA)', 'Salman Farsi (RA)', 'Khalid bin Waleed (RA)', 'Ayesha (RA)', 'Fatima (RA)', 'Hamza (RA)'];
       const who = pick(names);
-      const h = await randomHadith('bukhari');
-      return reply(`⭐ *${who}*\n\n📜 ${h.book} #${h.no}\n${h.text}`);
+      try {
+        const h = await randomHadith('bukhari');
+        return reply(`⭐ *${who}*\n\n📜 ${h.book} #${h.no}\n${h.text}`);
+      } catch { return reply(`⭐ *${who}*\n\n_Is sahabi ke baare me hadith abhi nahi mili — thori der baad try karo._`); }
     }
 
     /* ---------------- PRAYER / TIME ---------------- */

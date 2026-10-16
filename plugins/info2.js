@@ -70,11 +70,13 @@ const handler = async (ctx) => {
     }
     case 'wordoftheday': case 'wotd': {
       const w = pick(WORDS);
-      const d = await getJSON(`https://freedictionaryapi.com/api/v1/entries/en/${w}`);
-      const e = d.entries?.[0];
-      const def = e?.senses?.[0]?.definition || '';
-      const ipa = e?.pronunciations?.find((x) => x.type === 'ipa')?.text || '';
-      return reply(`📚 *Word of the day*\n\n*${w}*${ipa ? ` ${ipa}` : ''}\n_${e?.partOfSpeech || ''}_\n${def.slice(0, 300)}`);
+      try {
+        const d = await getJSON(`https://freedictionaryapi.com/api/v1/entries/en/${w}`);
+        const e = d.entries?.[0];
+        const def = e?.senses?.[0]?.definition || '';
+        const ipa = e?.pronunciations?.find((x) => x.type === 'ipa')?.text || '';
+        return reply(`📚 *Word of the day*\n\n*${w}*${ipa ? ` ${ipa}` : ''}\n_${e?.partOfSpeech || ''}_\n${def.slice(0, 300)}`);
+      } catch { return reply(`📚 *Word of the day*\n\n*${w}*\n\n_Definition abhi nahi mili — thori der baad try karo._`); }
     }
     case 'proverb': {
       return reply(`🗣️ *Kahawat*\n\n${pick(PROVERBS)}`);
@@ -82,8 +84,10 @@ const handler = async (ctx) => {
 
     /* ---------------- wiki / knowledge ---------------- */
     case 'wikirandom': {
-      const d = await getJSON('https://en.wikipedia.org/api/rest_v1/page/random/summary');
-      return reply(`📚 *${d.title}*\n\n${(d.extract || '').slice(0, 700)}\n\n🔗 ${d.content_urls?.desktop?.page || ''}`);
+      try {
+        const d = await getJSON('https://en.wikipedia.org/api/rest_v1/page/random/summary');
+        return reply(`📚 *${d.title}*\n\n${(d.extract || '').slice(0, 700)}\n\n🔗 ${d.content_urls?.desktop?.page || ''}`);
+      } catch { return reply('❌ Wikipedia article nahi mila. Thori der baad try karo.'); }
     }
     case 'onthisday': {
       const key = `${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
@@ -102,9 +106,11 @@ const handler = async (ctx) => {
       break;
     }
     case 'iss': {
-      const d = await getJSON('https://api.wheretheiss.at/v1/satellites/25544');
-      const lat = Number(d.latitude).toFixed(2), lon = Number(d.longitude).toFixed(2);
-      return reply(`🛰️ *ISS — live position*\n\n📍 Lat: ${lat}\n📍 Lon: ${lon}\n⚡ Speed: ${Math.round(d.velocity)} km/h\n📏 Altitude: ${Math.round(d.altitude)} km\n\n🗺️ https://maps.google.com/?q=${lat},${lon}`);
+      try {
+        const d = await getJSON('https://api.wheretheiss.at/v1/satellites/25544');
+        const lat = Number(d.latitude).toFixed(2), lon = Number(d.longitude).toFixed(2);
+        return reply(`🛰️ *ISS — live position*\n\n📍 Lat: ${lat}\n📍 Lon: ${lon}\n⚡ Speed: ${Math.round(d.velocity)} km/h\n📏 Altitude: ${Math.round(d.altitude)} km\n\n🗺️ https://maps.google.com/?q=${lat},${lon}`);
+      } catch { return reply('❌ ISS position abhi nahi mili. Thori der baad try karo.'); }
     }
     case 'launch': {
       try {

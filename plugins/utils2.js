@@ -54,7 +54,9 @@ const handler = async (ctx) => {
 
     /* ---------------- network ---------------- */
     case 'myip': {
-      const d = await getJSON('https://api.ipify.org?format=json');
+      let d;
+      try { d = await getJSON('https://api.ipify.org?format=json'); }
+      catch { return reply('❌ IP abhi nahi mila. Thori der baad try karo.'); }
       let extra = '';
       try {
         const e = await getJSON(`http://ip-api.com/json/${d.ip}`);
@@ -252,7 +254,9 @@ const handler = async (ctx) => {
     case 'moonphase': {
       // met.no gives the lunar phase as a 0-360 angle (farmsense is dead).
       const today = new Date().toISOString().slice(0, 10);
-      const d = await getJSON(`https://api.met.no/weatherapi/sunrise/3.0/moon?lat=24.86&lon=67.01&date=${today}`);
+      let d;
+      try { d = await getJSON(`https://api.met.no/weatherapi/sunrise/3.0/moon?lat=24.86&lon=67.01&date=${today}`); }
+      catch { return reply('❌ Moon phase abhi nahi mili. Thori der baad try karo.'); }
       const ang = d.properties?.moonphase;
       const names = [
         [22.5, '🌑 New Moon (naya chaand)'],
@@ -372,6 +376,6 @@ module.exports = {
     // extras that belong in this family
     'unixperm',
   ],
-  category: '🧰 UTILITY',
+  category: '🔧 UTILITY',
   handler,
 };

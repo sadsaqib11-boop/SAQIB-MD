@@ -13,7 +13,9 @@ const adminLog = new Map();   // groupId -> [lines]
 const muted = new Set();      // groupId
 const bots = new Set();       // groupId -> antibot on
 
-const getS = (g) => { if (!settings.has(g)) settings.set(g, { antiword: [], antilink: false, rules: '', antisticker: false, antiaudio: false, antivideo: false, autoreply: {} }); return settings.get(g); };
+const getS = (g) => { if (!settings.has(g)) settings.set(g, { antiword: [], antilink: false, rules: '', antisticker: false, antiaudio: false, antivideo: false, autoreply: {}, autoapprove: false }); return settings.get(g); };
+/** True when the group has auto-approve of join requests switched on. */
+const isAutoApprove = (g) => { const s = settings.get(g); return !!(s && s.autoapprove); };
 const logIt = (g, line) => { const l = adminLog.get(g) || []; l.push(`[${new Date().toLocaleTimeString('en-PK', { timeZone: 'Asia/Karachi' })}] ${line}`); adminLog.set(g, l.slice(-50)); };
 
 const handler = async (ctx) => {
@@ -211,6 +213,23 @@ const handler = async (ctx) => {
       bots.add(g);
       return reply('🛡️ *Group protection ON*\n\n✅ Anti-link\n✅ Anti-sticker\n✅ Anti-bot\n\n_Audio/video ke liye alag se on karo._');
     }
+    case 'autoapprove': {
+      const s = getS(g);
+      const v = String(arg || '').trim().toLowerCase();
+      const ON = ['on', 'true', '1', 'yes', 'haan', 'han', 'enable'];
+      const OFF = ['off', 'false', '0', 'no', 'nahi', 'na', 'disable'];
+      if (ON.includes(v)) s.autoapprove = true;
+      else if (OFF.includes(v)) s.autoapprove = false;
+      else s.autoapprove = !s.autoapprove;
+      if (!s.autoapprove) return reply(`🔒 *Auto-approve OFF*\n\nNaye join requests manually accept karo: ${P()}acceptall`);
+      // Approve anything already waiting, then keep auto-accepting new ones.
+      let n = 0;
+      try {
+        const list = await ctx.sock.groupRequestParticipantsList(g);
+        if (list?.length) { await ctx.sock.groupRequestParticipantsUpdate(g, list.map((r) => r.jid || r), 'approve'); n = list.length; }
+      } catch { /* ignore */ }
+      return reply(`✅ *Auto-approve ON*\n\nNaye join requests khud accept ho jayenge.${n ? `\n\n📥 ${n} pending request abhi approve kar diye.` : ''}`);
+    }
     default:
       return reply('❓ Unknown group command');
   }
@@ -265,4 +284,5 @@ module.exports = {
   category: '👥 GROUP',
   handler,
   onMessage,
+  isAutoApprove,
 };

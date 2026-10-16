@@ -44,34 +44,37 @@ const ALIASES = {
   anime: 'anime', logo: 'logo', premium: 'premium', download: 'download',
 };
 
-/** Resolve a user query to a category display-name. */
+/** Resolve a user query to a category display-name (precise — no false hits). */
 function findCategory(query) {
   const cats = categories();
   const q = norm(ALIASES[norm(query)] || query);
   if (!q) return null;
-  let best = null;
-  for (const cat of cats.keys()) {
-    const n = norm(cat);
-    const w = words(cat);
-    if (n === q || w.includes(q) || n.includes(q) || q.includes(n) || w.some((x) => x.startsWith(q) || q.startsWith(x))) {
-      best = cat;
-      break;
-    }
-  }
-  return best;
+  const keys = [...cats.keys()];
+  // 1) exact normalised match  (".menu main" -> MAIN, never AI)
+  let hit = keys.find((c) => norm(c) === q);
+  if (hit) return hit;
+  // 2) the query is a whole word of the category  (".menu media" -> MEDIA & FX)
+  hit = keys.find((c) => words(c).includes(q));
+  if (hit) return hit;
+  // 3) prefix match — only when BOTH sides are >= 3 chars, so a 2-letter name
+  //    like "ai" can never swallow an unrelated query such as "main".
+  hit = keys.find((c) => { const n = norm(c); return Math.min(n.length, q.length) >= 3 && (n.startsWith(q) || q.startsWith(n)); });
+  if (hit) return hit;
+  // 4) substring match, same length guard
+  hit = keys.find((c) => { const n = norm(c); return n.length >= 3 && q.length >= 3 && (n.includes(q) || q.includes(n)); });
+  return hit || null;
 }
 
-/** A clean, modern header — fewer boxes, easier to read on a phone. */
+/** A premium, modern header — a compact box that reads beautifully on a phone. */
 function header() {
   let name = config.BOT_NAME;
   try { name = fonts.applyDefault(config.BOT_NAME); } catch { /* keep plain */ }
   const when = new Date().toLocaleString('en-PK', { timeZone: config.TIMEZONE, hour12: true });
   return (
-    `┏━━━━━━━━━━━━━━━━━━━┓\n` +
-    `┃  ✨ *${name}*  ✨\n` +
-    `┗━━━━━━━━━━━━━━━━━━━┛\n` +
-    `  ⚡ v${config.BOT_VERSION}   👑 ${config.OWNER_NAME}\n` +
-    `  🕒 ${when}\n` +
+    `╭━━━━━━━━━━━━━━━━━━━━━╮\n` +
+    `┃   ✦  *${name}*  ✦\n` +
+    `╰━━━━━━━━━━━━━━━━━━━━━╯\n` +
+    `  ⚡ *v${config.BOT_VERSION}*  •  👑 ${config.OWNER_NAME}  •  🕒 ${when}\n` +
     `  💠 Prefix: *${config.PREFIX}*`
   );
 }
@@ -81,7 +84,7 @@ let _picBuf = null;
 async function sendMenu(ctx, text) {
   const pic = path.resolve(config.BOT_PIC);
   try {
-    if (text.length <= 1000 && fs.existsSync(pic)) {
+    if (text.length <= 1024 && fs.existsSync(pic)) {
       if (!_picBuf) _picBuf = fs.readFileSync(pic); // SPEED: read the pic once
       await ctx.send(ctx.from, { image: _picBuf, caption: text }, { quoted: ctx.m });
       return;
@@ -103,21 +106,17 @@ function categoriesText() {
   return cached('cats', () => {
     const cats = categories();
     const total = [...cats.values()].reduce((n, c) => n + c.length, 0);
+    const bar = '━'.repeat(21);
     let txt = `${header()}\n\n`;
-    txt += `╭─「 📂 *CATEGORIES* 」\n`;
+    txt += `📂 *CATEGORIES*   ›   ${total} commands\n${bar}\n`;
     let i = 1;
     for (const [cat, cmds] of cats.entries()) {
-      txt += `│ ${String(i).padStart(2, '0')}. *${cat}*\n`;
-      txt += `│      ╰─ ${cmds.length} commands\n`;
+      txt += ` ${String(i).padStart(2, '0')} ▸ ${cat}  ›  ${cmds.length}\n`;
       i++;
     }
-    txt += `╰───────────────────\n\n`;
-    txt += `📊 *Total:* ${total} commands\n\n`;
-    txt += `╭─「 💡 *USE KAISE KAREIN* 」\n`;
-    txt += `│ ▸ ${config.PREFIX}menu <category>\n│      ╰─ category ki commands\n`;
-    txt += `│ ▸ ${config.PREFIX}menuall\n│      ╰─ saari commands\n`;
-    txt += `╰───────────────────\n\n`;
-    txt += `_✨ ${config.BOT_NAME} — by ${config.OWNER_NAME}_`;
+    txt += `${bar}\n`;
+    txt += `💡 ${config.PREFIX}menu <category>   •   ${config.PREFIX}menuall\n`;
+    txt += `✨ _${config.BOT_NAME} — by ${config.OWNER_NAME}_`;
     return txt;
   });
 }
@@ -125,12 +124,12 @@ function categoriesText() {
 function categoryText(cat) {
   return cached('cat|' + cat, () => {
     const cmds = categories().get(cat) || [];
-    let txt = `${header()}\n\n`;
-    txt += `╭─「 *${cat}* 」\n`;
-    txt += `│ 📦 ${cmds.length} commands\n`;
-    txt += `╰───────────────────\n\n`;
-    // two commands per line when they are short, so the list is half as long
     const p = config.PREFIX;
+    let txt = `${header()}\n\n`;
+    txt += `╭─❖ ${cat}\n`;
+    txt += `│ 📦 *${cmds.length} commands*\n`;
+    txt += `╰━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    // two commands per line when they are short, so the list is half as long
     const rows = [];
     for (let i = 0; i < cmds.length; i += 2) {
       const a = `▸ ${p}${cmds[i]}`;
@@ -138,9 +137,10 @@ function categoryText(cat) {
       rows.push(b ? `${a.padEnd(26)}${b}` : a);
     }
     txt += rows.join('\n');
-    txt += `\n\n╭─「 💡 」\n`;
-    txt += `│ ${p}menu — categories\n│ ${p}menuall — saari commands\n`;
-    txt += `╰───────────────────`;
+    txt += `\n\n╭─❖ 💡 *MORE*\n`;
+    txt += `│ ▸ ${p}menu — categories\n│ ▸ ${p}menuall — saari commands\n`;
+    txt += `╰━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    txt += `✨ _${config.BOT_NAME} — by ${config.OWNER_NAME}_`;
     return txt;
   });
 }
@@ -150,11 +150,11 @@ function allText() {
     const cats = categories();
     let txt = `${header()}\n\n`;
     for (const [cat, cmds] of cats.entries()) {
-      txt += `┌─「 *${cat}* 」\n`;
-      txt += cmds.map((c) => `│ ▹ ${config.PREFIX}${c}`).join('\n');
-      txt += `\n└────────────────\n\n`;
+      txt += `╭─❖ *${cat}*  ›  ${cmds.length}\n`;
+      txt += cmds.map((c) => `│ ▸ ${config.PREFIX}${c}`).join('\n');
+      txt += `\n╰━━━━━━━━━━━━━━━━━━━━━\n\n`;
     }
-    txt += `_*${config.BOT_NAME} — Powered by ${config.OWNER_NAME}*_`;
+    txt += `✨ _${config.BOT_NAME} — by ${config.OWNER_NAME}_`;
     return txt;
   });
 }
@@ -169,7 +169,7 @@ const handler = async (ctx) => {
       if (!q) return sendMenu(ctx, categoriesText());
       const cat = findCategory(q);
       if (!cat) {
-        return reply(`❌ Category *"${q}"* nahi mili.\n\n${config.PREFIX}menu likho taake saari categories dekho.`);
+        return reply(`❌ Category *"${q}"* nahi mili.\n\n💡 ${config.PREFIX}menu likho — saari categories dekhne ke liye.`);
       }
       return sendMenu(ctx, categoryText(cat));
     }

@@ -179,6 +179,6 @@ for (let i = 0; i <= 99; i++) commands.push(`unban${i}`);
 
 module.exports = {
   commands,
-  category: '\ud83e\uddf0 UTILITY',
+  category: '🔧 UTILITY',
   handler,
 };
