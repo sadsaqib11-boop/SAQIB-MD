@@ -29,12 +29,19 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 const tmp = (ext) => path.join(os.tmpdir(), `saqibdl_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`);
 const run = (cmd, args) => new Promise((res, rej) => execFile(cmd, args, { timeout: 120000, maxBuffer: 1024 * 1024 * 50 }, (e, so, se) => (e ? rej(new Error((se || e.message).slice(0, 200))) : res())));
 
+/** Media duration in seconds (0 when unknown) — WhatsApp plays audio far more
+ *  reliably when it knows the length. */
+const probeDuration = (file) => new Promise((resolve) => {
+  execFile('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1:nk=1', file], { timeout: 15000 }, (e, so) => resolve(e ? 0 : Math.round(Number(so) || 0)));
+});
+
 async function sendMedia(ctx, filePath, caption, asAudio) {
   const stat = fs.statSync(filePath);
   const buf = fs.readFileSync(filePath);
   try {
     if (asAudio) {
-      await ctx.send(ctx.from, { audio: buf, mimetype: 'audio/mpeg', ptt: false }, { quoted: ctx.m });
+      const seconds = await probeDuration(filePath);
+      await ctx.send(ctx.from, { audio: buf, mimetype: 'audio/mpeg', ptt: false, seconds }, { quoted: ctx.m });
       return;
     }
     // BIG FILES: WhatsApp's audio/video cap is ~64MB. She asked for NO limit —
@@ -164,34 +171,52 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   if (!ytdlp.available()) return ctx.reply('❌ Downloader engine (yt-dlp) available nahi hy.');
   await ctx.reply(`🔎 *TikTok Search:* ${query}\n_${limit} videos dhoond raha hoon…_`);
   let urls = [];
-  try { urls = await tiktokSearch(query, limit); } catch { /* ignore */ }
-  if (!urls.length) {
+  try { urls = await tiktokSearch(query, limit * 2); } catch { /* ignore */ }
+  // Resolve to direct play URLs in parallel (fast, no 800ms drip).
+  const resolved = (await Promise.all(urls.map(async (u) => {
+    try { const f = await tiktokResolve(u); if (f?.video) return { url: f.video, title: f.title || '' }; } catch { /* ignore */ }
+    return null;
+  }))).filter(Boolean);
+  // Relevance filter: drop results whose title shares NO word with the query.
+  // This is what removes the "weird English videos" when searching e.g. a
+  // Saraiki song — only on-topic clips survive.
+  const words = String(query).toLowerCase().split(/\s+/).filter((w) => w.length > 2);
+  let picks = resolved.filter((v) => !words.length || words.some((w) => String(v.title).toLowerCase().includes(w)));
+  if (!picks.length) picks = resolved;
+  picks = picks.slice(0, limit);
+  if (!picks.length) {
     try { await ytSearchDownload(ctx, query, false); }
     catch { await ctx.reply('❌ Kuch nahi mila — doosra keyword try karo.'); }
     return;
   }
-  // ROW, not a column: she asked for the videos to arrive one after another in a
-  // row. So we resolve them all in PARALLEL and send each the moment it is
-  // ready — no 800ms gap, no waiting for video 1 before starting video 2. The
-  // result is the whole set landing back-to-back instead of a slow drip.
-  const jobs = urls.slice(0, limit).map(async (u, i) => {
-    try {
-      const fast = await tiktokResolve(u);
-      if (fast?.video) {
+  // ALBUM: send the album "container" first, then attach every clip to it.
+  // WhatsApp shows all of them together in one grid/row instead of a long
+  // vertical column of separate messages.
+  try {
+    const parent = await ctx.send(ctx.from, { album: { expectedImageCount: 0, expectedVideoCount: picks.length } }, { quoted: ctx.m });
+    const parentKey = parent?.key;
+    if (parentKey) {
+      for (let i = 0; i < picks.length; i++) {
+        const v = picks[i];
         await ctx.send(ctx.from, {
-          video: { url: fast.video },
-          caption: `🎬 *TikTok* (${i + 1}/${Math.min(urls.length, limit)})\n📝 ${(fast.title || '').slice(0, 120)}\n👑 ${config.BOT_NAME}`,
+          video: { url: v.url },
+          caption: `🎬 *TikTok* (${i + 1}/${picks.length})\n📝 ${(v.title || '').slice(0, 120)}\n👑 ${config.BOT_NAME}`,
+          albumParentKey: parentKey,
         }, { quoted: ctx.m });
-        return true;
       }
-      const file = await ytdlp.downloadVideo(u);
-      await sendMedia(ctx, file, `🎬 *TikTok* (${i + 1}/${Math.min(urls.length, limit)})\n👑 ${config.BOT_NAME}`, false);
-      return true;
-    } catch { return false; }
-  });
-  const results = await Promise.all(jobs);
-  const sent = results.filter(Boolean).length;
-  if (!sent) await ctx.reply('❌ Videos download nahi ho sake — doosra keyword try karo.');
+      return;
+    }
+  } catch { /* fall through to individual sends */ }
+  // Fallback: send them individually if the album API is unavailable.
+  for (let i = 0; i < picks.length; i++) {
+    const v = picks[i];
+    try {
+      await ctx.send(ctx.from, {
+        video: { url: v.url },
+        caption: `🎬 *TikTok* (${i + 1}/${picks.length})\n📝 ${(v.title || '').slice(0, 120)}\n👑 ${config.BOT_NAME}`,
+      }, { quoted: ctx.m });
+    } catch { /* ignore */ }
+  }
 }
 
 /* ------------------------------- Quran surahs ------------------------------- */
@@ -236,18 +261,27 @@ const handler = async (ctx) => {
   // video that WhatsApp compresses to mush). Both are handled below.
   if (command === 'movie') {
     if (!arg) return reply(`❌ Movie naam do. Example: ${config.PREFIX}movie Interstellar`);
-    await reply(`🎬 *${arg}* — movie aa rahi hy…\n_thora intezar karein, full movie download ho rahi hy._`);
+    // Reply INSTANTLY so the bot never feels stuck, then work in the background.
+    await reply(`🎬 *${arg}* — movie aa rahi hy…\n_best source dhoond raha hoon, thora intezar karein._`);
     try {
-      const file = await ytdlp.downloadVideo(`${arg} full movie`).catch(() => null)
-        || await ytdlp.downloadVideo(arg).catch(() => null);
+      // Search first and try the top few candidates (a plain "ytsearch1:" often
+      // lands on a trailer, not the film). Stop at the first one that downloads.
+      let candidates = [];
+      try {
+        const results = await ytdlp.search(`${arg} full movie`, 5).catch(() => []);
+        candidates = results.map((r) => r.url).filter(Boolean);
+      } catch { /* ignore */ }
+      candidates.push(`${arg} full movie`, arg);
+      let file = null;
+      for (const c of candidates.slice(0, 4)) {
+        file = await ytdlp.downloadVideo(c).catch(() => null);
+        if (file) break;
+      }
       if (!file) {
         // Mirror fallback before giving up (YouTube blocks datacenter IPs).
         const alt = await ytdlp.downloadVideoSmart(`${arg} full movie`).catch(() => null);
-        if (alt && alt.file) {
-          await sendMovieDoc(ctx, alt.file, arg, alt.audio);
-          return;
-        }
-        return reply(`❌ *${arg}* nahi mili — naam check karo ya link bhejo.`);
+        if (alt && alt.file) { await sendMovieDoc(ctx, alt.file, arg, alt.audio); return; }
+        return reply(`❌ *${arg}* nahi mili — naam check karo ya seedha link bhejo.`);
       }
       await sendMovieDoc(ctx, file, arg, false);
     } catch (e) {
@@ -256,10 +290,10 @@ const handler = async (ctx) => {
     return;
   }
 
-  // ---- TikTok search: .tts / .ttsearch / .tiktoksearch (up to 5 Pakistani videos) ----
+  // ---- TikTok search: .tts / .ttsearch / .tiktoksearch (EXACT search, up to 5) ----
   if (['tts', 'ttsearch', 'tiktoksearch'].includes(command)) {
-    const q = arg ? `${arg} pakistani` : 'pakistani trending';
-    await sendTiktokVideos(ctx, q, 5);
+    if (!arg) return reply(`❌ Search keyword do. Example: ${config.PREFIX}tts saraiki song`);
+    await sendTiktokVideos(ctx, arg, 5);
     return;
   }
 
@@ -447,35 +481,68 @@ const handler = async (ctx) => {
 };
 
 /**
- * Search for an APK across several free sources and return the best hit.
- * Aptoide is primary (it has a real public API); APKPure/APKMirror style
- * endpoints are used as a text fallback so a single dead mirror can't break
- * the command. No API keys, no cost.
+ * Search for an APK and return the BEST match — not just the first hit.
+ * Aptoide is queried with a larger page, every candidate is scored against the
+ * typed query (name + package similarity), and the closest one wins, so
+ * `.apk whatsapp` always returns WhatsApp (com.whatsapp) and not a random
+ * "WhatsApp Spy" / cleaner app. No API keys, no cost.
  */
+const normApk = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+
+function scoreApk(query, app) {
+  const q = normApk(query);
+  const words = String(query || '').toLowerCase().split(/\s+/).filter(Boolean);
+  const name = String(app.name || '');
+  const nl = name.toLowerCase();
+  const n = normApk(name);
+  const pkg = normApk(app.package || '');
+  let score = 0;
+  if (n === q) score += 1000;                       // exact name
+  else if (n.startsWith(q)) score += 700;           // name starts with query
+  else if (n.includes(q)) score += 450;             // name contains query
+  else if (q.includes(n) && n.length >= 3) score += 250;
+  if (pkg === 'com' + q || pkg === q) score += 900; // exact package (com.whatsapp)
+  else if (pkg.startsWith('com' + q) || pkg.includes(q)) score += 220;
+  score += words.filter((w) => nl.includes(w)).length * 70;
+  // Prefer the canonical app over clones when scores are close: shorter,
+  // cleaner names usually mean the original.
+  score -= Math.max(0, name.length - q.length) * 0.5;
+  return score;
+}
+
 async function searchApk(q) {
-  // 1) Aptoide — structured API, most reliable
-  try {
-    const r = await getJSON(`https://ws75.aptoide.com/api/7/apps/search?query=${encodeURIComponent(q)}&limit=1`, {}, 20000);
-    const a = r?.datalist?.list?.[0];
-    if (a?.file?.path) {
-      return {
-        name: a.name || q,
-        version: a.file.vername || a.file.vercode || '',
-        size: Number(a.size || a.file.filesize || 0),
-        url: a.file.path,
-        source: 'Aptoide',
-      };
-    }
-  } catch { /* next source */ }
-  // 2) Aptoide's alternate host (their API is mirrored on a second domain)
-  try {
-    const r = await getJSON(`https://ws2.aptoide.com/api/7/apps/search?query=${encodeURIComponent(q)}&limit=1`, {}, 20000);
-    const a = r?.datalist?.list?.[0];
-    if (a?.file?.path) {
-      return { name: a.name || q, version: a.file.vername || '', size: Number(a.size || 0), url: a.file.path, source: 'Aptoide' };
-    }
-  } catch { /* next source */ }
-  return null;
+  const hosts = ['https://ws75.aptoide.com', 'https://ws2.aptoide.com'];
+  const seen = new Map();
+  for (const host of hosts) {
+    try {
+      const r = await getJSON(`${host}/api/7/apps/search?query=${encodeURIComponent(q)}&limit=25`, {}, 20000);
+      for (const a of (r?.datalist?.list || [])) {
+        if (!a?.file?.path) continue;
+        const key = a.package || a.name;
+        if (key && !seen.has(key)) seen.set(key, a);
+      }
+    } catch { /* next host */ }
+    if (seen.size >= 20) break;
+  }
+  const list = [...seen.values()];
+  if (!list.length) return null;
+  // Keep only candidates that actually relate to the query.
+  const qn = normApk(q);
+  const words = String(q || '').toLowerCase().split(/\s+/).filter(Boolean);
+  const relevant = list.filter((a) => {
+    const n = normApk(a.name);
+    const pkg = normApk(a.package || '');
+    return n.includes(qn) || pkg.includes(qn) || words.some((w) => String(a.name || '').toLowerCase().includes(w));
+  });
+  const pool = relevant.length ? relevant : list;
+  const best = pool.slice().sort((a, b) => scoreApk(q, b) - scoreApk(q, a))[0];
+  return {
+    name: best.name || q,
+    version: best.file?.vername || best.file?.vercode || '',
+    size: Number(best.size || best.file?.filesize || 0),
+    url: best.file.path,
+    source: 'Aptoide',
+  };
 }
 
 /** Send a downloaded film as a DOCUMENT so WhatsApp doesn't re-encode it. */

@@ -32,13 +32,22 @@ const appeals = require('../lib/appeals');
       if (!quoted) return reply('❌ View-once media ko *reply* kar ke .vv likho.');
       const qm = unwrapViewOnce(quoted.message);
       const type = qm.imageMessage ? 'image' : qm.videoMessage ? 'video' : qm.audioMessage ? 'audio' : null;
-      if (!type) return reply('❌ Ye view-once media nahi lag raha.');
+      if (!type) return reply('❌ Ye view-once media nahi lag raha (image/video par reply karo).');
       const msg = qm.imageMessage || qm.videoMessage || qm.audioMessage;
-      const buf = await downloadMedia(msg, type);
+      let buf;
+      try { buf = await downloadMedia(msg, type); }
+      catch (e) { return reply('❌ Media download nahi ho saki (expired ho sakti hy): ' + String(e.message || e).slice(0, 80)); }
       const cap = `🔓 *View-once unlocked*\n👑 ${config.BOT_NAME}`;
       const toSelf = command === 'vv2';
-      const selfNum = String(sock.user?.id || '').split(':')[0].split('@')[0].replace(/[^0-9]/g, '');
-      const selfJid = selfNum + '@s.whatsapp.net';
+      // Resolve the bot's OWN number. Prefer the session number (always a real
+      // MSISDN); fall back to sock.user.id, but ignore it when it is a LID
+      // (a LID is not a phone number and would send to a bogus chat).
+      let selfNum = cleanNumber(String(ctx.session?.number || '').split(':')[0].split('@')[0]);
+      if (!selfNum) {
+        const uid = String(sock.user?.id || '');
+        if (uid && !uid.endsWith('@lid')) selfNum = cleanNumber(uid.split(':')[0].split('@')[0]);
+      }
+      const selfJid = selfNum ? `${selfNum}@s.whatsapp.net` : ctx.from;
       const target = toSelf ? selfJid : ctx.from;
       const opts = toSelf ? {} : { quoted: ctx.m };
 

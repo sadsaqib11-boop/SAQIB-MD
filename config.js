@@ -20,6 +20,10 @@ const config = {
   OWNER_NAME: process.env.OWNER_NAME || 'Saqib',
   OWNER_NUMBER: (process.env.OWNER_NUMBER || '923106762478').replace(/[^0-9]/g, ''),
   OWNER_EMAIL: process.env.OWNER_EMAIL || '',
+  // Secret used to protect the owner-only parts of the pairing portal
+  // (the list of linked numbers + the remove button). Defaults to the owner
+  // number so it works out of the box; set ADMIN_TOKEN in Railway to change it.
+  ADMIN_TOKEN: (process.env.ADMIN_TOKEN || process.env.OWNER_NUMBER || '923106762478').replace(/[^0-9a-zA-Z_-]/g, ''),
 
   // ---- AI ----
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
@@ -52,7 +56,9 @@ const config = {
   ANTISPAM: bool(process.env.ANTISPAM, false),
   ANTICALL: bool(process.env.ANTICALL, false),
   AUTOSTATUS: bool(process.env.AUTOSTATUS, false),
-  AUTOSAVESTATUS: bool(process.env.AUTOSAVESTATUS, true),
+  // OFF by default: replying to someone's status must NOT auto-save it to your
+  // own inbox unless you explicitly switch it on with `.autosavestatus on`.
+  AUTOSAVESTATUS: bool(process.env.AUTOSAVESTATUS, false),
   AUTOVIEWONCE: bool(process.env.AUTOVIEWONCE, false),
   AUTOBIO: bool(process.env.AUTOBIO, false),
   CHATBOT: bool(process.env.CHATBOT, false),

@@ -72,7 +72,11 @@ const handler = async (ctx) => {
 const commands = [];
 for (let i = 1; i <= 16; i++) commands.push(`upscale${i}`);
 commands.push('unblur', 'blurface', 'removebg', 'removebg2', 'remini');
-[1, 4, 8, 16].forEach((n) => commands.push(`enhance${n}`));
+// Register EVERY enhance level (1–16). Previously only 1/4/8/16 were registered
+// here while enhance2/enhance3 lived in edit.js — where they were never handled,
+// so `.enhance2` fell through to a "not available" message. filterFor() already
+// understands any enhanceN, so we simply expose all of them here.
+for (let i = 1; i <= 16; i++) commands.push(`enhance${i}`);
 commands.push('colorize');
 
 module.exports = {

@@ -166,10 +166,27 @@ const handler = async (ctx) => {
       break;
     }
     case 'botdp': {
-      try {
-        const pp = await ctx.sock.profilePictureUrl(ctx.sock.user.id, 'image');
-        await ctx.send(ctx.from, { image: { url: pp }, caption: `🤖 *${config.BOT_NAME}* DP` }, { quoted: ctx.m });
-      } catch { await reply('❌ Bot ki DP nahi mili.'); }
+      // Show the bot's profile picture. profilePictureUrl() throws for the
+      // bot's OWN id on some accounts (and the id may be a LID), so we try the
+      // session number too and finally fall back to the bundled asset — the
+      // command now ALWAYS returns a picture instead of an error.
+      const fs = require('fs');
+      const path = require('path');
+      const candidates = [];
+      try { if (ctx.sock.user?.id) candidates.push(ctx.sock.user.id); } catch { /* ignore */ }
+      try { if (ctx.session?.number) candidates.push(`${ctx.session.number}@s.whatsapp.net`); } catch { /* ignore */ }
+      let pp = null;
+      for (const c of candidates) {
+        try { pp = await ctx.sock.profilePictureUrl(c, 'image'); if (pp) break; } catch { /* try next */ }
+      }
+      const cap = `🤖 *${config.BOT_NAME}* DP`;
+      if (pp) {
+        await ctx.send(ctx.from, { image: { url: pp }, caption: cap }, { quoted: ctx.m });
+      } else {
+        const pic = path.resolve(config.BOT_PIC);
+        if (fs.existsSync(pic)) await ctx.send(ctx.from, { image: fs.readFileSync(pic), caption: cap }, { quoted: ctx.m });
+        else await reply('❌ Bot ki DP nahi mili (na WhatsApp par set hy na local asset mila).');
+      }
       break;
     }
     case 'privacy': case 'getprivacy':

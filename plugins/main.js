@@ -61,18 +61,18 @@ function findCategory(query) {
   return best;
 }
 
-/** A clean, modern header — fewer boxes, easier to read on a phone. */
+/** A clean, modern header — a tidy box that reads well on a phone. */
 function header() {
   let name = config.BOT_NAME;
   try { name = fonts.applyDefault(config.BOT_NAME); } catch { /* keep plain */ }
   const when = new Date().toLocaleString('en-PK', { timeZone: config.TIMEZONE, hour12: true });
   return (
-    `┏━━━━━━━━━━━━━━━━━━━┓\n` +
-    `┃  ✨ *${name}*  ✨\n` +
-    `┗━━━━━━━━━━━━━━━━━━━┛\n` +
-    `  ⚡ v${config.BOT_VERSION}   👑 ${config.OWNER_NAME}\n` +
-    `  🕒 ${when}\n` +
-    `  💠 Prefix: *${config.PREFIX}*`
+    `╭━━━〔 ✨ *${name}* ✨ 〕━━━╮\n` +
+    `┃ ⚡ *Version*  : v${config.BOT_VERSION}\n` +
+    `┃ 👑 *Owner*    : ${config.OWNER_NAME}\n` +
+    `┃ 🕒 *Time*     : ${when}\n` +
+    `┃ 💠 *Prefix*   : ${config.PREFIX}\n` +
+    `╰━━━━━━━━━━━━━━━━━━━━━━━━╯`
   );
 }
 
@@ -104,19 +104,21 @@ function categoriesText() {
     const cats = categories();
     const total = [...cats.values()].reduce((n, c) => n + c.length, 0);
     let txt = `${header()}\n\n`;
-    txt += `╭─「 📂 *CATEGORIES* 」\n`;
+    txt += `╭━━〔 📂 *CATEGORIES* 〕━━╮\n`;
     let i = 1;
     for (const [cat, cmds] of cats.entries()) {
-      txt += `│ ${String(i).padStart(2, '0')}. *${cat}*\n`;
-      txt += `│      ╰─ ${cmds.length} commands\n`;
+      txt += `┃ ${String(i).padStart(2, '0')} ▸ *${cat}*\n`;
+      txt += `┃     ╰─ ${cmds.length} commands\n`;
       i++;
     }
-    txt += `╰───────────────────\n\n`;
+    txt += `╰━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n`;
     txt += `📊 *Total:* ${total} commands\n\n`;
-    txt += `╭─「 💡 *USE KAISE KAREIN* 」\n`;
-    txt += `│ ▸ ${config.PREFIX}menu <category>\n│      ╰─ category ki commands\n`;
-    txt += `│ ▸ ${config.PREFIX}menuall\n│      ╰─ saari commands\n`;
-    txt += `╰───────────────────\n\n`;
+    txt += `╭━━〔 💡 *HOW TO USE* 〕━━╮\n`;
+    txt += `┃ ▸ ${config.PREFIX}menu <category>\n`;
+    txt += `┃     ╰─ category ki commands\n`;
+    txt += `┃ ▸ ${config.PREFIX}menuall\n`;
+    txt += `┃     ╰─ saari commands\n`;
+    txt += `╰━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n`;
     txt += `_✨ ${config.BOT_NAME} — by ${config.OWNER_NAME}_`;
     return txt;
   });
@@ -126,9 +128,9 @@ function categoryText(cat) {
   return cached('cat|' + cat, () => {
     const cmds = categories().get(cat) || [];
     let txt = `${header()}\n\n`;
-    txt += `╭─「 *${cat}* 」\n`;
-    txt += `│ 📦 ${cmds.length} commands\n`;
-    txt += `╰───────────────────\n\n`;
+    txt += `╭━━〔 ${cat} 〕━━╮\n`;
+    txt += `┃ 📦 ${cmds.length} commands\n`;
+    txt += `╰━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n`;
     // two commands per line when they are short, so the list is half as long
     const p = config.PREFIX;
     const rows = [];
@@ -138,9 +140,10 @@ function categoryText(cat) {
       rows.push(b ? `${a.padEnd(26)}${b}` : a);
     }
     txt += rows.join('\n');
-    txt += `\n\n╭─「 💡 」\n`;
-    txt += `│ ${p}menu — categories\n│ ${p}menuall — saari commands\n`;
-    txt += `╰───────────────────`;
+    txt += `\n\n╭━━〔 💡 〕━━╮\n`;
+    txt += `┃ ${p}menu — categories\n`;
+    txt += `┃ ${p}menuall — all commands\n`;
+    txt += `╰━━━━━━━━━━━━━━━━━━━━━━━━╯`;
     return txt;
   });
 }
@@ -150,11 +153,11 @@ function allText() {
     const cats = categories();
     let txt = `${header()}\n\n`;
     for (const [cat, cmds] of cats.entries()) {
-      txt += `┌─「 *${cat}* 」\n`;
-      txt += cmds.map((c) => `│ ▹ ${config.PREFIX}${c}`).join('\n');
-      txt += `\n└────────────────\n\n`;
+      txt += `╭━━〔 ${cat} 〕━━╮\n`;
+      txt += cmds.map((c) => `┃ ▸ ${config.PREFIX}${c}`).join('\n');
+      txt += `\n╰━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n`;
     }
-    txt += `_*${config.BOT_NAME} — Powered by ${config.OWNER_NAME}*_`;
+    txt += `_✨ *${config.BOT_NAME} — Powered by ${config.OWNER_NAME}*_`;
     return txt;
   });
 }

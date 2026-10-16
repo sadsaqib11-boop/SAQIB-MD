@@ -96,11 +96,26 @@ app.get('/api/status', (req, res) => {
   res.json({ ok: true, ...bot.getStatus() });
 });
 
+// ---- Owner-only guard ------------------------------------------------------
+// Connected numbers are private: only the owner (who knows ADMIN_TOKEN) may
+// list them or remove a session. Everyone else only sees the count.
+const ADMIN_TOKEN = String(config.ADMIN_TOKEN || '');
+function isAdmin(req) {
+  const t = String(req.query?.token || req.headers['x-admin-token'] || req.body?.token || '').trim();
+  return !!t && !!ADMIN_TOKEN && t === ADMIN_TOKEN;
+}
+
 app.get('/api/sessions', (req, res) => {
-  res.json({ ok: true, sessions: bot.listSessions(), max: config.MAX_SESSIONS });
+  const all = bot.listSessions();
+  if (!isAdmin(req)) {
+    // Locked view: expose only the count, never the numbers/owners.
+    return res.json({ ok: true, locked: true, count: all.length, sessions: [], max: config.MAX_SESSIONS });
+  }
+  res.json({ ok: true, locked: false, count: all.length, sessions: all, max: config.MAX_SESSIONS });
 });
 
 app.post('/api/session/remove', async (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ ok: false, error: 'Unauthorized — owner token required.' });
   try {
     const ok = await bot.removeSession(req.body?.number);
     res.json({ ok, removed: ok });
