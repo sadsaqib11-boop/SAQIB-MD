@@ -122,39 +122,13 @@
   .rm:hover{background:rgba(239,68,68,.25)}
   .empty{color:var(--muted);font-size:clamp(12.5px,3.3vw,13.5px);padding:8px 0;line-height:1.6}
 
-  /* ---- lock screen ---- */
-  .lock{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
-    padding:20px;background:rgba(4,5,10,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-  .lock.hidden{display:none}
-  .lockcard{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:24px;
-    padding:clamp(22px,6vw,34px);box-shadow:0 30px 80px rgba(0,0,0,.6);text-align:center;animation:pop .3s ease}
-  .locklogo{width:64px;height:64px;margin:0 auto 16px;border-radius:20px;display:grid;place-items:center;font-size:30px;
-    background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 12px 34px rgba(124,92,255,.5)}
-  .lockcard h2{font-size:clamp(19px,5vw,22px);margin-bottom:8px}
-  .lockcard p{color:var(--muted);font-size:clamp(12.5px,3.4vw,13.5px);line-height:1.6;margin-bottom:20px}
-  .lockcard .field{max-width:340px;margin:0 auto}
-  .lockcard .msg{text-align:left}
-  .shake{animation:shake .4s}
-  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  /* ---- lock screen (removed — portal is public) ---- */
 </style>
 <script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
 </head>
-<body class="locked">
+<body>
 
-<!-- Password lock screen -->
-<div id="lock" class="lock">
-  <div class="lockcard" id="lockCard">
-    <div class="locklogo">🔒</div>
-    <h2>SAQIB-MD</h2>
-    <p>Ye portal password se protected hy.<br/>Aage barhne ke liye password daalo.</p>
-    <div class="field">
-      <input id="lockPass" type="password" placeholder="Portal password" autocomplete="current-password" />
-      <button id="lockBtn">Unlock</button>
-    </div>
-    <div id="lockMsg" class="msg"></div>
-    <div class="hint" style="margin-top:14px">Password bhool gaye? Railway me <b>PORTAL_PASSWORD</b> set karo.</div>
-  </div>
-</div>
+<!-- portal password lock screen removed (portal is public) -->
 
 <div class="wrap">
   <header>
@@ -167,7 +141,6 @@
     </div>
     <div class="headright">
       <div class="pill"><span id="statusDot" class="dot"></span><span id="statusText">Checking…</span></div>
-      <button id="relockBtn" class="lockbtn" title="Lock portal">🔒 Lock</button>
     </div>
   </header>
 
@@ -245,55 +218,12 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const API = '';
-const LOCK_KEY = 'saqib_portal_pass';
 const TOKEN_KEY = 'saqib_admin_token';
 
-/* ---------------- password lock screen ---------------- */
-function lockErr(text) {
-  const m = $('lockMsg'); m.textContent = text; m.className = 'msg err';
-  const c = $('lockCard'); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
-}
-async function authPortal(pass) {
-  try {
-    const r = await fetch(API + '/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: pass }) });
-    const d = await r.json();
-    return !!d.ok;
-  } catch { return false; }
-}
-function showLock() {
-  document.body.classList.add('locked');
-  $('lock').classList.remove('hidden');
-  $('lockPass').value = '';
-  setTimeout(() => $('lockPass').focus(), 60);
-}
-function unlockPortal(pass) {
-  if (pass) { localStorage.setItem(LOCK_KEY, pass); localStorage.setItem(TOKEN_KEY, pass); $('token').value = pass; }
-  document.body.classList.remove('locked');
-  $('lock').classList.add('hidden');
+/* ---------------- boot (portal is public — no lock screen) ---------------- */
+function bootPortal() {
   refreshStatus(); refreshCommands(); refreshSessions();
 }
-async function initPortal() {
-  try {
-    const r = await fetch(API + '/api/portal');
-    const d = await r.json();
-    if (!d.locked) { unlockPortal(); return; }
-    const saved = (localStorage.getItem(LOCK_KEY) || '').trim();
-    if (saved && await authPortal(saved)) { unlockPortal(saved); return; }
-    if (saved) localStorage.removeItem(LOCK_KEY);
-    showLock();
-  } catch { showLock(); }
-}
-$('lockBtn').addEventListener('click', async () => {
-  const pass = ($('lockPass').value || '').trim();
-  if (!pass) return lockErr('❌ Password daalo.');
-  const btn = $('lockBtn'); btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
-  const ok = await authPortal(pass);
-  btn.disabled = false; btn.textContent = 'Unlock';
-  if (ok) unlockPortal(pass);
-  else lockErr('❌ Galat password. Dobara try karo.');
-});
-$('lockPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('lockBtn').click(); });
-$('relockBtn').addEventListener('click', () => { localStorage.removeItem(LOCK_KEY); showLock(); });
 
 /* ---------------- status / commands ---------------- */
 async function refreshStatus() {
@@ -427,9 +357,9 @@ $('testBtn').addEventListener('click', async () => {
 });
 
 /* ---------------- boot ---------------- */
-initPortal();
-setInterval(() => { if (!document.body.classList.contains('locked')) refreshStatus(); }, 8000);
-setInterval(() => { if (!document.body.classList.contains('locked')) refreshSessions(); }, 10000);
+bootPortal();
+setInterval(refreshStatus, 8000);
+setInterval(refreshSessions, 10000);
 </script>
 </body>
 </html>
