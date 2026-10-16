@@ -100,8 +100,6 @@ module.exports = {
   commands: [
     'grayscale', 'invert', 'sepia', 'vintage', 'blurpic', 'mirror', 'flipimg', 'pixelate', 'deepfry', 'hdr',
     'shadow', 'comic', 'oilpaint', 'sketchpic', 'glass', 'vhs', 'frame', 'polaroid',
-    // extras that belong in this family
-    'enhance2', 'enhance3',
   ],
   category: '🖼️ EDIT',
   handler,

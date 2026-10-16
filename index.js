@@ -96,11 +96,26 @@ app.get('/api/status', (req, res) => {
   res.json({ ok: true, ...bot.getStatus() });
 });
 
+// ---- Owner-only guard ------------------------------------------------------
+// Connected numbers are private: only the owner (who knows ADMIN_TOKEN) may
+// list them or remove a session. Everyone else only sees the count.
+const ADMIN_TOKEN = String(config.ADMIN_TOKEN || '');
+function isAdmin(req) {
+  const t = String(req.query?.token || req.headers['x-admin-token'] || req.body?.token || '').trim();
+  return !!t && !!ADMIN_TOKEN && t === ADMIN_TOKEN;
+}
+
 app.get('/api/sessions', (req, res) => {
-  res.json({ ok: true, sessions: bot.listSessions(), max: config.MAX_SESSIONS });
+  const all = bot.listSessions();
+  if (!isAdmin(req)) {
+    // Locked view: expose only the count, never the numbers/owners.
+    return res.json({ ok: true, locked: true, count: all.length, sessions: [], max: config.MAX_SESSIONS });
+  }
+  res.json({ ok: true, locked: false, count: all.length, sessions: all, max: config.MAX_SESSIONS });
 });
 
 app.post('/api/session/remove', async (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ ok: false, error: 'Unauthorized — owner token required.' });
   try {
     const ok = await bot.removeSession(req.body?.number);
     res.json({ ok, removed: ok });
@@ -184,6 +199,25 @@ app.post('/api/debug/clear', (req, res) => { debug.clear(); res.json({ ok: true 
 app.post('/api/reconnect', async (req, res) => {
   try { const n = await bot.reconnectAll(); res.json({ ok: true, restarted: n }); }
   catch (e) { res.status(500).json({ ok: false, error: e?.message || String(e) }); }
+});
+
+// Owner-only: send a REAL WhatsApp message from the bot to a number. This is
+// the end-to-end proof that the live pipeline works (not a mock). Defaults to
+// the owner number.
+app.post('/api/test-send', async (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ ok: false, error: 'Unauthorized — owner token required.' });
+  const to = String(req.body?.number || config.OWNER_NUMBER || '').replace(/[^0-9]/g, '');
+  const text = String(req.body?.text || `✅ *${config.BOT_NAME}* live test — bot kaam kar raha hy!\n💠 Prefix: ${config.PREFIX}\n🕒 ${new Date().toISOString()}`);
+  if (!to) return res.status(400).json({ ok: false, error: 'number required' });
+  try {
+    const sock = bot.getSock();
+    if (!sock) return res.status(503).json({ ok: false, error: 'no connected session' });
+    const jid = `${to}@s.whatsapp.net`;
+    const sent = await sock.sendMessage(jid, { text });
+    res.json({ ok: true, to: jid, id: sent?.key?.id || null });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e?.message || String(e) });
+  }
 });
 
 // In-process self-test: runs the real command engine (no WhatsApp needed).

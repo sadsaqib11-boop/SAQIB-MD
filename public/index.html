@@ -52,7 +52,9 @@
   .card .sub{color:var(--muted);font-size:13.5px;margin-bottom:20px;line-height:1.5}
 
   label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:.3px}
-  .field{display:flex;gap:10px}
+  .field{display:flex;gap:0;align-items:stretch}
+  .field input{border-top-right-radius:0;border-bottom-right-radius:0;border-right:none}
+  .field button{border-top-left-radius:0;border-bottom-left-radius:0;padding-left:20px;padding-right:20px}
   input{
     flex:1;padding:15px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(5,7,14,.7);
     color:var(--txt);font-size:15.5px;outline:none;transition:.2s;font-family:inherit;
@@ -177,11 +179,16 @@
     </div>
   </div>
 
-  <!-- Linked sessions -->
+  <!-- Linked sessions (owner-only) -->
   <div class="card sessions-card">
     <h2>📱 Linked Sessions <span id="sessCount" class="chip" style="margin-left:6px">0 / 50</span></h2>
-    <p class="sub">Ye sab numbers is bot se linked hain. Har number ka apna owner hy.</p>
+    <p class="sub">Sirf owner connected numbers dekh sakta hy. Neeche apna owner token daalo (default: aapka owner number).</p>
+    <div class="field" style="margin-bottom:14px;max-width:440px">
+      <input id="token" type="password" placeholder="Owner token" autocomplete="off" />
+      <button id="tokenBtn">Unlock</button>
+    </div>
     <div id="sessions"><div class="empty">Loading…</div></div>
+    <button id="testBtn" class="copy" style="margin-top:14px">📨 Send test message to owner</button>
   </div>
 
   <footer>
@@ -216,13 +223,19 @@ async function refreshCommands() {
     $('feat').innerHTML = cats.map(c => `<span class="chip">${c}</span>`).join('');
   } catch {}
 }
+function getToken() { return (localStorage.getItem('saqib_admin_token') || '').trim(); }
 async function refreshSessions() {
+  const token = getToken();
   try {
-    const r = await fetch(API + '/api/sessions');
+    const r = await fetch(API + '/api/sessions' + (token ? '?token=' + encodeURIComponent(token) : ''));
     const d = await r.json();
     const list = d.sessions || [];
-    $('sessCount').textContent = list.length + ' / ' + (d.max || 50);
+    $('sessCount').textContent = (d.count != null ? d.count : list.length) + ' / ' + (d.max || 50);
     const box = $('sessions');
+    if (d.locked) {
+      box.innerHTML = '<div class="empty">🔒 Sirf owner connected numbers dekh sakta hy. Neeche owner token daal ke <b>Unlock</b> dabao.</div>';
+      return;
+    }
     if (!list.length) { box.innerHTML = '<div class="empty">Abhi koi session linked nahi hy. Upar number daal ke link karo.</div>'; return; }
     box.innerHTML = list.map(s => `
       <div class="sess">
@@ -238,7 +251,7 @@ async function refreshSessions() {
     box.querySelectorAll('.rm').forEach(b => b.addEventListener('click', async () => {
       if (!confirm('Session +' + b.dataset.num + ' remove karein?')) return;
       b.disabled = true; b.textContent = '…';
-      try { await fetch(API + '/api/session/remove', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ number: b.dataset.num }) }); } catch {}
+      try { await fetch(API + '/api/session/remove', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ number: b.dataset.num, token: getToken() }) }); } catch {}
       refreshSessions(); refreshStatus();
     }));
   } catch { $('sessions').innerHTML = '<div class="empty">Sessions load nahi ho sake.</div>'; }
@@ -300,6 +313,21 @@ $('copyBtn').addEventListener('click', () => {
   });
 });
 $('num').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('pairBtn').click(); });
+$('token').value = getToken();
+$('tokenBtn').addEventListener('click', () => {
+  localStorage.setItem('saqib_admin_token', ($('token').value || '').trim());
+  refreshSessions();
+});
+$('token').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('tokenBtn').click(); });
+$('testBtn').addEventListener('click', async () => {
+  const btn = $('testBtn'); const old = btn.textContent; btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const r = await fetch(API + '/api/test-send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: getToken() }) });
+    const d = await r.json();
+    alert(d.ok ? '✅ Test message sent to +' + String(d.to || '').split('@')[0] : '❌ ' + (d.error || 'failed'));
+  } catch (e) { alert('❌ ' + e.message); }
+  btn.disabled = false; btn.textContent = old;
+});
 refreshStatus(); refreshCommands(); refreshSessions();
 setInterval(refreshStatus, 8000);
 setInterval(refreshSessions, 10000);
