@@ -139,6 +139,10 @@ async function askDownload(ctx, query) {
 }
 
 /* --------------------------- TikTok search helpers --------------------------- */
+/** Memory pressure check — yt-dlp child processes are big; when RSS is this
+ * high, spawning more will OOM-kill the container (verified live). */
+const memTight = () => process.memoryUsage().rss > 380 * 1048576;
+
 /** Extract candidate TikTok video URLs from a search-results HTML page. */
 function extractTiktokUrls(html) {
   const out = new Set();
@@ -315,7 +319,9 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     // Search engines gave NOTHING (Bing serves empty pages to Urdu queries
     // sometimes). Never collapse to ONE video — mirror-search pulls a full
     // RELEVANT row from YouTube and the same album code delivers it.
-    try {
+    // Skipped when memory is tight — the yt-dlp downloads it spawns are what
+    // OOM-killed the container when several .tts ran at once.
+    if (!memTight()) try {
       const yt = await ytdlp.searchViaMirror(query, limit);
       const picked = yt.map((v) => ({ src: '', url: '', title: String(v.title || '').slice(0, 120), file: v.file })).filter((v) => v.file && fs.existsSync(v.file));
       if (picked.length >= 2) {
@@ -355,6 +361,18 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   // staggered 2s apart so 5 yt-dlp spawns don't stampede a trial CPU.
   const tFetch = Date.now();
   let ytdlpLane = 0;
+  // MEMORY GUARD: yt-dlp child processes run ~60-100MB each — many at once
+  // OOM-killed the container (verified live: two concurrent .tts runs
+  // restarted the bot 2026-10-17 ~17:31 UTC). Clip downloads are capped at
+  // 2 concurrent, shared across ALL .tts calls via globalThis, and skipped
+  // entirely when RSS is already tight.
+  const YTDLP_MAX = 2;
+  const ytdlpState = (globalThis.__ttsYtdlp = globalThis.__ttsYtdlp || { n: 0, q: [] });
+  const ytdlpSlot = () => new Promise((res) => {
+    const go = () => { if (ytdlpState.n < YTDLP_MAX) { ytdlpState.n++; res(); } else ytdlpState.q.push(go); };
+    go();
+  });
+  const ytdlpFree = () => { ytdlpState.n--; (ytdlpState.q.shift() || (() => {}))(); };
   const results = await Promise.allSettled(picks.map((p, i) => {
     const cacheKey = 'b|' + (p.url || p.src);
     const hit = ttBufCache.get(cacheKey);
@@ -367,12 +385,14 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
         return buf;
       })
       : Promise.reject(new Error('no play url (tikwm refused)'));
-    const canYtdlp = !p.url && p.src && i < limit * 2;
+    const canYtdlp = !p.url && p.src && i < limit;
     return viaPlay.catch(() => {
-      if (!canYtdlp) throw new Error('no source');
-      const stagger = (ytdlpLane++) * 2000;
+      if (!canYtdlp || memTight()) throw new Error('no source');
+      const stagger = (ytdlpLane++) * 2500;
       return new Promise((r) => setTimeout(r, stagger))
+        .then(() => ytdlpSlot())
         .then(() => ytdlp.downloadVideoByUrl(p.src, { maxHeight: 480, timeoutMs: 120000 }))
+        .finally(ytdlpFree)
         .then((file) => {
           const buf = fs.readFileSync(file);
           try { fs.unlinkSync(file); } catch { /* ignore */ }
