@@ -73,7 +73,10 @@ const handler = async (ctx) => {
       const out = path.join(os.tmpdir(), `fx_${Date.now()}.jpg`);
       fs.writeFileSync(inp, buf);
       try {
-        await new Promise((res, rej) => execFile('ffmpeg', ['-y', '-i', inp, '-vf', FILTERS[command], out], { timeout: 45000 }, (e) => (e ? rej(e) : res())));
+        // -frames:v 1 -update 1 — same still-image fix as imagetools.js: a
+        // plain output filename without it can make ffmpeg bail out with
+        // "does not contain an image sequence pattern" and write no file.
+        await new Promise((res, rej) => execFile('ffmpeg', ['-y', '-i', inp, '-vf', FILTERS[command], '-frames:v', '1', '-update', '1', out], { timeout: 45000 }, (e) => (e ? rej(e) : res())));
         await ctx.send(ctx.from, { image: fs.readFileSync(out), caption: `✨ *${command}* effect` }, { quoted: ctx.m });
       } finally {
         setTimeout(() => { [inp, out].forEach((f) => { try { fs.unlinkSync(f); } catch { /* ignore */ } }); }, 5000);

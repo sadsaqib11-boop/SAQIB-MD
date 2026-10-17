@@ -57,7 +57,12 @@ const handler = async (ctx) => {
   const out = tmp(spec.ext);
   fs.writeFileSync(inp, buf);
   try {
-    await run(['-y', '-i', inp, '-vf', spec.vf, out]);
+    // -frames:v 1 -update 1: without these, ffmpeg refuses to write a single
+    // still to a plain filename ("does not contain an image sequence pattern")
+    // at scale factors >= 12, where libx264's auto-threading path stops
+    // applying the implicit -update 1. Result was "Process error: ..." with no
+    // file, which is what broke enhance12-16 and colorize on the live bot.
+    await run(['-y', '-i', inp, '-vf', spec.vf, '-frames:v', '1', '-update', '1', out]);
     await ctx.send(ctx.from, {
       image: fs.readFileSync(out),
       caption: `\ud83d\uddbc\ufe0f *${spec.label}*\n\ud83d\udc51 ${config.BOT_NAME}`,
