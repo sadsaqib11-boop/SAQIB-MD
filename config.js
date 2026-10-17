@@ -50,7 +50,7 @@ const config = {
   // DEFAULT OFF: reading incoming messages shows the double blue tick.
   // Off by default for privacy (matches .env.example AUTO_READ=false).
   AUTO_READ: bool(process.env.AUTO_READ, false),
-  AUTO_TYPING: bool(process.env.AUTO_TYPING, false),
+  AUTO_TYPING: bool(process.env.AUTO_TYPING, true),
   AUTO_REACT: bool(process.env.AUTO_REACT, false),
   // Auto-react scope (only meaningful when AUTO_REACT is ON).
   AUTO_REACT_GROUP: bool(process.env.AUTO_REACT_GROUP, true),
