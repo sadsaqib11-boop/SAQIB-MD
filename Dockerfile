@@ -18,6 +18,10 @@ RUN npm install --omit=dev --no-audit --no-fund
 # Copy source
 COPY . .
 
+# Bad MAC log-flood fix: libsignal har failed decrypt ka poora stack print karta hy
+# (1000+ lines/hour). Patch idempotent hy — dobara chalane par kuch nahi hota.
+RUN node scripts/patch-libsignal.js
+
 ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000
