@@ -93,8 +93,17 @@ async function ytSearchDownload(ctx, query, asAudio) {
   }
   // VIDEO: she asked for video, so never silently hand back an audio file.
   // If YouTube is blocked we try the alternate routes first, and only then
-  // tell her honestly instead of sending a surprise MP3.
-  const { file, audio } = await ytdlp.downloadVideoSmart(input);
+  // tell her honestly instead of sending a surprise MP3. TikTok is an extra
+  // lane here (same scraper as .tts) — short clips land even when YouTube
+  // and Dailymotion both refuse.
+  const videoViaTiktok = async () => {
+    const urls = await tiktokSearch(String(input).trim(), 3);
+    for (const u of urls) {
+      try { return await ytdlp.downloadVideoByUrl(u, { maxHeight: 480 }); } catch { /* next clip */ }
+    }
+    throw new Error('tiktok video lane came up empty');
+  };
+  const { file, audio } = await ytdlp.downloadVideoSmart(input, {}, [videoViaTiktok]);
   if (audio) {
     try { fs.unlinkSync(file); } catch { /* ignore */ }
     return ctx.reply(
@@ -112,14 +121,17 @@ async function ytSearchDownload(ctx, query, asAudio) {
 async function askDownload(ctx, query) {
   // Hard guarantee: the download flow can NEVER go silent. If the sources hang
   // (a stalled yt-dlp, a blocked mirror), the user still gets an answer.
-  const withTimeout = (p, ms) => Promise.race([
+  // LONG VIDEOS need real time: a 1GB+ film at container bandwidth can run
+  // 10-25 minutes — the old 5-minute cap was killing every long video with
+  // "download bohat dair se chal raha tha". Audio is light; video now gets 30.
+  const withTimeout = (p, ms, label) => Promise.race([
     p,
-    new Promise((_, rej) => setTimeout(() => rej(new Error('download bohat dair se chal raha tha — bejti khatam')), ms)),
+    new Promise((_, rej) => setTimeout(() => rej(new Error(label || 'download me bohat dair lag rahi thi')), ms)),
   ]);
   interactions.set(ctx.from, ctx.sender, 'choice', {
     options: [
-      { run: (c) => withTimeout(ytSearchDownload(c, query, true), 300000).catch((e) => c.reply('❌ Audio nahi aayi: ' + (e.message || 'download fail.') + '\n_Dusra naam try karo ya .tts/.video use karo._')) },
-      { run: (c) => withTimeout(ytSearchDownload(c, query, false), 300000).catch((e) => c.reply('❌ Video nahi aayi: ' + (e.message || 'download fail.') + '\n_Dusra naam try karo ya .tts/.video use karo._')) },
+      { run: (c) => withTimeout(ytSearchDownload(c, query, true), 600000).catch((e) => c.reply('❌ Audio nahi aayi: ' + (e.message || 'download fail.') + '\n_Dusra naam try karo ya .tts/.video use karo._')) },
+      { run: (c) => withTimeout(ytSearchDownload(c, query, false), 1800000, 'video bohat BARI hy aur download time baray me le raha hy — thora sabar, ya choti video mangwain').catch((e) => c.reply('❌ Video nahi aayi: ' + (e.message || 'download fail.') + '\n_Dusra naam try karo ya .tts/.song use karo._')) },
     ],
   });
   return ctx.reply(`🎬 *${query}*\n\n1️⃣ 🎵 Audio (MP3)\n2️⃣ 🎬 Video (MP4)\n\n_Reply *1* ya *2* karo!_`);
