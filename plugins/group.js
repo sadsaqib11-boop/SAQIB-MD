@@ -26,9 +26,23 @@ function matchParticipant(meta, target) {
   }) || null;
 }
 
-/** The bot's own participant record in this group (exact id form included). */
+/** The bot's own participant record in this group. Matches the bot against
+ * EVERY id variant a participant record can carry (id, lid, lidJid,
+ * phoneNumber, jid + contacts resolution) — matching by phone number alone
+ * falsely concluded "bot is not admin" whenever WhatsApp listed the bot under
+ * a LID, which made .promote/.demote ask for admin it already had. */
 function botParticipant(meta, selfNum) {
-  return matchParticipant(meta, selfNum);
+  const bare = String(selfNum || '').split('@')[0].split(':')[0].replace(/[^0-9]/g, '');
+  if (!bare) return null;
+  const ps = meta?.participants || [];
+  return ps.find((p) => {
+    const ids = [p.id, p.lid, p.lidJid, p.phoneNumber, p.jid]
+      .map((j) => String(j || '').split('@')[0].split(':')[0].replace(/[^0-9]/g, ''))
+      .filter(Boolean);
+    const resolved = String(require('../lib/contacts').resolve(p.id) || '').split('@')[0].replace(/[^0-9]/g, '');
+    if (resolved) ids.push(resolved);
+    return ids.includes(bare);
+  }) || null;
 }
 
 /** groupParticipantsUpdate with one LID<->phone retry. */
@@ -168,7 +182,7 @@ const handler = async (ctx) => {
       contacts.learnFromGroupMeta(meta);
       const selfNum = String(ctx.session?.number || sock.user?.id || '').split(':')[0].split('@')[0];
       const me = botParticipant(meta, selfNum);
-      if (!me?.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir kick chalega.');
+      if (me && !me.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir kick chalega.');
       const tp = matchParticipant(meta, target);
       if (!tp) return reply('\u274c Ye member is group me nahi hy.');
       await updateParticipant(sock, from, tp, 'remove');
@@ -181,7 +195,7 @@ const handler = async (ctx) => {
       contacts.learnFromGroupMeta(meta);
       const selfNum = String(ctx.session?.number || sock.user?.id || '').split(':')[0].split('@')[0];
       const me = botParticipant(meta, selfNum);
-      if (!me?.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir promote chalega.');
+      if (me && !me.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir promote chalega.');
       const tp = matchParticipant(meta, target);
       if (!tp) return reply('\u274c Ye member is group me nahi hy.');
       if (tp.admin) return reply('\ud83d\ude45 Ye pehle hi admin hy.');
@@ -195,7 +209,7 @@ const handler = async (ctx) => {
       contacts.learnFromGroupMeta(meta);
       const selfNum = String(ctx.session?.number || sock.user?.id || '').split(':')[0].split('@')[0];
       const me = botParticipant(meta, selfNum);
-      if (!me?.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir demote chalega.');
+      if (me && !me.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir demote chalega.');
       const tp = matchParticipant(meta, target);
       if (!tp) return reply('\u274c Ye member is group me nahi hy.');
       if (!tp.admin) return reply('\ud83d\ude45 Ye pehle hi normal member hy.');
@@ -208,7 +222,7 @@ const handler = async (ctx) => {
       contacts.learnFromGroupMeta(meta);
       const selfNum = String(ctx.session?.number || sock.user?.id || '').split(':')[0].split('@')[0];
       const me = botParticipant(meta, selfNum);
-      if (!me?.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add).');
+      if (me && !me.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add).');
       await sock.groupSettingUpdate(from, command === 'mute' ? 'announcement' : 'not_announcement');
       await reply(command === 'mute' ? '\ud83d\udd07 Group *sirf admins* ke messages ke liye.' : '\ud83d\udd0a Sab members message kar sakte hain.');
       break;
