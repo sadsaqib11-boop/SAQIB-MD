@@ -2,7 +2,7 @@
  * MAIN — menu, help, menuall, menustyle, ping, alive, uptime, owner, id, getpp,
  *        githubstalk, define, yts, praytime, runtime, repo, details, findcmd, clear
  *
- * MENU SYSTEM (10 designs — choose one with `.menustyle <1-10>`)
+ * MENU SYSTEM (10 designs — choose one with `.menustyle <1-11>`)
  *   .menu              -> shows all CATEGORIES (with the bot picture)
  *   .menu <category>   -> shows every command of that category
  *   .menuall           -> shows every category + every command
@@ -75,8 +75,10 @@ function findCategory(query) {
   return hit || null;
 }
 
-/** Build the data object that `lib/menu.js` renders. */
-function menuData(mode, cat, styleId, prefix) {
+/** Build the data object that `lib/menu.js` renders. `live` carries per-call
+ * values (user, rank, ram, uptime) — only the KING style uses them and it is
+ * never cached, so they're always fresh. */
+function menuData(mode, cat, styleId, prefix, live) {
   const cats = categories();
   const total = [...cats.values()].reduce((n, c) => n + c.length, 0);
   let name = config.BOT_NAME;
@@ -93,6 +95,20 @@ function menuData(mode, cat, styleId, prefix) {
     total,
     cat: cat || '',
     cmds: cat ? (cats.get(cat) || []) : [],
+    botMode: config.MODE,
+    extra: live || null,
+  };
+}
+
+/** Live per-user values for the KING menu style. */
+function liveMenuData(ctx) {
+  const up = Math.floor(process.uptime());
+  const h = Math.floor(up / 3600), m = Math.floor((up % 3600) / 60);
+  return {
+    user: (ctx.pushname || ctx.senderNum || 'User').slice(0, 20),
+    rank: ctx.isOwner ? '👑 Owner' : '⭐ User',
+    ram: (process.memoryUsage().rss / 1048576).toFixed(1) + ' MB',
+    uptime: `${h}h ${m}m`,
   };
 }
 
@@ -109,9 +125,17 @@ function cached(key, styleId, build) {
   return _menuCache.get(k);
 }
 
-const categoriesText = (styleId, prefix) => cached('cats', styleId, () => menu.render(styleId, menuData('categories', '', styleId, prefix)));
-const categoryText = (cat, styleId, prefix) => cached('cat|' + cat, styleId, () => menu.render(styleId, menuData('category', cat, styleId, prefix)));
-const allText = (styleId, prefix) => cached('all', styleId, () => menu.render(styleId, menuData('all', '', styleId, prefix)));
+// KING (style 11) is NEVER cached — its RAM/uptime/user block must be live.
+// Everything else stays day-cached for speed.
+const categoriesText = (styleId, prefix, live) => styleId === 11
+  ? menu.render(11, menuData('categories', '', 11, prefix, live))
+  : cached('cats', styleId, () => menu.render(styleId, menuData('categories', '', styleId, prefix)));
+const categoryText = (cat, styleId, prefix, live) => styleId === 11
+  ? menu.render(11, menuData('category', cat, 11, prefix, live))
+  : cached('cat|' + cat, styleId, () => menu.render(styleId, menuData('category', cat, styleId, prefix)));
+const allText = (styleId, prefix, live) => styleId === 11
+  ? menu.render(11, menuData('all', '', 11, prefix, live))
+  : cached('all', styleId, () => menu.render(styleId, menuData('all', '', styleId, prefix)));
 
 /**
  * Read an image file and ALWAYS return a real binary image buffer.
@@ -151,15 +175,15 @@ const handler = async (ctx) => {
     case 'menu':
     case 'help': {
       const q = ctx.arg ? ctx.arg.trim() : '';
-      if (!q) return sendMenu(ctx, categoriesText(style, prefix));
+      if (!q) return sendMenu(ctx, categoriesText(style, prefix, liveMenuData(ctx)));
       const cat = findCategory(q);
       if (!cat) {
         return reply(`❌ Category *"${q}"* was not found.\n\n💡 Type ${prefix}menu to see all categories.`);
       }
-      return sendMenu(ctx, categoryText(cat, style, prefix));
+      return sendMenu(ctx, categoryText(cat, style, prefix, liveMenuData(ctx)));
     }
     case 'menuall': {
-      await reply(allText(style, prefix));
+      await reply(allText(style, prefix, liveMenuData(ctx)));
       break;
     }
     case 'menustyle': {
@@ -177,8 +201,8 @@ const handler = async (ctx) => {
           `▸ Bot default: *${config.MENU_STYLE} — ${def.name}*\n${BAR}\n` +
           menu.listStyles() +
           `\n${BAR}\n` +
-          `💡 \`${prefix}menustyle <1-10>\` — pick YOUR style (works for everyone)\n` +
-          (ctx.isOwner ? `👑 \`${prefix}menustyle default <1-10>\` — change the bot-wide default\n` : '') +
+          `💡 \`${prefix}menustyle <1-11>\` — pick YOUR style (works for everyone)\n` +
+          (ctx.isOwner ? `👑 \`${prefix}menustyle default <1-11>\` — change the bot-wide default\n` : '') +
           `♻️ \`${prefix}menustyle reset\` — back to the default`
         );
       }
@@ -193,7 +217,7 @@ const handler = async (ctx) => {
         config.MENU_STYLE = n;
         settings.save();
         _menuCache.clear();
-        return reply(`✅ Bot-wide default menu style is now *${n} — ${menu.STYLES[n - 1].name}*.\n\nHere is a preview:\n\n${categoriesText(n, prefix)}`);
+        return reply(`✅ Bot-wide default menu style is now *${n} — ${menu.STYLES[n - 1].name}*.\n\nHere is a preview:\n\n${categoriesText(n, prefix, liveMenuData(ctx))}`);
       }
 
       // Reset the user's own style back to the default.
@@ -211,7 +235,7 @@ const handler = async (ctx) => {
       }
       menustyles.set(ctx.senderNum, n);
       _menuCache.clear();
-      await reply(`✅ Your menu style is now *${n} — ${menu.STYLES[n - 1].name}*.\n\nHere is a preview:\n\n${categoriesText(n, prefix)}`);
+      await reply(`✅ Your menu style is now *${n} — ${menu.STYLES[n - 1].name}*.\n\nHere is a preview:\n\n${categoriesText(n, prefix, liveMenuData(ctx))}`);
       break;
     }
     case 'details': {

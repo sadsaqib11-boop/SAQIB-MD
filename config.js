@@ -111,7 +111,7 @@ const config = {
   // ---- menu ----
   // Which of the 10 built-in menu styles to use (1-10). Change live with
   // `.menustyle <n>`; the choice is persisted to the volume.
-  MENU_STYLE: Math.min(10, Math.max(1, parseInt(process.env.MENU_STYLE || '1', 10) || 1)),
+  MENU_STYLE: Math.min(11, Math.max(1, parseInt(process.env.MENU_STYLE || '11', 10) || 11)),
 
   // ---- speed ----
   // ULTRA-FAST mode (default ON): trims every optional bit of work off the hot
