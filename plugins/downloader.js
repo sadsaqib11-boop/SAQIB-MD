@@ -161,59 +161,58 @@ function extractTiktokUrls(html) {
  * returns up to `limit` video URLs (first working backend wins).
  */
 async function tiktokSearch(query, limit = 5) {
-  // PAKISTAN-FIRST + IT ACTUALLY WORKS: the cc=PK/setlang=ur page params bias
-  // results to Pakistan BUT that page variant serves NO tiktok.com links to a
-  // plain fetcher (verified live 2026-10-17: 0 urls on every biased query,
-  // 10+ on the plain ones) — so the biased variants alone returned NOTHING
-  // and .tts fell back to a single YouTube video. Strategy now:
-  //   1. plain queries FIRST (they actually return links),
-  //   2. the PK-biased variants after (bonus local hits when they work),
-  //   3. HTML entity-decoding so links hidden inside escaped JSON (`&quot;`
-  //      blobs) are found too — most Bing results live there.
+  // PAKISTAN-FIRST + RELEVANCE-FIRST (user rule: sirf Urdu/Hindi/Punjabi
+  // content — "angreezi" clips nahi). Two tricks make that real:
+  //   1. VARIANT ORDER IS THE RANK: PK-flavored queries come FIRST and every
+  //      URL remembers which variant found it, so Pakistani-biased results
+  //      always outrank generic global ones downstream.
+  //   2. The PK flavor lives in the QUERY WORDS (which work on plain pages),
+  //      NOT in Bing's cc=PK params — those page variants serve zero links
+  //      to a plain fetcher (verified live: 0 urls).
   const variants = [
-    `${query} tiktok`,
-    `${query} site:tiktok.com`,
     `${query} tiktok pakistan`,
     `${query} tiktok urdu`,
     `${query} tiktok punjabi`,
-    `${query} tiktok saraiki`,
+    `${query} site:tiktok.com`,
+    `${query} tiktok`,
   ];
-  const found = [];
-  const collect = (html0) => {
+  const found = []; // [{ url, rank }] — rank = variant index (lower = PK-er)
+  const collect = (html0, rank) => {
     // Unescape HTML entities first — Bing buries its TikTok urls inside
     // JSON blobs full of &quot; / &amp;, which the old raw-regex missed.
     const html = html0
       .replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&amp;/g, '&');
-    for (const u of extractTiktokUrls(html)) { if (!found.includes(u)) found.push(u); if (found.length >= limit) break; }
+    for (const u of extractTiktokUrls(html)) {
+      if (!found.some((f) => f.url === u)) found.push({ url: u, rank });
+      if (found.length >= limit * 4) break;
+    }
   };
-  // First two variants (plain) WITHOUT the cc/setlang params that break the
-  // page; the PK-biased variants keep them (harmless if the page is empty).
   for (let i = 0; i < variants.length; i++) {
-    if (found.length >= limit) break;
-    const pk = i >= 2;
-    const params = pk ? '&cc=PK&setlang=ur' : '';
+    if (found.length >= limit * 4) break;
     try {
-      const html = await getText(`https://www.bing.com/videos/search?q=${encodeURIComponent(variants[i])}${params}`, { headers: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } }, 20000);
-      collect(html);
+      const html = await getText(`https://www.bing.com/videos/search?q=${encodeURIComponent(variants[i])}`, { headers: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } }, 20000);
+      collect(html, i);
     } catch { /* next */ }
-    await sleep(50); // SPEED: was 150ms per engine — still polite, 3x snappier
+    await sleep(50); // polite
   }
 
-  // Backend 2: DuckDuckGo (direct then Jina reader proxy), PK region.
-  for (const v of variants) {
-    if (found.length >= limit) break;
+  // Backend 2: DuckDuckGo (direct then Jina reader proxy), PK region — ranks
+  // continue (PK variants before generic) so ordering stays meaningful.
+  for (let i = 0; i < variants.length; i++) {
+    if (found.length >= limit * 4) break;
     for (const url of [
-      `https://html.duckduckgo.com/html/?q=${encodeURIComponent(v)}&kl=pk-en`,
-      `https://r.jina.ai/https://html.duckduckgo.com/html/?q=${encodeURIComponent(v)}&kl=pk-en`,
+      `https://html.duckduckgo.com/html/?q=${encodeURIComponent(variants[i])}&kl=pk-en`,
+      `https://r.jina.ai/https://html.duckduckgo.com/html/?q=${encodeURIComponent(variants[i])}&kl=pk-en`,
     ]) {
-      if (found.length >= limit) break;
+      if (found.length >= limit * 4) break;
       try {
         const html = await getText(url, { headers: { 'User-Agent': UA, 'Accept': 'text/plain' } }, 20000);
-        collect(html);
+        collect(html, i);
       } catch { /* next */ }
     }
   }
-  return found.slice(0, limit);
+  found.sort((a, b) => a.rank - b.rank);
+  return found.slice(0, limit * 4).map((f) => f.url);
 }
 
 /** Resolve a TikTok URL to a playable mp4 (tikwm fast path). */
@@ -257,7 +256,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     // Wider net: limit*4 candidates so that after dead links and the relevance
     // filter there are STILL enough survivors to deliver the full 5 (the old
     // net was too small — searches often delivered just 1 video).
-    const skey = `tt|${String(query).trim().toLowerCase()}`;
+    const skey = `tt2|${String(query).trim().toLowerCase()}`;
     let urls = srcCache.get(skey);
     if (!urls) {
       urls = [];
@@ -269,14 +268,20 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
       try { const f = await tiktokResolve(u); if (f?.video) return { url: f.video, title: f.title || '' }; } catch { /* ignore */ }
       return null;
     }))).filter(Boolean);
-    // Relevance RANKING (not just filtering): results whose title shares a
-    // word with the query come first; the rest follow as backfill. This
-    // punishes off-topic foreign clips without ever leaving the user with
-    // fewer than `limit` videos.
+    // RELEVANCE SCORE + PAKISTAN BIAS (user rule: "sirf Pakistan ki videos —
+    // urdu, hindi, punjabi — angreezi ki nahi"). Every video earns points for
+    // query-word overlap in its title, plus a bonus for desi markers. Sort is
+    // stable, so equal scores keep the PK-variant rank from tiktokSearch
+    // (pakistan/urdu/punjabi variants feed their URLs in first).
     const words = String(query).toLowerCase().split(/\s+/).filter((w) => w.length > 2);
-    const related = words.length ? resolved.filter((v) => words.some((w) => String(v.title).toLowerCase().includes(w))) : [];
-    const rest = resolved.filter((v) => !related.includes(v));
-    picks = [...related, ...rest].slice(0, limit);
+    const DESI = /(urdu|pak|punjab|saraiki|sindhi|hindi|desi|bollywood|lollywood)/i;
+    const score = (v) => {
+      const t = String(v.title).toLowerCase();
+      let s = words.reduce((n, w) => n + (t.includes(w) ? 1 : 0), 0);
+      if (DESI.test(t)) s += 2;
+      return s;
+    };
+    picks = [...resolved].sort((a, b) => score(b) - score(a)).slice(0, limit);
     if (picks.length) ttCache.set(ckey, picks);
   }
   if (!picks.length) {
