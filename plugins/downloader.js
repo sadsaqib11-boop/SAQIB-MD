@@ -22,7 +22,7 @@ const { getJSON, getText, sleep } = require('../lib/helpers');
 const interactions = require('../lib/interactions');
 const ytdlp = require('../lib/ytdlp');
 const dlcache = require('../lib/dlcache');
-const { ttCache, srcCache, ttBufCache } = require('../lib/cache');
+const { ttCache, srcCache, ttBufCache, TT_BUF_CACHE_MAX_BYTES } = require('../lib/cache');
 const debug = require('../lib/debug');
 
 const isUrl = (s) => /^https?:\/\//i.test(s || '');
@@ -339,7 +339,9 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     if (hit) return Promise.resolve(hit);
     const viaPlay = p.url
       ? fetchVideoBuffer(p.url).then((buf) => {
-        if (buf && buf.length < 12 * 1048576) ttBufCache.set('b|' + p.url, buf);
+        // Cache only clips small enough that a full cache stays memory-bounded
+        // (see TT_BUF_CACHE_MAX_BYTES). Bigger clips still send — just not kept.
+        if (buf && buf.length <= TT_BUF_CACHE_MAX_BYTES) ttBufCache.set(cacheKey, buf);
         return buf;
       })
       : Promise.reject(new Error('no play url (tikwm refused)'));
@@ -352,7 +354,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
         .then((file) => {
           const buf = fs.readFileSync(file);
           try { fs.unlinkSync(file); } catch { /* ignore */ }
-          if (buf && buf.length < 12 * 1048576) ttBufCache.set('b|' + p.src, buf);
+          if (buf && buf.length <= TT_BUF_CACHE_MAX_BYTES) ttBufCache.set(cacheKey, buf);
           return buf;
         });
     });
