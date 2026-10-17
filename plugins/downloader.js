@@ -135,29 +135,39 @@ function extractTiktokUrls(html) {
  * returns up to `limit` video URLs (first working backend wins).
  */
 async function tiktokSearch(query, limit = 5) {
-  // PAKISTAN-FIRST: the user is in Layyah, Punjab (PK) and wants Urdu/Punjabi/
-  // Saraiki/Hindi clips — NOT random foreign videos. We therefore (a) bias the
-  // search to the PK region/language, (b) add Pakistan-oriented query
-  // variants so the backends return local content first, and (c) HIDE foreign
-  // results when enough local ones exist (relevance filter downstream).
+  // PAKISTAN-FIRST + IT ACTUALLY WORKS: the cc=PK/setlang=ur page params bias
+  // results to Pakistan BUT that page variant serves NO tiktok.com links to a
+  // plain fetcher (verified live 2026-10-17: 0 urls on every biased query,
+  // 10+ on the plain ones) — so the biased variants alone returned NOTHING
+  // and .tts fell back to a single YouTube video. Strategy now:
+  //   1. plain queries FIRST (they actually return links),
+  //   2. the PK-biased variants after (bonus local hits when they work),
+  //   3. HTML entity-decoding so links hidden inside escaped JSON (`&quot;`
+  //      blobs) are found too — most Bing results live there.
   const variants = [
+    `${query} tiktok`,
+    `${query} site:tiktok.com`,
     `${query} tiktok pakistan`,
     `${query} tiktok urdu`,
     `${query} tiktok punjabi`,
     `${query} tiktok saraiki`,
-    `${query} tiktok`,
-    `${query} site:tiktok.com`,
   ];
   const found = [];
-  const collect = (html) => {
+  const collect = (html0) => {
+    // Unescape HTML entities first — Bing buries its TikTok urls inside
+    // JSON blobs full of &quot; / &amp;, which the old raw-regex missed.
+    const html = html0
+      .replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&amp;/g, '&');
     for (const u of extractTiktokUrls(html)) { if (!found.includes(u)) found.push(u); if (found.length >= limit) break; }
   };
-
-  // Backend 1: Bing Videos — cc=PK + setlang=ur biases results to Pakistan.
-  for (const v of variants) {
+  // First two variants (plain) WITHOUT the cc/setlang params that break the
+  // page; the PK-biased variants keep them (harmless if the page is empty).
+  for (let i = 0; i < variants.length; i++) {
     if (found.length >= limit) break;
+    const pk = i >= 2;
+    const params = pk ? '&cc=PK&setlang=ur' : '';
     try {
-      const html = await getText(`https://www.bing.com/videos/search?q=${encodeURIComponent(v)}&cc=PK&setlang=ur`, { headers: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8', 'Cookie': 'SRCHHPGUSR=SRCHLANG=ur&SRCHHPGUSR=CC=PK' } }, 20000);
+      const html = await getText(`https://www.bing.com/videos/search?q=${encodeURIComponent(variants[i])}${params}`, { headers: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } }, 20000);
       collect(html);
     } catch { /* next */ }
     await sleep(150);
@@ -263,6 +273,21 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
       const buf = await fetchVideoBuffer(picks[i].url);
       bufs.push({ buf, title: (picks[i].title || '').slice(0, 120) });
     } catch { /* dead clip — skip */ }
+  }
+  if (bufs.length < limit) {
+    // TikTok pool SHORT ya dry (Bing/DDG served empty pages, tikwm blocked).
+    // BACKFILL: YouTube-via-mirror se top related videos — row phir bhi puri
+    // hogi, kam videos kabhi nahi.
+    try {
+      const yt = await ytdlp.searchViaMirror(query, limit - bufs.length);
+      for (const v of yt) {
+        if (bufs.length >= limit) break;
+        try {
+          bufs.push({ buf: fs.readFileSync(v.file), title: String(v.title || '').slice(0, 120) });
+          try { fs.unlinkSync(v.file); } catch { /* ignore */ }
+        } catch { /* ignore */ }
+      }
+    } catch { /* ignore */ }
   }
   if (!bufs.length) {
     await ctx.reply('❌ TikTok ne videos bhejne se rok liya (server IP block). Thori dair baad dobara try karo — ya .video se search karo.');
