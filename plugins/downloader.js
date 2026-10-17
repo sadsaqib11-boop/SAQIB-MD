@@ -140,8 +140,10 @@ async function askDownload(ctx, query) {
 
 /* --------------------------- TikTok search helpers --------------------------- */
 /** Memory pressure check — yt-dlp child processes are big; when RSS is this
- * high, spawning more will OOM-kill the container (verified live). */
-const memTight = () => process.memoryUsage().rss > 380 * 1048576;
+ * high, spawning more will OOM-kill the container (verified live twice:
+ * concurrent .tts runs killed the bot 2026-10-17). Threshold sits well under
+ * Railway trial limits so a queued download never tips the cgroup. */
+const memTight = () => process.memoryUsage().rss > 280 * 1048576;
 
 /** Extract candidate TikTok video URLs from a search-results HTML page. */
 function extractTiktokUrls(html) {
@@ -366,7 +368,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   // restarted the bot 2026-10-17 ~17:31 UTC). Clip downloads are capped at
   // 2 concurrent, shared across ALL .tts calls via globalThis, and skipped
   // entirely when RSS is already tight.
-  const YTDLP_MAX = 2;
+  const YTDLP_MAX = 1;
   const ytdlpState = (globalThis.__ttsYtdlp = globalThis.__ttsYtdlp || { n: 0, q: [] });
   const ytdlpSlot = () => new Promise((res) => {
     const go = () => { if (ytdlpState.n < YTDLP_MAX) { ytdlpState.n++; res(); } else ytdlpState.q.push(go); };
