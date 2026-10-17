@@ -22,7 +22,8 @@ const { getJSON, getText, sleep } = require('../lib/helpers');
 const interactions = require('../lib/interactions');
 const ytdlp = require('../lib/ytdlp');
 const dlcache = require('../lib/dlcache');
-const { ttCache, srcCache } = require('../lib/cache');
+const { ttCache, srcCache, ttBufCache } = require('../lib/cache');
+const debug = require('../lib/debug');
 
 const isUrl = (s) => /^https?:\/\//i.test(s || '');
 const MAX_MEDIA_BYTES = 64 * 1024 * 1024;   // WhatsApp audio/video cap (~64 MB)
@@ -254,15 +255,19 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     const skey = `tt2|${String(query).trim().toLowerCase()}`;
     let urls = srcCache.get(skey);
     if (!urls) {
+      const tSearch = Date.now();
       urls = [];
       try { urls = await tiktokSearch(query, limit * 4); } catch { /* ignore */ }
       if (urls.length) srcCache.set(skey, urls);
+      debug.info('[TTS] search done', { seconds: Math.round((Date.now() - tSearch) / 1000), urls: urls.length });
     }
     // Resolve to direct play URLs in parallel (fast, no 800ms drip).
+    const tResolve = Date.now();
     const resolved = (await Promise.all(urls.map(async (u) => {
       try { const f = await tiktokResolve(u); if (f?.video) return { url: f.video, title: f.title || '' }; } catch { /* ignore */ }
       return null;
     }))).filter(Boolean);
+    debug.info('[TTS] resolve done', { seconds: Math.round((Date.now() - tResolve) / 1000), clips: resolved.length });
     // RELEVANCE SCORE + PAKISTAN BIAS (user rule: "sirf Pakistan ki videos —
     // urdu, hindi, punjabi — angreezi ki nahi"). Every video earns points for
     // query-word overlap in its title, plus a bonus for desi markers. Sort is
@@ -295,7 +300,18 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   //    keeps going until `limit` clips are actually collected — dead links can
   //    never shrink the row below what she asked for.
   let delivered = 0;
-  const results = await Promise.allSettled(picks.map((p) => fetchVideoBuffer(p.url)));
+  // Buffer CACHE first: a repeated query replays instantly (no CDN wait).
+  const tFetch = Date.now();
+  const uncached = picks.filter((p) => !ttBufCache.get('b|' + p.url));
+  const results = await Promise.allSettled(picks.map((p) => {
+    const hit = ttBufCache.get('b|' + p.url);
+    if (hit) return Promise.resolve(hit);
+    return fetchVideoBuffer(p.url).then((buf) => {
+      if (buf && buf.length < 12 * 1048576) ttBufCache.set('b|' + p.url, buf);
+      return buf;
+    });
+  }));
+  debug.info('[TTS] buffers done', { seconds: Math.round((Date.now() - tFetch) / 1000), cachedSkips: picks.length - uncached.length });
   const bufs = [];
   for (let i = 0; i < results.length && bufs.length < limit; i++) {
     if (results[i].status === 'fulfilled') {
