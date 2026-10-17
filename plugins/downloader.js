@@ -187,29 +187,24 @@ async function tiktokSearch(query, limit = 5) {
       if (found.length >= limit * 4) break;
     }
   };
-  for (let i = 0; i < variants.length; i++) {
-    if (found.length >= limit * 4) break;
-    try {
-      const html = await getText(`https://www.bing.com/videos/search?q=${encodeURIComponent(variants[i])}`, { headers: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } }, 20000);
-      collect(html, i);
-    } catch { /* next */ }
-    await sleep(50); // polite
-  }
-
-  // Backend 2: DuckDuckGo (direct then Jina reader proxy), PK region — ranks
-  // continue (PK variants before generic) so ordering stays meaningful.
-  for (let i = 0; i < variants.length; i++) {
-    if (found.length >= limit * 4) break;
-    for (const url of [
-      `https://html.duckduckgo.com/html/?q=${encodeURIComponent(variants[i])}&kl=pk-en`,
-      `https://r.jina.ai/https://html.duckduckgo.com/html/?q=${encodeURIComponent(variants[i])}&kl=pk-en`,
-    ]) {
-      if (found.length >= limit * 4) break;
-      try {
-        const html = await getText(url, { headers: { 'User-Agent': UA, 'Accept': 'text/plain' } }, 20000);
-        collect(html, i);
-      } catch { /* next */ }
-    }
+  // SPEED: every engine x variant fires AT ONCE (Promise.allSettled) — wall
+  // time is the slowest single fetch (~12s cap), not the sum. The old
+  // sequential loop could stack 15 fetches x 20s and was why .tts felt
+  // "boht slow". Four lanes per variant: Bing videos page, Bing web page
+  // (different HTML, extra hits), DDG direct (PK region), DDG via Jina.
+  const jobs = variants.map((v, i) => {
+    const q = encodeURIComponent(v);
+    return [
+      { rank: i, url: `https://www.bing.com/videos/search?q=${q}`, h: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } },
+      { rank: i, url: `https://www.bing.com/search?q=${q}`, h: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } },
+      { rank: i, url: `https://html.duckduckgo.com/html/?q=${q}&kl=pk-en`, h: { 'User-Agent': UA, 'Accept': 'text/plain' } },
+      { rank: i, url: `https://r.jina.ai/https://html.duckduckgo.com/html/?q=${q}&kl=pk-en`, h: { 'User-Agent': UA, 'Accept': 'text/plain' } },
+    ];
+  }).flat();
+  const results = await Promise.allSettled(jobs.map((j) =>
+    getText(j.url, { headers: j.h }, 12000).then((html) => ({ html, rank: j.rank }))));
+  for (const r of results) {
+    if (r.status === 'fulfilled') collect(r.value.html, r.value.rank);
   }
   found.sort((a, b) => a.rank - b.rank);
   return found.slice(0, limit * 4).map((f) => f.url);
