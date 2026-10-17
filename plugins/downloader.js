@@ -290,6 +290,26 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     if (picks.length) ttCache.set(ckey, picks);
   }
   if (!picks.length) {
+    // Search engines gave NOTHING (Bing serves empty pages to Urdu queries
+    // sometimes). Never collapse to ONE video — mirror-search pulls a full
+    // RELEVANT row from YouTube and the same album code delivers it.
+    try {
+      const yt = await ytdlp.searchViaMirror(query, limit);
+      const picked = yt.map((v) => ({ src: '', url: '', title: String(v.title || '').slice(0, 120), file: v.file })).filter((v) => v.file && fs.existsSync(v.file));
+      if (picked.length >= 2) {
+        debug.info('[TTS] mirror-row fallback', { count: picked.length });
+        try {
+          const parent = await ctx.send(ctx.from, { album: { expectedVideoCount: picked.length } }, { quoted: ctx.m });
+          const parentKey = { id: parent?.key?.id, remoteJid: ctx.from, fromMe: true };
+          for (const v of picked) {
+            try {
+              await ctx.send(ctx.from, { video: fs.readFileSync(v.file), caption: v.title ? `🎬 *${v.title}*` : undefined }, { albumParentKey: parentKey });
+            } catch { await ctx.send(ctx.from, { video: fs.readFileSync(v.file) }); }
+          }
+        } catch { for (const v of picked) { try { await ctx.send(ctx.from, { video: fs.readFileSync(v.file) }); } catch { /* skip */ } } }
+        return;
+      }
+    } catch { /* fall through to single video */ }
     try { await ytSearchDownload(ctx, query, false); }
     catch { await ctx.reply('❌ Kuch nahi mila — doosra keyword try karo.'); }
     return;
@@ -390,6 +410,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   if (!delivered) {
     await ctx.reply('❌ TikTok ne videos bhejne se rok liya (server IP block). Thori dair baad dobara try karo — ya .video se search karo.');
   }
+  debug.info('[TTS] delivered', { count: delivered, wanted: limit });
 }
 
 /* ------------------------------- Quran surahs ------------------------------- */
