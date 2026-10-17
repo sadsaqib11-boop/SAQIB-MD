@@ -68,7 +68,10 @@ const handler = async (ctx) => {
       caption: `\ud83d\uddbc\ufe0f *${spec.label}*\n\ud83d\udc51 ${config.BOT_NAME}`,
     }, { quoted: ctx.m });
   } catch (e) {
-    await reply('\u274c Process error: ' + e.message);
+    // The old message here was a bare "Process error: <ffmpeg stderr>" with no
+    // command context — hard to act on when it shows up in a chat. Include the
+    // command and the filter used so a failure is self-describing.
+    await reply(`\u274c ${config.PREFIX}${command} failed (${spec.label}). ${String(e.message).slice(0, 180)}`);
   } finally {
     [inp, out].forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
   }
