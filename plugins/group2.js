@@ -291,7 +291,7 @@ module.exports = {
     } catch (e) {
       const s = String(e?.message || e || '');
       if (/forbidden|not-?author|40[13]\b|conflict|action-not-allowed|rate-overlimit/i.test(s)) {
-        return ctx.reply('\u26a0\ufe0f Ye kaam nahi hua — *bot ko is group ka ADMIN banao* (group settings \u2192 admins \u2192 add), phir dobara try karo.');
+        return ctx.reply('\u26a0\ufe0f Ye kaam nahi hua. Bot ko group ka *ADMIN* banao aur member ke group me hone ka yaqeen karo, phir dobara try karo.');
       }
       throw e;
     }

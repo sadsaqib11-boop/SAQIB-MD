@@ -2,11 +2,52 @@
  * GROUP — group management (admin commands)
  */
 const config = require('../config');
+const contacts = require('../lib/contacts');
 const { isGroupAdmin } = require('../lib/handler');
 const { downloadMedia } = require('../lib/helpers');
 const { generateWAMessageFromContent, jidNormalizedUser, prepareWAMessageMedia } = require('@whiskeysockets/baileys');
 
 const warns = new Map(); // jid -> Map(user -> count)
+
+/** Match a kick/promote/demote target against the group's participant list
+ * and return the EXACT participant record WhatsApp knows for them. Fixes the
+ * LID-vs-phone mismatch: sending a phone JID for a participant WhatsApp has as
+ * a LID (or vice versa) gets rejected with not-authorized EVEN when the bot is
+ * admin — the #1 reason promote/demote/kick "did not work". */
+function matchParticipant(meta, target) {
+  const bare = String(target || '').split('@')[0].split(':')[0].replace(/[^0-9]/g, '');
+  if (!bare) return null;
+  const ps = meta?.participants || [];
+  return ps.find((p) => {
+    const id = String(p.id || '');
+    const alt = String(require('../lib/contacts').resolve(id) || '').split('@')[0];
+    const jid2 = String(p.jid || '').split('@')[0];
+    return id.split('@')[0] === bare || alt === bare || jid2 === bare;
+  }) || null;
+}
+
+/** The bot's own participant record in this group (exact id form included). */
+function botParticipant(meta, selfNum) {
+  return matchParticipant(meta, selfNum);
+}
+
+/** groupParticipantsUpdate with one LID<->phone retry. */
+async function updateParticipant(sock, from, participant, action) {
+  const contacts = require('../lib/contacts');
+  try {
+    await sock.groupParticipantsUpdate(from, [participant.id], action);
+  } catch (e) {
+    const id = String(participant.id || '');
+    const idBare = id.split('@')[0];
+    const alt = participant.lid || participant.lidJid
+      || (id.endsWith('@lid') ? contacts.resolve(id) : (contacts.pnToLid.get(idBare) ? `${idBare}@lid` : null));
+    if (alt && alt !== id) {
+      await sock.groupParticipantsUpdate(from, [alt], action);
+      return;
+    }
+    throw e;
+  }
+}
 
 /**
  * Post a WhatsApp *group status* (group story). Baileys has no high-level helper,
@@ -89,23 +130,51 @@ const handler = async (ctx) => {
     }
     case 'kick': {
       if (!target) return reply('\u274c Kisi member ko reply karo ya number do.');
-      await sock.groupParticipantsUpdate(from, [target], 'remove');
-      await reply(`\ud83d\udc62 @${target.split('@')[0]} ko nikal diya gaya.`, { mentions: [target] });
+      const meta = await sock.groupMetadata(from);
+      contacts.learnFromGroupMeta(meta);
+      const selfNum = String(ctx.session?.number || sock.user?.id || '').split(':')[0].split('@')[0];
+      const me = botParticipant(meta, selfNum);
+      if (!me?.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir kick chalega.');
+      const tp = matchParticipant(meta, target);
+      if (!tp) return reply('\u274c Ye member is group me nahi hy.');
+      await updateParticipant(sock, from, tp, 'remove');
+      await reply(`\ud83d\udc62 @${String(tp.id).split('@')[0]} ko nikal diya gaya.`, { mentions: [tp.id] });
       break;
     }
     case 'promote': {
       if (!target) return reply('\u274c Kisi member ko reply karo ya number do.');
-      await sock.groupParticipantsUpdate(from, [target], 'promote');
-      await reply(`\ud83d\udc51 @${target.split('@')[0]} ab *ADMIN* hy!`, { mentions: [target] });
+      const meta = await sock.groupMetadata(from);
+      contacts.learnFromGroupMeta(meta);
+      const selfNum = String(ctx.session?.number || sock.user?.id || '').split(':')[0].split('@')[0];
+      const me = botParticipant(meta, selfNum);
+      if (!me?.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir promote chalega.');
+      const tp = matchParticipant(meta, target);
+      if (!tp) return reply('\u274c Ye member is group me nahi hy.');
+      if (tp.admin) return reply('\ud83d\ude45 Ye pehle hi admin hy.');
+      await updateParticipant(sock, from, tp, 'promote');
+      await reply(`\ud83d\udc51 @${String(tp.id).split('@')[0]} ab *ADMIN* hy!`, { mentions: [tp.id] });
       break;
     }
     case 'demote': {
       if (!target) return reply('\u274c Kisi member ko reply karo ya number do.');
-      await sock.groupParticipantsUpdate(from, [target], 'demote');
-      await reply(`\u2b07\ufe0f @${target.split('@')[0]} ab normal member hy.`, { mentions: [target] });
+      const meta = await sock.groupMetadata(from);
+      contacts.learnFromGroupMeta(meta);
+      const selfNum = String(ctx.session?.number || sock.user?.id || '').split(':')[0].split('@')[0];
+      const me = botParticipant(meta, selfNum);
+      if (!me?.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir demote chalega.');
+      const tp = matchParticipant(meta, target);
+      if (!tp) return reply('\u274c Ye member is group me nahi hy.');
+      if (!tp.admin) return reply('\ud83d\ude45 Ye pehle hi normal member hy.');
+      await updateParticipant(sock, from, tp, 'demote');
+      await reply(`\u2b07\ufe0f @${String(tp.id).split('@')[0]} ab normal member hy.`, { mentions: [tp.id] });
       break;
     }
     case 'mute': case 'unmute': {
+      const meta = await sock.groupMetadata(from);
+      contacts.learnFromGroupMeta(meta);
+      const selfNum = String(ctx.session?.number || sock.user?.id || '').split(':')[0].split('@')[0];
+      const me = botParticipant(meta, selfNum);
+      if (!me?.admin) return reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add).');
       await sock.groupSettingUpdate(from, command === 'mute' ? 'announcement' : 'not_announcement');
       await reply(command === 'mute' ? '\ud83d\udd07 Group *sirf admins* ke messages ke liye.' : '\ud83d\udd0a Sab members message kar sakte hain.');
       break;
@@ -298,7 +367,7 @@ module.exports = {
     } catch (e) {
       const s = String(e?.message || e || '');
       if (/forbidden|not-?author|40[13]\b|conflict|action-not-allowed|rate-overlimit/i.test(s)) {
-        return ctx.reply('\u26a0\ufe0f Ye kaam nahi hua — *bot ko is group ka ADMIN banao* (group settings \u2192 admins \u2192 add), phir dobara try karo.');
+        return ctx.reply('\u26a0\ufe0f Ye kaam nahi hua. Bot ko group ka *ADMIN* banao aur member ke group me hone ka yaqeen karo, phir dobara try karo.');
       }
       throw e;
     }
