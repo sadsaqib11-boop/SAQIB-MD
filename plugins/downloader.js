@@ -651,22 +651,34 @@ async function searchApk(q) {
 /** Send a downloaded film as a DOCUMENT so WhatsApp doesn't re-encode it. */
 async function sendMovieDoc(ctx, file, title, audio) {
   try {
+    // GUARD: an undefined/missing file used to crash mid-send with a cryptic
+    // "Cannot read properties of undefined" — say what actually happened.
+    if (!file || !fs.existsSync(file)) {
+      console.error('[MOVIE] send fail: file missing', { file });
+      await ctx.reply(`❌ Movie download to hui thi lekin file mili nahi (${file || 'unknown path'}) — dobara try karo.`);
+      return;
+    }
     const size = fs.statSync(file).size;
     const mb = (size / 1048576).toFixed(1);
     // STREAM the file instead of reading it all into RAM: a 2-hour 720p film can
     // be 1.5-2.5 GB, which would OOM a small container if buffered. WhatsApp's
     // document cap is ~2 GB, so we also guard against oversized files.
     if (size > MAX_DOC_BYTES) {
-      await ctx.reply('\u274c Movie ' + mb + ' MB ki hy \u2014 WhatsApp ki 2GB limit se bari, bhej nahi sakta.');
+      await ctx.reply('❌ Movie ' + mb + ' MB ki hy — WhatsApp ki 2GB limit se bari, bhej nahi sakta.');
       return;
     }
+    const safeTitle = String(title || 'movie').replace(/[^\w.-]+/g, '_');
     await ctx.send(ctx.from, {
       document: fs.createReadStream(file),
       mimetype: audio ? 'audio/mpeg' : 'video/mp4',
-      fileName: `${String(title).replace(/[^\w.-]+/g, '_')}.${audio ? 'mp3' : 'mp4'}`,
+      fileName: `${safeTitle}.${audio ? 'mp3' : 'mp4'}`,
       caption: `🎬 *${title}*\n📏 ${mb} MB\n📄 Full movie (document)\n👑 ${config.BOT_NAME}`,
     }, { quoted: ctx.m });
   } catch (e) {
+    // Log the FULL stack to the bot log (visible in /api/debug) — the next
+    // "file bhejne me masla" report then comes with a fixable answer, not a
+    // one-line mystery.
+    console.error('[MOVIE] send fail:', e?.stack || e?.message || e);
     await ctx.reply(`❌ File bhejne me masla: ${e.message || e}`);
   } finally {
     // Delete AFTER the upload has finished (the stream has been consumed by the
