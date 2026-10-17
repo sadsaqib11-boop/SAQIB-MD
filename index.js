@@ -276,9 +276,9 @@ async function genTestFile(kind) {
   const f = `/tmp/iris-test-${kind}`;
   if (fs.existsSync(f)) return f;
   const map = {
-    image: ['-f', 'lavfi', '-i', 'color=c=red:s=640x640', '-frames:v', '1', '-vcodec', 'png', f],
-    video: ['-f', 'lavfi', '-i', 'testsrc=duration=2:size=320x240:rate=15', '-pix_fmt', 'yuv420p', f],
-    audio: ['-f', 'lavfi', '-i', 'sine=frequency=440:duration=2', '-q:a', '9', f],
+    image: ['-f', 'lavfi', '-i', 'color=c=red:s=640x640', '-frames:v', '1', '-f', 'image2', '-vcodec', 'png', f],
+    video: ['-f', 'lavfi', '-i', 'testsrc=duration=2:size=320x240:rate=15', '-pix_fmt', 'yuv420p', '-f', 'mp4', f],
+    audio: ['-f', 'lavfi', '-i', 'sine=frequency=440:duration=2', '-q:a', '9', '-f', 'mp3', f],
   };
   const args = map[kind] || map.image;
   await new Promise((res2, rej2) => execFile('ffmpeg', args, { timeout: 60000 }, (e, so, se) => (e ? rej2(new Error((se || e.message).slice(0, 200))) : res2())));
