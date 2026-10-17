@@ -66,6 +66,35 @@ app.get('/health', (req, res) => {
   res.json({ ok: true, bot: config.BOT_NAME, version: config.BOT_VERSION, status: s.status, connected: s.connected, uptime: s.uptime, sessions: s.connectedCount });
 });
 
+// Groups diagnostic — for every CONNECTED session, list every group the
+// account is in: member count, announce-only flag, and whether the BOT is an
+// admin there. This is how we prove WHY a "1k+ member group" looks dead: an
+// announce-only group silently rejects every reply from a non-admin bot.
+app.get('/api/groups', async (req, res) => {
+  try {
+    const out = [];
+    for (const s of bot.listSessions()) {
+      if (s.status !== 'connected') continue;
+      const sock = bot.getSock(s.number);
+      if (!sock) continue;
+      let groups = [];
+      try { groups = await sock.groupFetchAllParticipating(); } catch (e) { out.push({ session: s.number, error: e?.message || String(e) }); continue; }
+      const meId = String(sock.user?.id || '').split(':')[0].split('@')[0];
+      for (const [jid, meta] of Object.entries(groups || {})) {
+        const me = (meta.participants || []).find((p) => String(p.id || '').split('@')[0].split(':')[0] === meId);
+        out.push({
+          session: s.number, jid, name: meta.subject || '', size: (meta.participants || []).length,
+          announceOnly: !!meta.announce, botAdmin: !!(me && (me.admin === 'admin' || me.admin === 'superadmin')),
+        });
+      }
+    }
+    out.sort((a, b) => (b.size || 0) - (a.size || 0));
+    res.json({ ok: true, count: out.length, groups: out });
+  } catch (e) {
+    res.json({ ok: false, error: e?.message || String(e) });
+  }
+});
+
 // Build marker — lets us confirm which code is actually live (deploy check).
 const BUILD = process.env.BUILD_MARKER || 'watchdog+lastUpdate+diag';
 app.get('/api/version', (req, res) => {

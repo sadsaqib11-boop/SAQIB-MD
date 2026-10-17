@@ -76,7 +76,7 @@ async function ytSearchDownload(ctx, query, asAudio) {
   const input = String(query).trim();
   // Only fetch metadata when we already have a URL (avoids a slow blocked YT search).
   const meta = isUrl(input) ? await ytdlp.info(input).catch(() => ({ title: '' })) : { title: query };
-  await ctx.reply(`⬇️ *${meta.title || query}*\n_${asAudio ? '🎵 Audio' : '🎬 Video'} download ho raha hy…_`);
+  await ctx.reply(`⬇️ *${meta.title || query}*\n_${asAudio ? '🎵 Audio' : '🎬 Video'} download ho raha hy…\n⏱️ choti file 1-3 min, bari video 10-30 min lag sakte hain. Ek dafa aayi to dobara *foran*._`);
   if (asAudio) {
     // SIX lanes race: YouTube, SoundCloud, Dailymotion, Invidious mirror,
     // JioSaavn, and TikTok (this closure uses the same scraper as .tts).
@@ -401,7 +401,7 @@ const handler = async (ctx) => {
       return;
     }
     // Reply INSTANTLY so the bot never feels stuck, then work in the background.
-    await reply(`🎬 *${arg}* — movie aa rahi hy…\n_best source dhoond raha hoon, thora intezar karein (5-10 minute lag sakte hain)._`);
+    await reply(`🎬 *${arg}* — movie aa rahi hy…\n_720p full movie: *20-40 minute* lag sakte hain. Ek dafa aa gayi to agli dafa *foran* (seconds) milegi._`);
     try {
       // downloadMovie: searches the top candidates (a plain "ytsearch1:" often
       // lands on a trailer, not the film), races the direct download against a
