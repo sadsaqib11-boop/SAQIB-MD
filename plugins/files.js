@@ -77,7 +77,7 @@ const handler = async (ctx) => {
         const url = (await r.text()).trim();
         if (!/^https?:/.test(url)) throw new Error('upload failed');
         return reply(`☁️ *File uploaded*\n\n📛 ${doc.fileName || 'file'}\n🔗 ${url}\n\n_Link permanent hai._`);
-      } catch { return reply('❌ Upload nahi ho saka. File chhoti kar ke try karo (max ~200MB).'); }
+      } catch { return reply('❌ Upload failed. Try a smaller file (max ~200MB).'); }
     }
     case 'tempfile': {
       const doc = attached(ctx);
@@ -94,7 +94,7 @@ const handler = async (ctx) => {
           return reply(`⏳ *Temp file (24h)*\n\n📛 ${doc.fileName || 'file'}\n🔗 ${url}`);
         } catch { return reply('❌ Upload nahi ho saka.'); }
       }
-      if (!arg) return reply(`❌ File par reply karo, ya text do: ${P()}tempfile <text>`);
+      if (!arg) return reply(`❌ Reply to a file, or provide text: ${P()}tempfile <text>`);
       try {
         const f = new FormData();
         f.append('file', new Blob([arg]), 'note.txt');
@@ -124,7 +124,7 @@ const handler = async (ctx) => {
     }
     case 'gist': {
       if (!arg) return reply(`❌ Code/text do. Example: ${P()}gist console.log(1)`);
-      if (!config.GITHUB_TOKEN) return reply(`❌ Gist banane ke liye GITHUB_TOKEN chahiye.\n\n_${P()}pastebin ${arg.slice(0, 20)} — ye bina token kaam karta hai._`);
+      if (!config.GITHUB_TOKEN) return reply(`❌ Creating a gist needs GITHUB_TOKEN.\n\n_${P()}pastebin ${arg.slice(0, 20)} — this one works without a token._`);
       try {
         const r = await fetch('https://api.github.com/gists', {
           method: 'POST',
@@ -219,18 +219,18 @@ const handler = async (ctx) => {
         off += 30 + nlen + elen + size;
       }
       if (!names.length) return reply('❌ Ye zip nahi lagti (ya encrypted hai).');
-      return reply(`🗜️ *Archive contents* (${names.length} files)\n\n${names.slice(0, 40).map((n) => '• ' + n).join('\n')}${names.length > 40 ? `\n_…aur ${names.length - 40}_` : ''}\n\n_Extract karne ke liye file PC par kholo._`);
+      return reply(`🗜️ *Archive contents* (${names.length} files)\n\n${names.slice(0, 40).map((n) => '• ' + n).join('\n')}${names.length > 40 ? `\n_…and ${names.length - 40} more_` : ''}\n\n_Open the file on a PC to extract._`);
     }
 
     /* ---------------- PDF (needs the file on a host with tools) ---------------- */
     case 'topdf': {
       const doc = attached(ctx);
-      if (!doc) return reply(`❌ Image(s) par reply karke ${P()}topdf likho.\n\n_Multi-image → PDF ke liye images ek sath reply karo._`);
+      if (!doc) return reply(`❌ Reply to image(s) with ${P()}topdf.\n\n_For multi-image → PDF, reply to all the images at once._`);
       try {
         const buf = await downloadMedia(doc, 'image');
         // Minimal single-image PDF wrapper (JPEG only, no re-encode).
         if (!/jpe?g/i.test(doc.mimetype || '')) {
-          return reply('❌ Filhal sirf JPG images se PDF banti hai. (PNG → JPG ke liye .imgconvert jpg use karo)');
+          return reply('❌ Currently only JPG images can become a PDF. (Use .imgconvert jpg for PNG → JPG)');
         }
         const w = doc.width || 1000, h = doc.height || 1000;
         const objs = [];
@@ -246,7 +246,7 @@ const handler = async (ctx) => {
         const xref = Buffer.from(`xref\n0 6\n0000000000 65535 f \n0000000009 00000 n \n0000000052 00000 n \n0000000101 00000 n \n0000000225 00000 n \n0000000${String(body.length - stream.length + 30).padStart(3, '0')} 00000 n \ntrailer<</Size 6/Root 1 0 R>>\nstartxref\n${xrefPos}\n%%EOF`, 'latin1');
         const out = Buffer.concat([body, xref]);
         await ctx.send(ctx.from, { document: out, fileName: 'image.pdf', mimetype: 'application/pdf' }, { quoted: ctx.m });
-      } catch { return reply('❌ PDF nahi ban saki. JPG image try karo.'); }
+      } catch { return reply('❌ Could not build the PDF. Try a JPG image.'); }
     }
     case 'mergepdf': case 'splitpdf': case 'compresspdf': case 'pdflock': case 'pdfunlock': case 'pdfpage':
     case 'pdftotext': case 'pdf2img': {
@@ -259,25 +259,25 @@ const handler = async (ctx) => {
           const texts = [...raw.matchAll(/\((.*?)\)\s*Tj/g)].map((m) => m[1]).join(' ');
           const tj = [...raw.matchAll(/\[(.*?)\]\s*TJ/g)].map((m) => (m[1].match(/\((.*?)\)/g) || []).map((x) => x.slice(1, -1)).join('')).join(' ');
           const out = (texts + ' ' + tj).replace(/\\([()\\])/g, '$1').trim();
-          if (!out) return reply('❌ Is PDF me text layer nahi mili (scanned PDF?).');
+          if (!out) return reply('❌ No text layer found in this PDF (is it scanned?).');
           return reply(`📄 *PDF text*\n\n${out.slice(0, 2500)}`);
         } catch { return reply('❌ Text extract nahi hua.'); }
       }
-      return reply(`⚠️ *${command}* ko poora karne ke liye server par PDF tools (qpdf/ghostscript) chahiye.\n\n✅ Jo bina tools kaam karte hain: ${P()}pdfmeta, ${P()}pdftotext, ${P()}filetype, ${P()}hashfile\n\n_Chahte ho to main Railway image me tools add kar dun?_`);
+      return reply(`⚠️ *${command}* needs PDF tools (qpdf/ghostscript) on the server.\n\n✅ These work without the tools: ${P()}pdfmeta, ${P()}pdftotext, ${P()}filetype, ${P()}hashfile\n\n_Want me to add the tools to the Railway image?_`);
     }
 
     /* ---------------- images (sharp-free, ffmpeg-free fallbacks) ---------------- */
     case 'imgcompress': case 'imgresize': case 'imgcrop': case 'imgconvert': case 'gifmaker': case 'mp4compress': case 'mp3tag': {
       const doc = attached(ctx);
       if (!doc) return reply(`❌ Media par reply karke ${P()}${command} likho.`);
-      return reply(`⚠️ *${command}* ke liye image/video tools (sharp/ffmpeg) chahiye jo is host par nahi hain.\n\n✅ Jo kaam karte hain: ${P()}removebg, ${P()}enhance1-16, ${P()}blur, ${P()}sticker\n\n_Chaho to main Railway image me ffmpeg/sharp add kar dun — phir ye sab chal jayenge._`);
+      return reply(`⚠️ *${command}* needs image/video tools (sharp/ffmpeg) that this host does not have.\n\n✅ These work: ${P()}removebg, ${P()}enhance1-16, ${P()}blur, ${P()}sticker\n\n_I can add ffmpeg/sharp to the Railway image — then these will all work._`);
     }
 
     /* ---------------- text/doc generators ---------------- */
     case 'menucard': {
       if (!arg) return reply(`❌ Format: ${P()}menucard Pizza Palace | Margherita 800 | Fajita 1200`);
       const [name, ...items] = arg.split('|').map((s) => s.trim());
-      return reply(`🍽️ *${name || 'MENU'}*\n${'─'.repeat(24)}\n\n${items.map((i) => `▫️ ${i}`).join('\n')}\n\n${'─'.repeat(24)}\n_${config.BOT_NAME} — order karein!_`);
+      return reply(`🍽️ *${name || 'MENU'}*\n${'─'.repeat(24)}\n\n${items.map((i) => `▫️ ${i}`).join('\n')}\n\n${'─'.repeat(24)}\n_${config.BOT_NAME} — place your order!_`);
     }
     case 'invoice': {
       if (!arg) return reply(`❌ Format: ${P()}invoice Client Name | Item 1 x2 @500 | Item 2 @300`);

@@ -122,7 +122,7 @@ async function adminMetaOrReply(ctx, sock, from, reply) {
   const selfNum = String(ctx.session?.number || sock.user?.id || '').split(':')[0].split('@')[0];
   const me = botParticipant(meta, selfNum);
   if (!me?.admin) {
-    await reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir ye command chalegi.');
+    await reply('\u26a0\ufe0f Make the bot an *ADMIN* of this group first (group settings \u2192 admins \u2192 add), then this command will work.');
     return null;
   }
   return meta;
@@ -157,7 +157,7 @@ const handler = async (ctx) => {
         });
       } catch { /* still no */ }
     }
-    if (!ok) return reply('\u274c Ye command sirf *group admins* ke liye hai.');
+    if (!ok) return reply('\u274c This command is for *group admins* only.');
   }
 
   const target = quoted ? (quoted.key.participant || quoted.key.remoteJid) : (arg ? arg.replace(/[^0-9]/g, '') + '@s.whatsapp.net' : null);

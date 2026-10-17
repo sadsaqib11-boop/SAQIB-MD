@@ -210,7 +210,7 @@ const handler = async (ctx) => {
   // ---- .fool — the TARGET is the fool (never the sender) ----
   if (command === 'fool' || command === 'pagal' || command === 'bewaqoof') {
     if (!target) {
-      return reply('🤡 Kisko *PAGAL* banana hy? Us ke message pe *reply* karo ya *@tag* karo.');
+      return reply('🤡 Who should be marked *PAGAL*? Reply to their message or *@tag* them.');
     }
     const line = pick(FOOL_LINES).replace('@x', tag);
     return ctx.send(ctx.from, { text: line, mentions }, { quoted: ctx.m });
@@ -219,7 +219,7 @@ const handler = async (ctx) => {
   // ---- role commands ----
   if (ROLES[command]) {
     if (!target) {
-      return reply(`🤔 Kisko? Us ke message pe *reply* karo ya *@tag* karo, phir \`${config.PREFIX}${command}\` bhejo.`);
+      return reply(`🤔 Who? Reply to their message or *@tag* them, then send \`${config.PREFIX}${command}\`.`);
     }
     const [emoji, line] = ROLES[command];
     return ctx.send(ctx.from, { text: `${emoji} ${tag} ${line}`, mentions }, { quoted: ctx.m });
@@ -246,7 +246,7 @@ const handler = async (ctx) => {
       const url = await nekoImg(isGirl ? 'waifu' : 'husbando');
       if (!url) throw new Error('no img');
       await ctx.send(ctx.from, { image: { url }, caption: `${isGirl ? '👧' : '👦'} *${command}* DP\n👑 ${config.BOT_NAME}` }, { quoted: ctx.m });
-    } catch { await reply('❌ DP nahi mili, dobara try karo.'); }
+    } catch { await reply('❌ Could not get the profile picture, please try again.'); }
     return;
   }
 

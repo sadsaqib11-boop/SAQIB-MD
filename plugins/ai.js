@@ -11,7 +11,7 @@ const STYLE_NOTES = {
   grok: 'Jawab thoda witty aur sharp style mein do.',
   claude: 'Jawab thoughtful aur clear style mein do.',
   deepseek: 'Technical/coding sawal ho to detail se jawab do.',
-  mathgpt: 'Ye maths sawal hy — step by step solve karo.',
+  mathgpt: 'This is a math question — solve it step by step.',
 };
 
 /** fetch with an AbortController timeout (keeps AI snappy — never hangs). */
@@ -63,7 +63,7 @@ async function askPollinations(prompt) {
   if (!res.ok) throw new Error(`AI API error ${res.status}`);
   const data = await res.json();
   const out = data.choices?.[0]?.message?.content;
-  return out ? String(out).trim() : '❌ Koi jawab nahi mila.';
+  return out ? String(out).trim() : '❌ No answer found.';
 }
 
 
@@ -124,7 +124,7 @@ const handler = async (ctx) => {
   try {
     const imgMsg = ctx.m.message?.imageMessage || ctx.quoted?.message?.imageMessage;
     if (imgMsg) {
-      prompt = prompt || 'Is image ko describe karo.';
+      prompt = prompt || 'Describe this image.';
       img = (await downloadMedia(imgMsg, 'image')).toString('base64');
     }
   } catch { /* ignore */ }

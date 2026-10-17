@@ -90,7 +90,7 @@ const handler = async (ctx) => {
       polaroid: '📷 *Polaroid style*',
     };
     if (CAPTIONS[command]) {
-      return reply(`⚠️ *${command}* ke liye image engine (sharp/canvas) chahiye jo is host par nahi hai.\n\n✅ Ye effects chalte hain: ${P()}grayscale ${P()}sepia ${P()}invert ${P()}blurpic ${P()}vintage ${P()}sketchpic ${P()}pixelate ${P()}deepfry ${P()}hdr ${P()}glow ${P()}vhs ${P()}mirror ${P()}flipimg ${P()}comic`);
+      return reply(`⚠️ *${command}* needs an image engine (sharp/canvas) that this host does not have.\n\n✅ These effects work: ${P()}grayscale ${P()}sepia ${P()}invert ${P()}blurpic ${P()}vintage ${P()}sketchpic ${P()}pixelate ${P()}deepfry ${P()}hdr ${P()}glow ${P()}vhs ${P()}mirror ${P()}flipimg ${P()}comic`);
     }
 
     return reply(`⚠️ *${command}* filhal available nahi (host par image tools nahi hain).\n\n✅ Chalne wale effects: ${P()}grayscale, ${P()}sepia, ${P()}invert, ${P()}blurpic, ${P()}vintage, ${P()}sketchpic, ${P()}pixelate, ${P()}deepfry, ${P()}hdr, ${P()}glow, ${P()}vhs, ${P()}mirror, ${P()}flipimg, ${P()}comic, ${P()}oilpaint, ${P()}glass`);

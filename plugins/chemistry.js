@@ -172,7 +172,7 @@ const handler = async (ctx) => {
     const hits = SYMS.filter((s) => EL[s][0].toLowerCase().includes(q.toLowerCase()));
     if (hits.length === 1) return reply(card(hits[0]));
     if (hits.length) return reply(`🔍 ${hits.map((h) => `\`${P()}element ${h}\``).join(' · ')}`);
-    return reply(`❌ \`${q}\` nahi mila. \`${P()}elementlist\` try karo.`);
+    return reply(`❌ \`${q}\` not found. Try \`${P()}elementlist\`.`);
   }
 
   // field lookups
@@ -180,7 +180,7 @@ const handler = async (ctx) => {
     if (!q) return reply(`❓ Element likho. Example: \`${P()}${command} gold\``);
     let sym = EL[q] ? q : (BY_SYM[q.toLowerCase()] || BY_NAME[q.toLowerCase()]);
     if (!sym) sym = SYMS.find((s) => EL[s][0].toLowerCase().includes(q.toLowerCase()));
-    if (!sym) return reply(`❌ \`${q}\` nahi mila.`);
+    if (!sym) return reply(`❌ \`${q}\` not found.`);
     const [name, num, mass, cat] = EL[sym];
     const v = command === 'atomicnumber' ? num : command === 'atomicmass' ? mass + ' u' : cat;
     const label = command === 'atomicnumber' ? 'Atomic number' : command === 'atomicmass' ? 'Atomic mass' : 'Category';

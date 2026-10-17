@@ -142,7 +142,7 @@ const handler = async (ctx) => {
       return reply(`📧 *Email draft*\n\n${out}`);
     }
     case 'replygen': {
-      if (!arg) return reply(`❌ Message do jiska reply chahiye. Example: ${P()}replygen <their msg>`);
+      if (!arg) return reply(`❌ Send a message to reply to. Example: ${P()}replygen <their msg>`);
       const out = await ask(`Write 3 possible replies (short, friendly) to this message:\n\n${arg}`, 'You write natural chat replies.');
       return reply(`💬 *Reply options*\n\n${out}`);
     }
@@ -316,13 +316,13 @@ const handler = async (ctx) => {
     case 'voiceai': {
       if (!arg) return reply(`❌ Sawal do. Example: ${P()}voiceai aaj mausam kaisa hai`);
       const out = await ask(arg, 'Answer in one short Roman Urdu sentence.');
-      return reply(`🤖 *AI*\n\n${out}\n\n_Tip: ${P()}tts ${out.slice(0, 80)} — voice note ke liye._`);
+      return reply(`🤖 *AI*\n\n${out}\n\n_Tip: ${P()}tts ${out.slice(0, 80)} — to get it as a voice note._`);
     }
     default:
       return reply('❓ Unknown AI command');
   }
   } catch {
-    return reply('🤖 AI abhi busy hai ya network slow hai. Thori der baad try karo.');
+    return reply('🤖 The AI is busy or the network is slow. Try again in a little while.');
   }
 };
 

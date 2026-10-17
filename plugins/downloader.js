@@ -42,7 +42,7 @@ async function sendMedia(ctx, filePath, caption, asAudio) {
   // GUARD: an undefined/missing file used to crash with "path argument must be
   // of type string" — report it in words instead.
   if (!filePath || !fs.existsSync(filePath)) {
-    throw new Error('download ke baad file mili hi nahi — dobara try karo');
+    throw new Error('the file was missing after download — please try again');
   }
   const stat = fs.statSync(filePath);
   const buf = fs.readFileSync(filePath);
@@ -73,11 +73,11 @@ async function sendDoc(ctx, buf, fileName, mimetype) {
 
 /** Download the first result (audio or video). */
 async function ytSearchDownload(ctx, query, asAudio) {
-  if (!ytdlp.available()) return ctx.reply('❌ Downloader engine (yt-dlp) available nahi hy.');
+  if (!ytdlp.available()) return ctx.reply('❌ The downloader engine (yt-dlp) is not available.');
   const input = String(query).trim();
   // Only fetch metadata when we already have a URL (avoids a slow blocked YT search).
   const meta = isUrl(input) ? await ytdlp.info(input).catch(() => ({ title: '' })) : { title: query };
-  await ctx.reply(`⬇️ *${meta.title || query}*\n_${asAudio ? '🎵 Audio' : '🎬 Video'} download ho raha hy…\n⏱️ choti file 1-3 min, bari video 10-30 min lag sakte hain. Ek dafa aayi to dobara *foran*._`);
+  await ctx.reply(`⬇️ *${meta.title || query}*\n_${asAudio ? '🎵 Audio' : '🎬 Video'} download started…\n⏱️ small files take 1-3 min, big videos 10-30 min. Once fetched, repeats are *instant*._`);
   if (asAudio) {
     // SIX lanes race: YouTube, SoundCloud, Dailymotion, Invidious mirror,
     // JioSaavn, and TikTok (this closure uses the same scraper as .tts).
@@ -100,7 +100,7 @@ async function ytSearchDownload(ctx, query, asAudio) {
   const videoViaTiktok = async () => {
     const urls = await tiktokSearch(String(input).trim(), 3);
     for (const u of urls) {
-      try { return await ytdlp.downloadVideoByUrl(u, { maxHeight: 480 }); } catch { /* next clip */ }
+      try { return await ytdlp.downloadVideoByUrl(u, { maxHeight: 720 }); } catch { /* next clip */ }
     }
     throw new Error('tiktok video lane came up empty');
   };
@@ -108,8 +108,8 @@ async function ytSearchDownload(ctx, query, asAudio) {
   if (audio) {
     try { fs.unlinkSync(file); } catch { /* ignore */ }
     return ctx.reply(
-      '❌ *Video* nahi mil saki (YouTube ne block kiya).\n' +
-      '🎵 Audio mil sakti hy — `' + config.PREFIX + 'song ' + query + '` try karo.'
+      '❌ Could not get the *video* (YouTube blocked it).\n' +
+      '🎵 Audio may work — try `' + config.PREFIX + 'song ' + query + '`.'
     );
   }
   await sendMedia(ctx, file, `🎬 *${meta.title || query}*\n👑 ${config.BOT_NAME}`, false);
@@ -127,15 +127,15 @@ async function askDownload(ctx, query) {
   // "download bohat dair se chal raha tha". Audio is light; video now gets 30.
   const withTimeout = (p, ms, label) => Promise.race([
     p,
-    new Promise((_, rej) => setTimeout(() => rej(new Error(label || 'download me bohat dair lag rahi thi')), ms)),
+    new Promise((_, rej) => setTimeout(() => rej(new Error(label || 'the download was taking too long')), ms)),
   ]);
   interactions.set(ctx.from, ctx.sender, 'choice', {
     options: [
-      { run: (c) => withTimeout(ytSearchDownload(c, query, true), 600000).catch((e) => c.reply('❌ Audio nahi aayi: ' + (e.message || 'download fail.') + '\n_Dusra naam try karo ya .tts/.video use karo._')) },
-      { run: (c) => withTimeout(ytSearchDownload(c, query, false), 1800000, 'video bohat BARI hy aur download time baray me le raha hy — thora sabar, ya choti video mangwain').catch((e) => c.reply('❌ Video nahi aayi: ' + (e.message || 'download fail.') + '\n_Dusra naam try karo ya .tts/.song use karo._')) },
+      { run: (c) => withTimeout(ytSearchDownload(c, query, true), 600000).catch((e) => c.reply('❌ Audio failed: ' + (e.message || 'download failed.') + '\n_Try a different name, or use .tts/.video._')) },
+      { run: (c) => withTimeout(ytSearchDownload(c, query, false), 1800000, 'the video is very LARGE and the download needs time — please be patient, or request a smaller video').catch((e) => c.reply('❌ Video failed: ' + (e.message || 'download failed.') + '\n_Try a different name, or use .tts/.song._')) },
     ],
   });
-  return ctx.reply(`🎬 *${query}*\n\n1️⃣ 🎵 Audio (MP3)\n2️⃣ 🎬 Video (MP4)\n\n_Reply *1* ya *2* karo!_`);
+  return ctx.reply(`🎬 *${query}*\n\n1️⃣ 🎵 Audio (MP3)\n2️⃣ 🎬 Video (MP4)\n\n_Reply with *1* or *2*!_`);
 }
 
 /* --------------------------- TikTok search helpers --------------------------- */
@@ -268,12 +268,12 @@ async function fetchVideoBuffer(url, maxMs = 90000, maxBytes = 60 * 1048576) {
 
 /** Send up to `limit` TikTok videos for a query (used by `.tts`). */
 async function sendTiktokVideos(ctx, query, limit = 5) {
-  if (!ytdlp.available()) return ctx.reply('❌ Downloader engine (yt-dlp) available nahi hy.');
+  if (!ytdlp.available()) return ctx.reply('❌ The downloader engine (yt-dlp) is not available.');
   const ckey = `tt3|${String(query).trim().toLowerCase()}|${limit}`;
   let picks = ttCache.get(ckey);
   if (picks && picks.length) {
     // Repeat query within the TTL -> fully instant (no search, no resolve).
-    await ctx.reply(`⚡ *TikTok Search:* ${query}\n_pehle se results mojood — foran bhej raha hoon…_`);
+    await ctx.reply(`⚡ *TikTok Search:* ${query}\n_results are already cached — sending instantly…_`);
   } else {
     await ctx.reply(`🔎 *TikTok Search:* ${query}\n_${limit} videos dhoond raha hoon…_`);
     // Search is the slow part (Bing/DDG scraping) — cache the page URLs for 1h.
@@ -341,7 +341,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
       }
     } catch { /* fall through to single video */ }
     try { await ytSearchDownload(ctx, query, false); }
-    catch { await ctx.reply('❌ Kuch nahi mila — doosra keyword try karo.'); }
+    catch { await ctx.reply('❌ Nothing found — try a different keyword.'); }
     return;
   }
   // ALBUM MODE + DEAD-CLIP BACKFILL + PARALLEL FETCH — merged from both sides:
@@ -393,7 +393,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
       const stagger = (ytdlpLane++) * 2500;
       return new Promise((r) => setTimeout(r, stagger))
         .then(() => ytdlpSlot())
-        .then(() => ytdlp.downloadVideoByUrl(p.src, { maxHeight: 480, timeoutMs: 120000 }))
+        .then(() => ytdlp.downloadVideoByUrl(p.src, { maxHeight: 720, timeoutMs: 120000 }))
         .finally(ytdlpFree)
         .then((file) => {
           const buf = fs.readFileSync(file);
@@ -426,7 +426,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     } catch { /* ignore */ }
   }
   if (!bufs.length) {
-    await ctx.reply('❌ TikTok ne videos bhejne se rok liya (server IP block). Thori dair baad dobara try karo — ya .video se search karo.');
+    await ctx.reply('❌ TikTok blocked the send (server IP block). Try again in a little while — or search with .video.');
     return;
   }
   try {
@@ -454,7 +454,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     }
   }
   if (!delivered) {
-    await ctx.reply('❌ TikTok ne videos bhejne se rok liya (server IP block). Thori dair baad dobara try karo — ya .video se search karo.');
+    await ctx.reply('❌ TikTok blocked the send (server IP block). Try again in a little while — or search with .video.');
   }
   debug.info('[TTS] delivered', { count: delivered, wanted: limit });
 }
@@ -505,12 +505,12 @@ const handler = async (ctx) => {
     // Instant path: already downloaded before? Resend from the disk cache.
     const cached = dlcache.get('movie', `${arg}@720`);
     if (cached) {
-      await reply(`⚡ *${arg}* — pehle se download hy, foran bhej raha hoon…`);
+      await reply(`⚡ *${arg}* — already downloaded, sending instantly…`);
       await sendMovieDoc(ctx, cached, arg, false);
       return;
     }
     // Reply INSTANTLY so the bot never feels stuck, then work in the background.
-    await reply(`🎬 *${arg}* — movie aa rahi hy…\n_720p full movie: *20-40 minute* lag sakte hain. Ek dafa aa gayi to agli dafa *foran* (seconds) milegi._`);
+    await reply(`🎬 *${arg}* — movie is on the way…\n_720p full movie: *20-40 minutes*. Once fetched, the next time it arrives in *seconds*._`);
     try {
       // downloadMovie: searches the top candidates (a plain "ytsearch1:" often
       // lands on a trailer, not the film), races the direct download against a
@@ -523,7 +523,7 @@ const handler = async (ctx) => {
       ]);
       await sendMovieDoc(ctx, file, arg, false);
     } catch (e) {
-      await reply(`❌ *${arg}* nahi mili (${String(e.message || e).slice(0, 60)}) — naam check karo, seedha link bhejo, ya .video try karo.`);
+      await reply(`❌ *${arg}* not found (${String(e.message || e).slice(0, 60)}) — check the name, send a direct link, or try .video.`);
     }
     return;
   }
@@ -555,7 +555,7 @@ const handler = async (ctx) => {
               return;
             } catch { /* try the next source */ }
           }
-          await c.reply('❌ Surah audio fail — dobara try karo.');
+          await c.reply('❌ Surah audio failed — please try again.');
         } },
         { run: async (c) => {
           // Video used to go straight to a YouTube search, which is slow and is
@@ -584,7 +584,7 @@ const handler = async (ctx) => {
         } },
       ],
     });
-    return reply(`📖 *Surah ${n} — ${name}*\n\n1️⃣ 🎵 Audio (MP3)\n2️⃣ 🎬 Video (MP4)\n\n_Reply *1* ya *2* karo!_`);
+    return reply(`📖 *Surah ${n} — ${name}*\n\n1️⃣ 🎵 Audio (MP3)\n2️⃣ 🎬 Video (MP4)\n\n_Reply with *1* or *2*!_`);
   }
 
   // ---- npm package info ----
@@ -592,7 +592,7 @@ const handler = async (ctx) => {
     if (!arg) return reply(`❌ Package naam do. Example: ${config.PREFIX}dlnpm express`);
     try {
       const r = await getJSON(`https://registry.npmjs.org/${encodeURIComponent(arg.trim())}`);
-      if (r.error) return reply('❌ Package nahi mila.');
+      if (r.error) return reply('❌ Package not found.');
       const latest = r['dist-tags']?.latest;
       const v = r.versions?.[latest] || {};
       await reply(`📦 *${r.name}* @ ${latest}\n\n📝 ${(r.description || '-').slice(0, 300)}\n🔗 Homepage: ${r.homepage || '-'}\n👑 Author: ${(r.author && (r.author.name || r.author)) || '-'}\n📥 Tarball: ${v.dist?.tarball || '-'}\n\n_Install: npm i ${r.name}_`);
@@ -607,7 +607,7 @@ const handler = async (ctx) => {
     try {
       let res = await fetch(`https://codeload.github.com/${repo}/zip/refs/heads/main`);
       if (!res.ok) res = await fetch(`https://codeload.github.com/${repo}/zip/refs/heads/master`);
-      if (!res.ok) return reply('❌ Repo nahi mila (public ho aur main/master branch ho).');
+      if (!res.ok) return reply('❌ Repo not found (it must be public with a main/master branch).');
       const buf = Buffer.from(await res.arrayBuffer());
       await sendDoc(ctx, buf, `${repo.split('/')[1]}.zip`, 'application/zip');
     } catch (e) { await reply('❌ ' + (e.message || 'Clone fail.')); }
@@ -618,7 +618,7 @@ const handler = async (ctx) => {
   if (command === 'gdrive') {
     if (!isUrl(arg)) return reply(`❌ Drive link do. Example: ${config.PREFIX}gdrive https://drive.google.com/file/d/<id>/view`);
     const id = (arg.match(/[-\w]{25,}/) || [])[0];
-    if (!id) return reply('❌ File ID nahi mila.');
+    if (!id) return reply('❌ File ID not found.');
     try {
       const res = await fetch(`https://drive.google.com/uc?export=download&id=${id}`);
       const buf = Buffer.from(await res.arrayBuffer());
@@ -638,7 +638,7 @@ const handler = async (ctx) => {
     const q = arg.trim();
     await reply(`🔎 *${q}* dhoond raha hoon…`);
     const app = await searchApk(q);
-    if (!app) return reply(`❌ *${q}* nahi mila — naam check karo ya seedha link bhejo.`);
+    if (!app) return reply(`❌ *${q}* not found — check the name or send a direct link.`);
     const size = Number(app.size || 0);
     const mb = size ? (size / 1048576).toFixed(1) + ' MB' : 'unknown size';
     try {
@@ -657,7 +657,7 @@ const handler = async (ctx) => {
   // ---- TikTok -> sticker ----
   if (command === 'tsticker') {
     if (!isUrl(arg)) return reply(`❌ TikTok link do. Example: ${config.PREFIX}tsticker https://vt.tiktok.com/...`);
-    if (!ytdlp.available()) return reply('❌ Downloader engine (yt-dlp) available nahi hy.');
+    if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
     try {
       const file = await ytdlp.downloadVideo(arg);
       const out = tmp('webp');
@@ -692,7 +692,7 @@ const handler = async (ctx) => {
     case 'twitter': case 'x':
     case 'pinterest': case 'pin':
     case 'capcut': case 'mediafire': case 'megadl': case 'ytpost': case 'download': {
-      if (!ytdlp.available()) return reply('❌ Downloader engine (yt-dlp) available nahi hy.');
+      if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
       const label = {
         instagram: 'Instagram', ig: 'Instagram', igdl: 'Instagram', igdl2: 'Instagram', igdl3: 'Instagram', reels: 'Reels',
         facebook: 'Facebook', fb: 'Facebook', twitter: 'Twitter/X', x: 'Twitter/X',
@@ -702,11 +702,11 @@ const handler = async (ctx) => {
       try {
         const file = await ytdlp.downloadVideo(arg);
         await sendMedia(ctx, file, `⬇️ *${label}*\n👑 ${config.BOT_NAME}`, false);
-      } catch { await reply('❌ Download fail — link public ho ya baad me try karo.'); }
+      } catch { await reply('❌ Download failed — make the link public or try again later.'); }
       break;
     }
     case 'igmp3': {
-      if (!ytdlp.available()) return reply('❌ Downloader engine (yt-dlp) available nahi hy.');
+      if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
       try {
         const file = await ytdlp.downloadAudio(arg);
         await sendMedia(ctx, file, `🎵 *Instagram Audio*\n👑 ${config.BOT_NAME}`, true);
@@ -790,7 +790,7 @@ async function sendMovieDoc(ctx, file, title, audio) {
     // "Cannot read properties of undefined" — say what actually happened.
     if (!file || !fs.existsSync(file)) {
       console.error('[MOVIE] send fail: file missing', { file });
-      await ctx.reply(`❌ Movie download to hui thi lekin file mili nahi (${file || 'unknown path'}) — dobara try karo.`);
+      await ctx.reply(`❌ The movie downloaded but the file is missing (${file || 'unknown path'}) — please try again.`);
       return;
     }
     const size = fs.statSync(file).size;
@@ -799,7 +799,7 @@ async function sendMovieDoc(ctx, file, title, audio) {
     // be 1.5-2.5 GB, which would OOM a small container if buffered. WhatsApp's
     // document cap is ~2 GB, so we also guard against oversized files.
     if (size > MAX_DOC_BYTES) {
-      await ctx.reply('❌ Movie ' + mb + ' MB ki hy — WhatsApp ki 2GB limit se bari, bhej nahi sakta.');
+      await ctx.reply('❌ The movie is ' + mb + ' MB — over the 2GB WhatsApp limit, cannot send it.');
       return;
     }
     const safeTitle = String(title || 'movie').replace(/[^\w.-]+/g, '_');

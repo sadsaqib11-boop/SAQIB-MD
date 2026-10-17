@@ -225,7 +225,7 @@ const handler = async (ctx) => {
     const hits = KEYS.filter((k) => k.includes(q) || C[k][0].toLowerCase().includes(q));
     if (hits.length === 1) return reply(card(hits[0]));
     if (hits.length) return reply(`🔍 ${hits.length} mile:\n${hits.slice(0, 12).map((h) => `▪️ \`${P()}country ${h}\``).join('\n')}`);
-    return reply(`❌ \`${arg}\` nahi mila. \`${P()}countrylist\` try karo.`);
+    return reply(`❌ \`${arg}\` not found. Try \`${P()}countrylist\`.`);
   }
 
   // ---- a specific field across ALL countries ----
@@ -236,7 +236,7 @@ const handler = async (ctx) => {
     if (!q) return reply(`❓ Country likho. Example: \`${P()}${command} pakistan\``);
     let k = C[q] ? q : byIso[q];
     if (!k) k = KEYS.find((x) => C[x][0].toLowerCase().includes(q));
-    if (!k) return reply(`❌ \`${arg}\` nahi mila.`);
+    if (!k) return reply(`❌ \`${arg}\` not found.`);
     const v = C[k][FIELD[command]];
     const label = command === 'callingcode' ? 'Calling code' : command.charAt(0).toUpperCase() + command.slice(1);
     return reply(`${flag(C[k][3])} *${C[k][0]}*\n▪️ ${label}: *${v}*`);
@@ -246,7 +246,7 @@ const handler = async (ctx) => {
     if (!q) return reply(`🏳️ Country ka naam ya ISO code likho. Example: \`${P()}flag pk\``);
     let k = byIso[q] || C[q];
     if (!k) k = KEYS.find((x) => C[x][0].toLowerCase().includes(q));
-    if (!k) return reply(`❌ \`${arg}\` nahi mila.`);
+    if (!k) return reply(`❌ \`${arg}\` not found.`);
     return reply(`${flag(C[k][3])} *${C[k][0]}* — \`${C[k][3]}\``);
   }
 

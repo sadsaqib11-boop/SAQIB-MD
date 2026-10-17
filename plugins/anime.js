@@ -31,14 +31,14 @@ const handler = async (ctx) => {
     try {
       const r = await getJSON('https://dog.ceo/api/breeds/image/random');
       await ctx.send(ctx.from, { image: { url: r.message }, caption: `🐶 ${config.BOT_NAME}` }, { quoted: ctx.m });
-    } catch { await reply('❌ Image nahi mili.'); }
+    } catch { await reply('❌ Image not found.'); }
     return;
   }
   if (command === 'cat') {
     try {
       const r = await getJSON('https://api.thecatapi.com/v1/images/search');
       await ctx.send(ctx.from, { image: { url: r[0].url }, caption: `🐱 ${config.BOT_NAME}` }, { quoted: ctx.m });
-    } catch { await reply('❌ Image nahi mili.'); }
+    } catch { await reply('❌ Image not found.'); }
     return;
   }
 
@@ -47,7 +47,7 @@ const handler = async (ctx) => {
       const url = await nekoImage(NEKO[command]);
       if (!url) throw new Error('no image');
       await ctx.send(ctx.from, { image: { url }, caption: `🌸 ${config.BOT_NAME}` }, { quoted: ctx.m });
-    } catch { await reply('❌ Image nahi mili.'); }
+    } catch { await reply('❌ Image not found.'); }
     return;
   }
 };
