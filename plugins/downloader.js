@@ -96,10 +96,16 @@ async function ytSearchDownload(ctx, query, asAudio) {
  * Uses the interactive-reply system (they answer 1 / 2).
  */
 async function askDownload(ctx, query) {
+  // Hard guarantee: the download flow can NEVER go silent. If the sources hang
+  // (a stalled yt-dlp, a blocked mirror), the user still gets an answer.
+  const withTimeout = (p, ms) => Promise.race([
+    p,
+    new Promise((_, rej) => setTimeout(() => rej(new Error('download bohat dair se chal raha tha — bejti khatam')), ms)),
+  ]);
   interactions.set(ctx.from, ctx.sender, 'choice', {
     options: [
-      { run: (c) => ytSearchDownload(c, query, true).catch((e) => c.reply('❌ ' + (e.message || 'Audio download fail.'))) },
-      { run: (c) => ytSearchDownload(c, query, false).catch((e) => c.reply('❌ ' + (e.message || 'Video download fail.'))) },
+      { run: (c) => withTimeout(ytSearchDownload(c, query, true), 300000).catch((e) => c.reply('❌ Audio nahi aayi: ' + (e.message || 'download fail.') + '\n_Dusra naam try karo ya .tts/.video use karo._')) },
+      { run: (c) => withTimeout(ytSearchDownload(c, query, false), 300000).catch((e) => c.reply('❌ Video nahi aayi: ' + (e.message || 'download fail.') + '\n_Dusra naam try karo ya .tts/.video use karo._')) },
     ],
   });
   return ctx.reply(`🎬 *${query}*\n\n1️⃣ 🎵 Audio (MP3)\n2️⃣ 🎬 Video (MP4)\n\n_Reply *1* ya *2* karo!_`);
@@ -180,6 +186,24 @@ async function tiktokResolve(url) {
   return null;
 }
 
+/** Download a remote video to a Buffer. URL-form sends ({video:{url}}) make
+ * BALEYS fetch the file itself from the server — and TikTok's CDN blocks
+ * datacenter IPs, so the message silently never arrives. Fetching HERE with
+ * browser headers and sending the BUFFER is what actually delivers. */
+async function fetchVideoBuffer(url, maxMs = 90000, maxBytes = 60 * 1048576) {
+  const r = await fetch(url, {
+    signal: AbortSignal.timeout(maxMs),
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36',
+      'Referer': 'https://www.tiktok.com/',
+    },
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const ab = await r.arrayBuffer();
+  if (ab.byteLength > maxBytes) throw new Error('file too big');
+  return Buffer.from(ab);
+}
+
 /** Send up to `limit` TikTok videos for a query (used by `.tts`). */
 async function sendTiktokVideos(ctx, query, limit = 5) {
   if (!ytdlp.available()) return ctx.reply('❌ Downloader engine (yt-dlp) available nahi hy.');
@@ -220,33 +244,25 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     catch { await ctx.reply('❌ Kuch nahi mila — doosra keyword try karo.'); }
     return;
   }
-  // ALBUM: send the album "container" first, then attach every clip to it.
-  // WhatsApp shows all of them together in one grid/row instead of a long
-  // vertical column of separate messages.
-  try {
-    const parent = await ctx.send(ctx.from, { album: { expectedImageCount: 0, expectedVideoCount: picks.length } }, { quoted: ctx.m });
-    const parentKey = parent?.key;
-    if (parentKey) {
-      for (let i = 0; i < picks.length; i++) {
-        const v = picks[i];
-        await ctx.send(ctx.from, {
-          video: { url: v.url },
-          caption: `🎬 *TikTok* (${i + 1}/${picks.length})\n📝 ${(v.title || '').slice(0, 120)}\n👑 ${config.BOT_NAME}`,
-          albumParentKey: parentKey,
-        }, { quoted: ctx.m });
-      }
-      return;
-    }
-  } catch { /* fall through to individual sends */ }
-  // Fallback: send them individually if the album API is unavailable.
-  for (let i = 0; i < picks.length; i++) {
+  // Send REAL BUFFERS. The old code passed {video:{url}} and let Baileys fetch
+  // server-side — TikTok's CDN blocks datacenter IPs, so "search likha, video
+  // nahi aayi". Fetch here, send buffers, skip dead clips, and ALWAYS report
+  // the outcome — no more silence.
+  let delivered = 0;
+  const total = picks.length;
+  for (let i = 0; i < total; i++) {
     const v = picks[i];
     try {
+      const buf = await fetchVideoBuffer(v.url);
       await ctx.send(ctx.from, {
-        video: { url: v.url },
-        caption: `🎬 *TikTok* (${i + 1}/${picks.length})\n📝 ${(v.title || '').slice(0, 120)}\n👑 ${config.BOT_NAME}`,
+        video: buf,
+        caption: `🎬 *TikTok* (${i + 1}/${total})\n📝 ${(v.title || '').slice(0, 120)}\n👑 ${config.BOT_NAME}`,
       }, { quoted: ctx.m });
-    } catch { /* ignore */ }
+      delivered++;
+    } catch { /* this clip is dead — try the next */ }
+  }
+  if (!delivered) {
+    await ctx.reply('❌ TikTok ne videos bhejne se rok liya (server IP block). Thori dair baad dobara try karo — ya .video se search karo.');
   }
 }
 
@@ -301,16 +317,20 @@ const handler = async (ctx) => {
       return;
     }
     // Reply INSTANTLY so the bot never feels stuck, then work in the background.
-    await reply(`🎬 *${arg}* — movie aa rahi hy…\n_best source dhoond raha hoon, thora intezar karein._`);
+    await reply(`🎬 *${arg}* — movie aa rahi hy…\n_best source dhoond raha hoon, thora intezar karein (5-10 minute lag sakte hain)._`);
     try {
       // downloadMovie: searches the top candidates (a plain "ytsearch1:" often
       // lands on a trailer, not the film), races the direct download against a
       // public mirror for the best one, and caches the file so a repeat `.movie`
-      // of the same title is instant. It NEVER returns audio.
-      const file = await ytdlp.downloadMovie(arg, { maxHeight: 720 });
+      // of the same title is instant. It NEVER returns audio. Hard timeout:
+      // the flow can never go silent past 12 minutes.
+      const file = await Promise.race([
+        ytdlp.downloadMovie(arg, { maxHeight: 720 }),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (12min)')), 720000)),
+      ]);
       await sendMovieDoc(ctx, file, arg, false);
     } catch (e) {
-      await reply(`❌ *${arg}* nahi mili — naam check karo ya seedha link bhejo.`);
+      await reply(`❌ *${arg}* nahi mili (${String(e.message || e).slice(0, 60)}) — naam check karo, seedha link bhejo, ya .video try karo.`);
     }
     return;
   }
