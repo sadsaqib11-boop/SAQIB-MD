@@ -76,11 +76,19 @@ function langLine(prompt) {
 }
 let currentLang = 'en';
 
+/** Normalise a prompt into a stable cache key (case/space/punctuation-insensitive). */
+function normKey(s) {
+  return String(s).toLowerCase().replace(/\s+/g, ' ').replace(/[.!?،۔]+$/g, '').trim().slice(0, 400);
+}
+
 /** Unified AI entry: Gemini if key present, else keyless fallback. Cached for speed. */
 async function askAI(prompt, imageBase64 = null, senderNum = null) {
   currentLang = senderNum ? lang.forUser(senderNum) : 'en';
-  // Only cache text-only prompts (images are unique).
-  const cacheKey = imageBase64 ? null : 'ai:' + prompt.slice(0, 300);
+  // Only cache text-only prompts (images are unique). The key is normalised AND
+  // includes the reply language, so two users asking the same thing in different
+  // languages never get each other's answer. Very short prompts are not cached.
+  const nk = normKey(prompt);
+  const cacheKey = (imageBase64 || nk.length < 3) ? null : `ai:${currentLang}:${nk}`;
   if (cacheKey) {
     const hit = aiCache.get(cacheKey);
     if (hit) return hit;

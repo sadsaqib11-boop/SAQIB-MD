@@ -36,7 +36,11 @@ console.log(`${config.BOT_NAME}: ${plugins.length} plugin files, ${totalCmds} co
 
 // Downloader engine + periodic temp cleanup
 const ytdlp = require('./lib/ytdlp');
+const dlcache = require('./lib/dlcache');
 console.log(`[YTDLP] ${ytdlp.available() ? 'available ✅' : 'NOT found ❌'}`);
+// Enforce the download-cache TTL + size cap at boot and every 15 min.
+try { dlcache.sweep(); } catch { /* ignore */ }
+console.log(`[CACHE] dir=${dlcache.DIR} ${JSON.stringify(dlcache.stats())}`);
 setInterval(() => ytdlp.cleanup(), 15 * 60 * 1000).unref?.();
 
 // ---------------------------------------------------------------------------

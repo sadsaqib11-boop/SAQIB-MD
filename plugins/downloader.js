@@ -21,6 +21,8 @@ const { execFile } = require('child_process');
 const { getJSON, getText, sleep } = require('../lib/helpers');
 const interactions = require('../lib/interactions');
 const ytdlp = require('../lib/ytdlp');
+const dlcache = require('../lib/dlcache');
+const { ttCache, srcCache } = require('../lib/cache');
 
 const isUrl = (s) => /^https?:\/\//i.test(s || '');
 const MAX_MEDIA_BYTES = 64 * 1024 * 1024;   // WhatsApp audio/video cap (~64 MB)
@@ -52,7 +54,10 @@ async function sendMedia(ctx, filePath, caption, asAudio) {
       return;
     }
     await ctx.send(ctx.from, { video: buf, caption, mimetype: 'video/mp4' }, { quoted: ctx.m });
-  } finally { try { fs.unlinkSync(filePath); } catch { /* ignore */ } }
+  } finally {
+    // Keep cache-backed files on disk so a repeat request is instant.
+    if (!dlcache.isCached(filePath)) { try { fs.unlinkSync(filePath); } catch { /* ignore */ } }
+  }
 }
 
 async function sendDoc(ctx, buf, fileName, mimetype) {
@@ -178,24 +183,38 @@ async function tiktokResolve(url) {
 /** Send up to `limit` TikTok videos for a query (used by `.tts`). */
 async function sendTiktokVideos(ctx, query, limit = 5) {
   if (!ytdlp.available()) return ctx.reply('❌ Downloader engine (yt-dlp) available nahi hy.');
-  await ctx.reply(`🔎 *TikTok Search:* ${query}\n_${limit} videos dhoond raha hoon…_`);
-  let urls = [];
-  try { urls = await tiktokSearch(query, limit * 3); } catch { /* ignore */ }
-  // Resolve to direct play URLs in parallel (fast, no 800ms drip).
-  const resolved = (await Promise.all(urls.map(async (u) => {
-    try { const f = await tiktokResolve(u); if (f?.video) return { url: f.video, title: f.title || '' }; } catch { /* ignore */ }
-    return null;
-  }))).filter(Boolean);
-  // Relevance filter: drop results whose title shares NO word with the query.
-  // This is what removes the "weird English videos" when searching e.g. a
-  // Saraiki song — only on-topic clips survive.
-  const words = String(query).toLowerCase().split(/\s+/).filter((w) => w.length > 2);
-  const related = resolved.filter((v) => words.length && words.some((w) => String(v.title).toLowerCase().includes(w)));
-  let picks = related.slice(0, limit);
-  if (picks.length < limit) {
-    for (const v of resolved) { if (picks.length >= limit) break; if (!picks.includes(v)) picks.push(v); }
+  const ckey = `${String(query).trim().toLowerCase()}|${limit}`;
+  let picks = ttCache.get(ckey);
+  if (picks && picks.length) {
+    // Repeat query within the TTL -> fully instant (no search, no resolve).
+    await ctx.reply(`⚡ *TikTok Search:* ${query}\n_pehle se results mojood — foran bhej raha hoon…_`);
+  } else {
+    await ctx.reply(`🔎 *TikTok Search:* ${query}\n_${limit} videos dhoond raha hoon…_`);
+    // Search is the slow part (Bing/DDG scraping) — cache the page URLs for 1h.
+    const skey = `tt|${String(query).trim().toLowerCase()}`;
+    let urls = srcCache.get(skey);
+    if (!urls) {
+      urls = [];
+      try { urls = await tiktokSearch(query, limit * 3); } catch { /* ignore */ }
+      if (urls.length) srcCache.set(skey, urls);
+    }
+    // Resolve to direct play URLs in parallel (fast, no 800ms drip).
+    const resolved = (await Promise.all(urls.map(async (u) => {
+      try { const f = await tiktokResolve(u); if (f?.video) return { url: f.video, title: f.title || '' }; } catch { /* ignore */ }
+      return null;
+    }))).filter(Boolean);
+    // Relevance filter: drop results whose title shares NO word with the query.
+    // This is what removes the "weird English videos" when searching e.g. a
+    // Saraiki song — only on-topic clips survive.
+    const words = String(query).toLowerCase().split(/\s+/).filter((w) => w.length > 2);
+    const related = resolved.filter((v) => words.length && words.some((w) => String(v.title).toLowerCase().includes(w)));
+    picks = related.slice(0, limit);
+    if (picks.length < limit) {
+      for (const v of resolved) { if (picks.length >= limit) break; if (!picks.includes(v)) picks.push(v); }
+    }
+    picks = picks.slice(0, limit);
+    if (picks.length) ttCache.set(ckey, picks);
   }
-  picks = picks.slice(0, limit);
   if (!picks.length) {
     try { await ytSearchDownload(ctx, query, false); }
     catch { await ctx.reply('❌ Kuch nahi mila — doosra keyword try karo.'); }
@@ -274,32 +293,24 @@ const handler = async (ctx) => {
   // each in 720p, and refuse any audio result.
   if (command === 'movie') {
     if (!arg) return reply(`❌ Movie naam do. Example: ${config.PREFIX}movie Interstellar`);
+    // Instant path: already downloaded before? Resend from the disk cache.
+    const cached = dlcache.get('movie', `${arg}@720`);
+    if (cached) {
+      await reply(`⚡ *${arg}* — pehle se download hy, foran bhej raha hoon…`);
+      await sendMovieDoc(ctx, cached, arg, false);
+      return;
+    }
     // Reply INSTANTLY so the bot never feels stuck, then work in the background.
     await reply(`🎬 *${arg}* — movie aa rahi hy…\n_best source dhoond raha hoon, thora intezar karein._`);
     try {
-      // Search first and try the top few candidates (a plain "ytsearch1:" often
-      // lands on a trailer, not the film). Stop at the first one that downloads.
-      let candidates = [];
-      try {
-        const results = await ytdlp.search(`${arg} full movie`, 5).catch(() => []);
-        candidates = results.map((r) => r.url).filter(Boolean);
-      } catch { /* ignore */ }
-      candidates.push(`${arg} full movie`, arg);
-      let file = null;
-      for (const c of candidates.slice(0, 4)) {
-        file = await ytdlp.downloadVideo(c, { maxHeight: 720 }).catch(() => null);
-        if (file) break;
-      }
-      if (!file) {
-        // Mirror fallback before giving up (YouTube blocks datacenter IPs).
-        // allowAudio:false -> a movie is NEVER returned as an MP3.
-        const alt = await ytdlp.downloadVideoSmart(`${arg} full movie`, { maxHeight: 720, allowAudio: false }).catch(() => null);
-        if (alt && alt.file && !alt.audio) { await sendMovieDoc(ctx, alt.file, arg, false); return; }
-        return reply(`❌ *${arg}* nahi mili — naam check karo ya seedha link bhejo.`);
-      }
+      // downloadMovie: searches the top candidates (a plain "ytsearch1:" often
+      // lands on a trailer, not the film), races the direct download against a
+      // public mirror for the best one, and caches the file so a repeat `.movie`
+      // of the same title is instant. It NEVER returns audio.
+      const file = await ytdlp.downloadMovie(arg, { maxHeight: 720 });
       await sendMovieDoc(ctx, file, arg, false);
     } catch (e) {
-      await reply('❌ ' + (e.message || 'Movie download fail.'));
+      await reply(`❌ *${arg}* nahi mili — naam check karo ya seedha link bhejo.`);
     }
     return;
   }
@@ -582,7 +593,10 @@ async function sendMovieDoc(ctx, file, title, audio) {
   } finally {
     // Delete AFTER the upload has finished (the stream has been consumed by the
     // awaited send). A short delay is a safety margin for the socket flush.
-    setTimeout(() => { try { fs.unlinkSync(file); } catch { /* ignore */ } }, 15000);
+    // Cache-backed files are KEPT so a repeat `.movie` is instant.
+    if (!dlcache.isCached(file)) {
+      setTimeout(() => { try { fs.unlinkSync(file); } catch { /* ignore */ } }, 15000);
+    }
   }
 }
 
