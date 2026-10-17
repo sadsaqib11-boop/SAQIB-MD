@@ -170,7 +170,7 @@ async function tiktokSearch(query, limit = 5) {
       const html = await getText(`https://www.bing.com/videos/search?q=${encodeURIComponent(variants[i])}${params}`, { headers: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } }, 20000);
       collect(html);
     } catch { /* next */ }
-    await sleep(150);
+    await sleep(50); // SPEED: was 150ms per engine — still polite, 3x snappier
   }
 
   // Backend 2: DuckDuckGo (direct then Jina reader proxy), PK region.
@@ -258,21 +258,23 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     catch { await ctx.reply('❌ Kuch nahi mila — doosra keyword try karo.'); }
     return;
   }
-  // ALBUM MODE + DEAD-CLIP BACKFILL — merged from both sides:
+  // ALBUM MODE + DEAD-CLIP BACKFILL + PARALLEL FETCH — merged from both sides:
   //  - ALBUM: the videos arrive as ONE WhatsApp album (grid/row — exactly the
   //    "_________________________________" row she asked for), not 5 vertical
   //    messages. The album parent is a tiny metadata message; each video
   //    references it via albumParentKey so WhatsApp groups them together.
+  //  - PARALLEL: all candidate buffers are fetched SIMULTANEOUSLY
+  //    (Promise.allSettled) — total wait is the slowest clip, not the sum.
   //  - BACKFILL: buffers are fetched with a wider candidate pool and the loop
   //    keeps going until `limit` clips are actually collected — dead links can
   //    never shrink the row below what she asked for.
   let delivered = 0;
+  const results = await Promise.allSettled(picks.map((p) => fetchVideoBuffer(p.url)));
   const bufs = [];
-  for (let i = 0; i < picks.length && bufs.length < limit; i++) {
-    try {
-      const buf = await fetchVideoBuffer(picks[i].url);
-      bufs.push({ buf, title: (picks[i].title || '').slice(0, 120) });
-    } catch { /* dead clip — skip */ }
+  for (let i = 0; i < results.length && bufs.length < limit; i++) {
+    if (results[i].status === 'fulfilled') {
+      bufs.push({ buf: results[i].value, title: (picks[i].title || '').slice(0, 120) });
+    } // dead clip — skip
   }
   if (bufs.length < limit) {
     // TikTok pool SHORT ya dry (Bing/DDG served empty pages, tikwm blocked).
