@@ -10,15 +10,23 @@
 const config = require('../config');
 const { downloadMedia } = require('../lib/helpers');
 
-/** Unwrap view-once wrappers into the inner media message. */
+/** Unwrap view-once / ephemeral wrappers into the inner media message.
+ * RECURSIVE on purpose: WhatsApp sometimes wraps view-once inside
+ * ephemeralMessage (disappearing-mode chats) or nests the wrappers, and the
+ * old single-level unwrap missed those — the exact ".vv kam nahi kar raha". */
 function unwrapViewOnce(qm) {
-  if (!qm) return null;
-  return (
-    qm.viewOnceMessage?.message ||
-    qm.viewOnceMessageV2?.message ||
-    qm.viewOnceMessageV2Extension?.message ||
-    qm
-  );
+  let m = qm;
+  for (let i = 0; m && i < 6; i++) {
+    const next =
+      m.viewOnceMessage?.message ||
+      m.viewOnceMessageV2?.message ||
+      m.viewOnceMessageV2Extension?.message ||
+      m.ephemeralMessage?.message ||
+      null;
+    if (!next) break;
+    m = next;
+  }
+  return m || qm || null;
 }
 
 const handler = async (ctx) => {
@@ -32,9 +40,12 @@ const handler = async (ctx) => {
   try { buf = await downloadMedia(msg, type); }
   catch (e) { return reply('❌ Could not download the media (it may have expired): ' + String(e.message || e).slice(0, 80)); }
   const cap = `🔓 *View-once unlocked*\n👑 ${config.BOT_NAME}`;
-  if (type === 'image') await ctx.send(ctx.from, { image: buf, caption: cap }, { quoted: ctx.m });
-  else if (type === 'video') await ctx.send(ctx.from, { video: buf, caption: cap }, { quoted: ctx.m });
-  else await ctx.send(ctx.from, { audio: buf, mimetype: 'audio/mpeg' }, { quoted: ctx.m });
+  // Send WITHOUT quoting the command message. Quoting a view-once-quoted
+  // message makes WhatsApp reject the send on some clients (the .vv "does
+  // nothing" bug) — .vv2, which never quoted, always worked.
+  if (type === 'image') await ctx.send(ctx.from, { image: buf, caption: cap }, {});
+  else if (type === 'video') await ctx.send(ctx.from, { video: buf, caption: cap }, {});
+  else await ctx.send(ctx.from, { audio: buf, mimetype: 'audio/mpeg' }, {});
 };
 
 module.exports = {

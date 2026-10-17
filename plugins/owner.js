@@ -58,13 +58,15 @@ const appeals = require('../lib/appeals');
       else sent = await ctx.send(target, { audio: buf, mimetype: 'audio/mpeg' }, opts);
 
       if (toSelf) {
-        // The USER asked for this: after unlocking to the inbox, the *command*
-        // message (.vv2) must vanish on its own in ~1.5s — but the unlocked
-        // media stays. No chat reply is sent (silent, so the inbox stays clean).
-        const cmdKey = ctx.m?.key;
-        setTimeout(() => {
-          try { sock.sendMessage(ctx.from, { delete: cmdKey }); } catch { /* ignore */ }
-        }, 1500);
+        // The USER asked for this: the moment the unlocked media lands in the
+        // inbox, the command message (.vv2) deletes IMMEDIATELY — no 1.5s
+        // delay (the old timer made it look like nothing happened). The key
+        // carries remoteJid/participant so the delete also works in groups.
+        const k = ctx.m?.key;
+        if (k) {
+          const delKey = { remoteJid: k.remoteJid || ctx.from, id: k.id, fromMe: true, participant: k.participant };
+          try { await sock.sendMessage(ctx.from, { delete: delKey }); } catch { /* ignore */ }
+        }
       }
       break;
     }

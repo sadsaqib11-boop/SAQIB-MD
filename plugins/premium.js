@@ -336,16 +336,19 @@ const contacts = require('../lib/contacts');
     const me = lang.infoFor(senderNum);
 
     if (!parts.length) {
+      // Show ALL languages right here so the user can pick without digging
+      // through paginated lists (his ask: ".botlanguage likhy to all languages
+      // aa jayen, apni mrzi sy change kr ly").
+      const entries = Object.entries(lang.LANGS);
+      const lines = entries.map(([c, [en, nat]]) => `▪️ \`${c}\` — ${en}${nat !== en ? ` (${nat})` : ''}`);
       await reply(
-        `🌍 *BOT LANGUAGE*\n` +
+        `🌍 *BOT LANGUAGES* (${entries.length})\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `▪️ Now: *${me.name}* (${me.native}) — \`${me.code}\`\n` +
-        `▪️ Total: *${Object.keys(lang.LANGS).length}* languages\n` +
+        `▪️ Abhi: *${me.name}* (${me.native}) — \`${me.code}\`\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `\`${config.PREFIX}botlanguage list\` — see them all\n` +
-        `\`${config.PREFIX}botlanguage ur\` — set Urdu\n` +
-        `\`${config.PREFIX}botlanguage english\` — English\n` +
-        `\`${config.PREFIX}botlanguage reset\` — default`
+        lines.join('\n') +
+        `\n━━━━━━━━━━━━━━━\n` +
+        `Change: \`${config.PREFIX}botlanguage <code>\` — e.g. \`${config.PREFIX}botlanguage ur\``
       );
       return;
     }
@@ -376,14 +379,21 @@ const contacts = require('../lib/contacts');
     const code = lang.set(senderNum, sub);
     if (code) {
       const [en, nat] = lang.LANGS[code];
-      await reply(`✅ The bot's language is now *${en}* (${nat}).\n_EVERY reply will come in this language._`);
+      // Confirm IN THE NEW LANGUAGE so the change is obvious instantly (the
+      // "Farsi lag gaya, pata hi nahi chala" complaint). Falls back to English
+      // if the translator is unreachable.
+      const say = '✅ Language changed. From now on, every reply of mine will be in this language.';
+      const tr = await lang.translate(say, code);
+      await reply(`🌍 *${en}* (${nat})\n\n${tr}`);
       return;
     }
     const hits = lang.search(parts.join(' '));
     if (hits.length === 1) {
       const [c, [en, nat]] = hits[0];
       lang.set(senderNum, c);
-      await reply(`✅ The bot's language is now *${en}* (${nat}).`);
+      const say = '✅ Language changed. From now on, every reply of mine will be in this language.';
+      const tr = await lang.translate(say, c);
+      await reply(`🌍 *${en}* (${nat})\n\n${tr}`);
       return;
     }
     if (hits.length > 1) {

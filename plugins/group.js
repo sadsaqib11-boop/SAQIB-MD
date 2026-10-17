@@ -286,5 +286,21 @@ module.exports = {
   ],
   category: '\ud83d\udc65 GROUP',
   groupOnly: true,
-  handler,
+  // Wrap the handler so Baileys' raw "forbidden" / "not-authorized" /
+  // "Internal Server Error" from group admin calls (kick, promote, mute, …)
+  // becomes a clear instruction: the BOT must be a group admin. This is the
+  // fix for the "group commands pr forbidden/not authorized" complaints —
+  // WhatsApp itself rejects the action when the bot lacks admin rights, so
+  // the honest fix is a message that says exactly that.
+  handler: async (ctx) => {
+    try {
+      return await handler(ctx);
+    } catch (e) {
+      const s = String(e?.message || e || '');
+      if (/forbidden|not-?author|40[13]\b|conflict|action-not-allowed|rate-overlimit/i.test(s)) {
+        return ctx.reply('\u26a0\ufe0f Ye kaam nahi hua — *bot ko is group ka ADMIN banao* (group settings \u2192 admins \u2192 add), phir dobara try karo.');
+      }
+      throw e;
+    }
+  },
 };
