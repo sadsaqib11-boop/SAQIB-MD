@@ -20,6 +20,7 @@ const { msgStore, aiCache, takeSent } = require('../lib/cache');
 const menu = require('../lib/menu');
 const commandinfo = require('../lib/commandinfo');
 const settings = require('../lib/settings');
+const menustyles = require('../lib/menustyles');
 const fonts = require('./fonts');
 
 const startAt = Date.now();
@@ -75,7 +76,7 @@ function findCategory(query) {
 }
 
 /** Build the data object that `lib/menu.js` renders. */
-function menuData(mode, cat) {
+function menuData(mode, cat, styleId, prefix) {
   const cats = categories();
   const total = [...cats.values()].reduce((n, c) => n + c.length, 0);
   let name = config.BOT_NAME;
@@ -86,7 +87,7 @@ function menuData(mode, cat) {
     version: config.BOT_VERSION,
     ownerName: config.OWNER_NAME,
     when,
-    prefix: config.PREFIX,
+    prefix: prefix || config.PREFIX,
     mode,
     cats: [...cats.entries()],
     total,
@@ -96,20 +97,21 @@ function menuData(mode, cat) {
 }
 
 // SPEED: menu texts change only when the date rolls over OR the style changes.
+// Keyed by style so each user's chosen design is cached independently.
 const _menuCache = new Map();
 const _today = () => new Date().toISOString().slice(0, 10);
-function cached(key, build) {
-  const k = _today() + '|s' + config.MENU_STYLE + '|' + key;
+function cached(key, styleId, build) {
+  const k = _today() + '|s' + styleId + '|' + key;
   if (!_menuCache.has(k)) {
-    if (_menuCache.size > 80) _menuCache.clear();
+    if (_menuCache.size > 120) _menuCache.clear();
     _menuCache.set(k, build());
   }
   return _menuCache.get(k);
 }
 
-const categoriesText = () => cached('cats', () => menu.render(config.MENU_STYLE, menuData('categories')));
-const categoryText = (cat) => cached('cat|' + cat, () => menu.render(config.MENU_STYLE, menuData('category', cat)));
-const allText = () => cached('all', () => menu.render(config.MENU_STYLE, menuData('all')));
+const categoriesText = (styleId, prefix) => cached('cats', styleId, () => menu.render(styleId, menuData('categories', '', styleId, prefix)));
+const categoryText = (cat, styleId, prefix) => cached('cat|' + cat, styleId, () => menu.render(styleId, menuData('category', cat, styleId, prefix)));
+const allText = (styleId, prefix) => cached('all', styleId, () => menu.render(styleId, menuData('all', '', styleId, prefix)));
 
 /**
  * Read an image file and ALWAYS return a real binary image buffer.
@@ -141,42 +143,75 @@ async function sendMenu(ctx, text) {
 /* -------------------------------- handler -------------------------------- */
 const handler = async (ctx) => {
   const { command, reply } = ctx;
+  // Every user sees the menu in THEIR OWN chosen style (falls back to the
+  // bot-wide default). `prefix` is the user's own prefix too.
+  const style = menustyles.forUser(ctx.senderNum);
+  const prefix = ctx.prefix || config.PREFIX;
   switch (command) {
     case 'menu':
     case 'help': {
       const q = ctx.arg ? ctx.arg.trim() : '';
-      if (!q) return sendMenu(ctx, categoriesText());
+      if (!q) return sendMenu(ctx, categoriesText(style, prefix));
       const cat = findCategory(q);
       if (!cat) {
-        return reply(`❌ Category *"${q}"* was not found.\n\n💡 Type ${config.PREFIX}menu to see all categories.`);
+        return reply(`❌ Category *"${q}"* was not found.\n\n💡 Type ${prefix}menu to see all categories.`);
       }
-      return sendMenu(ctx, categoryText(cat));
+      return sendMenu(ctx, categoryText(cat, style, prefix));
     }
     case 'menuall': {
-      await reply(allText());
+      await reply(allText(style, prefix));
       break;
     }
     case 'menustyle': {
-      const a = String(ctx.arg || '').trim();
+      const parts = String(ctx.arg || '').trim().split(/\s+/).filter(Boolean);
+      const a = (parts[0] || '').toLowerCase();
+      const mine = style;
+
+      // No argument -> show the user's current style + the full list.
       if (!a) {
-        const cur = menu.STYLES[config.MENU_STYLE - 1];
+        const cur = menu.STYLES[mine - 1];
+        const def = menu.STYLES[config.MENU_STYLE - 1];
         return reply(
           `🎨 *MENU STYLE*\n${BAR}\n` +
-          `▸ Current: *${config.MENU_STYLE} — ${cur.name}*\n${BAR}\n` +
+          `▸ Your style: *${mine} — ${cur.name}*\n` +
+          `▸ Bot default: *${config.MENU_STYLE} — ${def.name}*\n${BAR}\n` +
           menu.listStyles() +
           `\n${BAR}\n` +
-          `💡 \`${config.PREFIX}menustyle <1-10>\` to change it.`
+          `💡 \`${prefix}menustyle <1-10>\` — pick YOUR style (works for everyone)\n` +
+          (ctx.isOwner ? `👑 \`${prefix}menustyle default <1-10>\` — change the bot-wide default\n` : '') +
+          `♻️ \`${prefix}menustyle reset\` — back to the default`
         );
       }
-      if (!ctx.isOwner) return reply('🔒 Only the *owner* can change the menu style.');
+
+      // Owner only: change the bot-wide default.
+      if (a === 'default') {
+        if (!ctx.isOwner) return reply('🔒 Only the *owner* can change the bot-wide default.');
+        const n = parseInt(parts[1], 10);
+        if (!Number.isInteger(n) || n < 1 || n > menu.STYLES.length) {
+          return reply(`❌ Pick a number from *1* to *${menu.STYLES.length}*.\n\n${menu.listStyles()}`);
+        }
+        config.MENU_STYLE = n;
+        settings.save();
+        _menuCache.clear();
+        return reply(`✅ Bot-wide default menu style is now *${n} — ${menu.STYLES[n - 1].name}*.\n\nHere is a preview:\n\n${categoriesText(n, prefix)}`);
+      }
+
+      // Reset the user's own style back to the default.
+      if (a === 'reset') {
+        menustyles.set(ctx.senderNum, null);
+        _menuCache.clear();
+        const def = menu.STYLES[config.MENU_STYLE - 1];
+        return reply(`♻️ Your menu style is back to the default (*${config.MENU_STYLE} — ${def.name}*).`);
+      }
+
+      // Anyone: set THEIR OWN style.
       const n = parseInt(a, 10);
       if (!Number.isInteger(n) || n < 1 || n > menu.STYLES.length) {
         return reply(`❌ Pick a number from *1* to *${menu.STYLES.length}*.\n\n${menu.listStyles()}`);
       }
-      config.MENU_STYLE = n;
-      settings.save();
+      menustyles.set(ctx.senderNum, n);
       _menuCache.clear();
-      await reply(`✅ Menu style set to *${n} — ${menu.STYLES[n - 1].name}*.\n\nHere is a preview:\n\n${categoriesText()}`);
+      await reply(`✅ Your menu style is now *${n} — ${menu.STYLES[n - 1].name}*.\n\nHere is a preview:\n\n${categoriesText(n, prefix)}`);
       break;
     }
     case 'details': {

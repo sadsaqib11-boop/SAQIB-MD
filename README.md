@@ -178,8 +178,10 @@ Every model name routes to the same AI engine. `.ai` `.bot` `.gpt` `.gpt4` `.gpt
 ### 🎨 LOGO (27)
 `.advglow` `.amongus` `.bplogo` `.bpstyle` `.cartoontxt` `.deletetxt` `.clouds` `.flag3d` `.freecreate` `.galaxy` `.galaxywp` `.glitch` `.glow` `.gradient` `.lightfx` `.logomaker` `.luxurygold` `.neon` `.papercut` `.pixelglitch` `.royal` `.sand` `.typography` `.beach` `.underwater` `.watercolor` `.write`
 
-### 🔎 MAIN (14)
-`.menu` `.help` `.ping` `.alive` `.uptime` `.owner` `.id` `.getpp` `.githubstalk` `.define` `.yts` `.praytime` `.runtime` `.repo`
+### 🔎 MAIN (19)
+`.menu` `.help` `.menuall` `.menustyle` `.ping` `.alive` `.uptime` `.owner` `.id` `.getpp` `.githubstalk` `.define` `.yts` `.praytime` `.runtime` `.repo` `.details` `.findcmd` `.clear`
+
+> 🎨 **10 menu designs** — every user can pick their own with `.menustyle <1-10>` (saved per user). The owner sets the bot-wide default with `.menustyle default <1-10>`.
 
 ### 🛠️ MEDIA & FX (28)
 `.sticker` `.s` `.toimg` `.toimage` `.tomp3` `.toptt` `.bass` `.deep` `.smooth` `.fat` `.tupai` `.blown` `.radio` `.robot` `.chipmunk` `.nightcore` `.earrape` `.reverse` `.slow` `.fast` `.baby` `.demon` `.vaporwave` `.echo` `.karaoke` `.8d` `.tremolo` `.vibrato`

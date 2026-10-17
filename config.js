@@ -93,7 +93,7 @@ const config = {
 
   // ---- customisable content (persisted) ----
   WELCOME_MSG: process.env.WELCOME_MSG || '👋 Welcome @user to @group!',
-  GOODBYE_MSG: process.env.GOODBYE_MSG || '🕊️ @user left @group. Allah Hafiz!',
+  GOODBYE_MSG: process.env.GOODBYE_MSG || '🕊️ @user left @group. Goodbye!',
   STATUS_EMOJI: process.env.STATUS_EMOJI || '🔥',
   DESCRIPTION: process.env.DESCRIPTION || 'SAQIB-MD — Premium WhatsApp Bot',
   STICKER_NAME: process.env.STICKER_NAME || 'SAQIB-MD',
