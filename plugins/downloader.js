@@ -241,7 +241,7 @@ async function fetchVideoBuffer(url, maxMs = 90000, maxBytes = 60 * 1048576) {
 /** Send up to `limit` TikTok videos for a query (used by `.tts`). */
 async function sendTiktokVideos(ctx, query, limit = 5) {
   if (!ytdlp.available()) return ctx.reply('❌ Downloader engine (yt-dlp) available nahi hy.');
-  const ckey = `${String(query).trim().toLowerCase()}|${limit}`;
+  const ckey = `tt3|${String(query).trim().toLowerCase()}|${limit}`;
   let picks = ttCache.get(ckey);
   if (picks && picks.length) {
     // Repeat query within the TTL -> fully instant (no search, no resolve).
@@ -262,12 +262,17 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
       debug.info('[TTS] search done', { seconds: Math.round((Date.now() - tSearch) / 1000), urls: urls.length });
     }
     // Resolve to direct play URLs in parallel (fast, no 800ms drip).
+    // KEEP THE SOURCE PAGE URL — tikwm (the resolver) is Cloudflare-blocked
+    // from Railway most of the time (live proof: 9 urls -> 1 clip), so the
+    // yt-dlp clip-download fallback needs the original TikTok URL to work
+    // from. Both travel with every pick now.
     const tResolve = Date.now();
     const resolved = (await Promise.all(urls.map(async (u) => {
-      try { const f = await tiktokResolve(u); if (f?.video) return { url: f.video, title: f.title || '' }; } catch { /* ignore */ }
-      return null;
-    }))).filter(Boolean);
-    debug.info('[TTS] resolve done', { seconds: Math.round((Date.now() - tResolve) / 1000), clips: resolved.length });
+      try { const f = await tiktokResolve(u); if (f?.video) return { src: u, url: f.video, title: f.title || '' }; } catch { /* ignore */ }
+      // Resolver refused — still a candidate, yt-dlp lane will fetch it.
+      return { src: u, url: '', title: '' };
+    }))).filter((v) => v.src);
+    debug.info('[TTS] resolve done', { seconds: Math.round((Date.now() - tResolve) / 1000), clips: resolved.filter((v) => v.url).length, candidates: resolved.length });
     // RELEVANCE SCORE + PAKISTAN BIAS (user rule: "sirf Pakistan ki videos —
     // urdu, hindi, punjabi — angreezi ki nahi"). Every video earns points for
     // query-word overlap in its title, plus a bonus for desi markers. Sort is
@@ -300,18 +305,39 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   //    keeps going until `limit` clips are actually collected — dead links can
   //    never shrink the row below what she asked for.
   let delivered = 0;
-  // Buffer CACHE first: a repeated query replays instantly (no CDN wait).
+  // Buffer CACHE + DUAL-LANE fetch per clip:
+  //   lane 1 (fast): tikwm play URL -> direct CDN fetch (no yt-dlp).
+  //   lane 2 (fallback): tikwm is Cloudflare-blocked from Railway (live
+  //     proof 9 urls -> 1 clip) — yt-dlp downloads the TikTok clip itself.
+  // yt-dlp lane only for the TOP candidates (already relevance-ranked) and
+  // staggered 2s apart so 5 yt-dlp spawns don't stampede a trial CPU.
   const tFetch = Date.now();
-  const uncached = picks.filter((p) => !ttBufCache.get('b|' + p.url));
-  const results = await Promise.allSettled(picks.map((p) => {
-    const hit = ttBufCache.get('b|' + p.url);
+  let ytdlpLane = 0;
+  const results = await Promise.allSettled(picks.map((p, i) => {
+    const cacheKey = 'b|' + (p.url || p.src);
+    const hit = ttBufCache.get(cacheKey);
     if (hit) return Promise.resolve(hit);
-    return fetchVideoBuffer(p.url).then((buf) => {
-      if (buf && buf.length < 12 * 1048576) ttBufCache.set('b|' + p.url, buf);
-      return buf;
+    const viaPlay = p.url
+      ? fetchVideoBuffer(p.url).then((buf) => {
+        if (buf && buf.length < 12 * 1048576) ttBufCache.set('b|' + p.url, buf);
+        return buf;
+      })
+      : Promise.reject(new Error('no play url (tikwm refused)'));
+    const canYtdlp = !p.url && p.src && i < limit * 2;
+    return viaPlay.catch(() => {
+      if (!canYtdlp) throw new Error('no source');
+      const stagger = (ytdlpLane++) * 2000;
+      return new Promise((r) => setTimeout(r, stagger))
+        .then(() => ytdlp.downloadVideoByUrl(p.src, { maxHeight: 480, timeoutMs: 120000 }))
+        .then((file) => {
+          const buf = fs.readFileSync(file);
+          try { fs.unlinkSync(file); } catch { /* ignore */ }
+          if (buf && buf.length < 12 * 1048576) ttBufCache.set('b|' + p.src, buf);
+          return buf;
+        });
     });
   }));
-  debug.info('[TTS] buffers done', { seconds: Math.round((Date.now() - tFetch) / 1000), cachedSkips: picks.length - uncached.length });
+  debug.info('[TTS] buffers done', { seconds: Math.round((Date.now() - tFetch) / 1000), attempts: picks.length });
   const bufs = [];
   for (let i = 0; i < results.length && bufs.length < limit; i++) {
     if (results[i].status === 'fulfilled') {
