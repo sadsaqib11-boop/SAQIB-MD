@@ -264,6 +264,69 @@ app.post('/api/test-send', async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// Owner-only test runner: executes a REAL command through the REAL handler as
+// if the owner had typed it in his own chat — every reply lands in the owner's
+// WhatsApp inbox. Iris uses this to test every command end-to-end without a
+// second phone. quoteMedia: 'image' | 'video' | 'audio' | 'sticker' attaches a
+// REAL (uploaded) media for the command to act on, like a user's reply.
+// ---------------------------------------------------------------------------
+const { execFile } = require('child_process');
+async function genTestFile(kind) {
+  const f = `/tmp/iris-test-${kind}`;
+  if (fs.existsSync(f)) return f;
+  const map = {
+    image: ['-f', 'lavfi', '-i', 'color=c=red:s=640x640', '-frames:v', '1', '-vcodec', 'png', f],
+    video: ['-f', 'lavfi', '-i', 'testsrc=duration=2:size=320x240:rate=15', '-pix_fmt', 'yuv420p', f],
+    audio: ['-f', 'lavfi', '-i', 'sine=frequency=440:duration=2', '-q:a', '9', f],
+  };
+  const args = map[kind] || map.image;
+  await new Promise((res2, rej2) => execFile('ffmpeg', args, { timeout: 60000 }, (e, so, se) => (e ? rej2(new Error((se || e.message).slice(0, 200))) : res2())));
+  return f;
+}
+async function makeTestMedia(kind, sock) {
+  const { prepareWAMessageMedia } = require('@whiskeysockets/baileys');
+  const real = kind === 'video' ? 'video' : kind === 'audio' ? 'audio' : 'image';
+  const file = await genTestFile(real);
+  const prepared = await prepareWAMessageMedia({ [real]: fs.readFileSync(file) }, { upload: sock.waUploadToServer });
+  const proto = prepared[`${real}Message`];
+  const quoted = kind === 'sticker'
+    ? { stickerMessage: { ...proto, mimetype: 'image/webp' } }
+    : { [`${real}Message`]: proto };
+  return { quoted };
+}
+app.post('/api/run-command', async (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ ok: false, error: 'Unauthorized — owner token required.' });
+  const text = String(req.body?.command || '').trim();
+  const quoteMedia = String(req.body?.quoteMedia || '').trim();
+  if (!text) return res.status(400).json({ ok: false, error: 'command required' });
+  try {
+    const sock = bot.getSock();
+    if (!sock) return res.status(503).json({ ok: false, error: 'no connected session' });
+    const ownerJid = `${config.OWNER_NUMBER}@s.whatsapp.net`;
+    const m = { key: { remoteJid: ownerJid, fromMe: false, id: 'IRISTEST' + Date.now().toString(36).toUpperCase() }, pushName: 'IrisTest', message: {} };
+    if (quoteMedia) {
+      const media = await makeTestMedia(quoteMedia, sock);
+      m.message = { extendedTextMessage: { text, contextInfo: { quotedMessage: media.quoted, participant: ownerJid, remoteJid: ownerJid, stanzaId: 'IRISQ' + Date.now().toString(36).toUpperCase() } } };
+    } else {
+      m.message = { conversation: text };
+    }
+    let sent = 0;
+    const sockProxy = new Proxy(sock, {
+      get(t, p) {
+        if (p === 'sendMessage') return async (...a) => { const r = await t.sendMessage(...a); sent++; return r; };
+        const v = t[p];
+        return typeof v === 'function' ? v.bind(t) : v;
+      },
+      set(t, p, v) { t[p] = v; return true; },
+    });
+    await require('./lib/handler').handleMessage(sockProxy, m, { number: config.OWNER_NUMBER, ownerNumber: config.OWNER_NUMBER });
+    res.json({ ok: true, ran: text, quoteMedia: quoteMedia || null, replies: sent });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e?.message || String(e) });
+  }
+});
+
 // In-process self-test: runs the real command engine (no WhatsApp needed).
 app.get('/api/selftest', async (req, res) => {
   const results = [];
