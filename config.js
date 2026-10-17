@@ -63,9 +63,10 @@ const config = {
   ANTISPAM: bool(process.env.ANTISPAM, false),
   ANTICALL: bool(process.env.ANTICALL, false),
   AUTOSTATUS: bool(process.env.AUTOSTATUS, false),
-  // OFF by default: replying to someone's status must NOT auto-save it to your
-  // own inbox unless you explicitly switch it on with `.autosavestatus on`.
-  AUTOSAVESTATUS: bool(process.env.AUTOSAVESTATUS, false),
+  // ON by default: when you REPLY to someone's status, the status media/text is
+  // auto-saved into YOUR OWN chat ("yourself" / inbox) so it is never lost.
+  // Toggle live with `.autosavestatus on|off`.
+  AUTOSAVESTATUS: bool(process.env.AUTOSAVESTATUS, true),
   // DEFAULT ON: any view-once (image/video) a user sends is auto-forwarded to
   // the bot's OWN chat ("yourself") so it is never lost. The owner asked for
   // this to be on by default.
@@ -82,6 +83,10 @@ const config = {
   STATUSVIEW: bool(process.env.STATUSVIEW, false),
   ADMINISTRATION: bool(process.env.ADMINISTRATION, false),
   MENTION_REPLY: bool(process.env.MENTION_REPLY, false),
+  // ANTI-MENTION: when ON, the bot IGNORES any message that mentions (tags) it,
+  // so nobody can summon it by tagging. Prefix commands (.menu) still work, and
+  // the owner is always allowed. OFF by default; toggle with `.antimention on`.
+  ANTIMENTION: bool(process.env.ANTIMENTION, false),
   // Send an unsolicited "I'm online" greeting to the owner on every connect?
   // OFF by default (the user asked for NO automatic/unwanted messages).
   AUTOGREET: bool(process.env.AUTOGREET, false),
@@ -103,10 +108,23 @@ const config = {
   // (e.g. `.font hello`). "mono" = monospace Unicode (the requested default).
   DEFAULT_FONT: (process.env.DEFAULT_FONT || 'mono').toLowerCase(),
 
+  // ---- menu ----
+  // Which of the 10 built-in menu styles to use (1-10). Change live with
+  // `.menustyle <n>`; the choice is persisted to the volume.
+  MENU_STYLE: Math.min(10, Math.max(1, parseInt(process.env.MENU_STYLE || '1', 10) || 1)),
+
+  // ---- speed ----
+  // ULTRA-FAST mode (default ON): trims every optional bit of work off the hot
+  // path (presence updates, history sync, link previews, typing indicators) so
+  // a command's reply goes out in well under a second. Set FAST_MODE=false to
+  // restore the chatty behaviour.
+  FAST_MODE: bool(process.env.FAST_MODE, true),
+
   // ---- session / multi-session ----
   SESSION_DIR: process.env.SESSION_DIR || './session',
   SESSION_ID: process.env.SESSION_ID || '',
-  MAX_SESSIONS: parseInt(process.env.MAX_SESSIONS || '50', 10),
+  // How many WhatsApp numbers can be linked at once. Raised to 500 per request.
+  MAX_SESSIONS: parseInt(process.env.MAX_SESSIONS || '500', 10),
 
   // ---- runtime flags ----
   SUDO: (process.env.SUDO || '').split(',').map((s) => s.replace(/[^0-9]/g, '')).filter(Boolean),

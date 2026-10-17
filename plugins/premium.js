@@ -3,7 +3,7 @@
  * -----------------------------------------------
  * Toggles (live, persisted, default OFF):
  *   antidelete, antideleteinbox, antispam, autoreact, autoviewonce,
- *   autobio, chatbot, anticall, anticallmsg, autoreadstatus, online
+ *   autobio, chatbot, anticall, anticallmsg, autoreadstatus, online, antimention
  *
  * The `onMessage` hook runs for EVERY message and enforces:
  *   - auto-status (view/react to statuses)
@@ -30,7 +30,7 @@ const parseOnOff = (a) => {
   return null;
 };
 const yn = (v) => (v ? 'ON 🟢' : 'OFF 🔴');
-const antideleteStatus = () => `🛡️ *Anti-Delete*\n▪️ Master: ${yn(config.ANTIDELETE)}\n▪️ Group watch: ${yn(config.ANTIDELETE)}\n▪️ Kahan aayega: *${config.ANTIDELETE_TO_CHAT ? 'Chat (jahan delete hua)' : 'Yourself (apni inbox)'}*\n\n_${config.PREFIX}antidelete inbox | ${config.PREFIX}antidelete chat_`;
+const antideleteStatus = () => `🛡️ *Anti-Delete*\n▪️ Master: ${yn(config.ANTIDELETE)}\n▪️ Group watch: ${yn(config.ANTIDELETE)}\n▪️ Where it lands: *${config.ANTIDELETE_TO_CHAT ? 'Chat (where it was deleted)' : 'Yourself (your own inbox)'}*\n\n_${config.PREFIX}antidelete inbox | ${config.PREFIX}antidelete chat_`;
 const autoreactStatus = () => `😀 *Auto-React*\n▪️ Master: ${yn(config.AUTO_REACT)}\n▪️ Group: ${yn(config.AUTO_REACT_GROUP)}\n▪️ Chat: ${yn(config.AUTO_REACT_CHAT)}`;
 
 const LINK_RE = /(https?:\/\/|www\.|chat\.whatsapp\.com|t\.me\/|wa\.me\/|bit\.ly|tinyurl)/i;
@@ -101,6 +101,7 @@ const TOGGLES = {
   autostatus: 'AUTOSTATUS',
   autosavestatus: 'AUTOSAVESTATUS',
   online: 'ONLINE',
+  antimention: 'ANTIMENTION',
 };
 
 /* ============================ per-message hook ============================ */
@@ -150,7 +151,7 @@ async function onMessage(ctx) {
     rec.count += 1;
     spamMap.set(sender, rec);
     if (rec.count === SPAM_LIMIT + 1) {
-      await sock.sendMessage(from, { text: `🚫 *Anti-Spam:* +${contacts.displayNum(ctx.senderNum)} thoda slow karo!` }).catch(() => {});
+      await sock.sendMessage(from, { text: `🚫 *Anti-Spam:* +${contacts.displayNum(ctx.senderNum)} please slow down!` }).catch(() => {});
       return;
     }
     if (rec.count > SPAM_LIMIT) return;
@@ -162,7 +163,7 @@ async function onMessage(ctx) {
     if (!admin) {
       try {
         await sock.sendMessage(from, { delete: m.key });
-        await sock.sendMessage(from, { text: `🔗 *Anti-Link:* +${contacts.displayNum(ctx.senderNum)} link bhejna mana hy!` }).catch(() => {});
+        await sock.sendMessage(from, { text: `🔗 *Anti-Link:* +${contacts.displayNum(ctx.senderNum)} sending links is not allowed!` }).catch(() => {});
       } catch { /* ignore */ }
       return;
     }
@@ -284,8 +285,8 @@ const contacts = require('../lib/contacts');
       if (v === null || v === true) config.ANTIDELETE = true;
       settings.save();
       await reply(
-        `✅ Anti-delete ab *${config.ANTIDELETE_TO_CHAT ? 'CHAT me' : 'YOURSELF (inbox) me'}* aayega.\n` +
-        `_(jahan delete hua wahi: \`${config.PREFIX}antidelete chat\` | apni inbox: \`${config.PREFIX}antidelete inbox\`)_`
+        `✅ Anti-delete will now arrive in *${config.ANTIDELETE_TO_CHAT ? 'the CHAT' : 'YOURSELF (inbox)'}*.\n` +
+        `_(where it was deleted: \`${config.PREFIX}antidelete chat\` | your inbox: \`${config.PREFIX}antidelete inbox\`)_`
       );
       return;
     }
@@ -309,19 +310,19 @@ const contacts = require('../lib/contacts');
       return reply(
         `✏️ *ANTI-EDIT*\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `▪️ Abhi: *${config.ANTIEDIT ? 'ON 🟢' : 'OFF 🔴'}*\n` +
+        `▪️ Now: *${config.ANTIEDIT ? 'ON 🟢' : 'OFF 🔴'}*\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `*Batao kya karna hy?*\n` +
-        `▪️ \`${config.PREFIX}antiedit on\` — edited messages pakro\n` +
-        `▪️ \`${config.PREFIX}antiedit off\` — band karo\n` +
-        `_(edit hone par purana + naya text dono aayenge)_`
+        `*What do you want to do?*\n` +
+        `▪️ \`${config.PREFIX}antiedit on\` — catch edited messages\n` +
+        `▪️ \`${config.PREFIX}antiedit off\` — turn it off\n` +
+        `_(when a message is edited you get the old + new text)_`
       );
     }
     const val = parseOnOff(sub);
-    if (val === null) return reply(`❓ \`${config.PREFIX}antiedit on\` ya \`${config.PREFIX}antiedit off\` likho.`);
+    if (val === null) return reply(`❓ Type \`${config.PREFIX}antiedit on\` or \`${config.PREFIX}antiedit off\`.`);
     config.ANTIEDIT = val;
     settings.save();
-    return reply(`✅ Anti-Edit ab *${val ? 'ON 🟢' : 'OFF 🔴'}* hy.`);
+    return reply(`✅ Anti-Edit is now *${val ? 'ON 🟢' : 'OFF 🔴'}*.`);
   }
 
   // ---- bot language (100+ languages) ----
@@ -338,11 +339,11 @@ const contacts = require('../lib/contacts');
       await reply(
         `🌍 *BOT LANGUAGE*\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `▪️ Abhi: *${me.name}* (${me.native}) — \`${me.code}\`\n` +
+        `▪️ Now: *${me.name}* (${me.native}) — \`${me.code}\`\n` +
         `▪️ Total: *${Object.keys(lang.LANGS).length}* languages\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `\`${config.PREFIX}botlanguage list\` — sab dekho\n` +
-        `\`${config.PREFIX}botlanguage ur\` — Urdu laga do\n` +
+        `\`${config.PREFIX}botlanguage list\` — see them all\n` +
+        `\`${config.PREFIX}botlanguage ur\` — set Urdu\n` +
         `\`${config.PREFIX}botlanguage english\` — English\n` +
         `\`${config.PREFIX}botlanguage reset\` — default`
       );
@@ -355,19 +356,19 @@ const contacts = require('../lib/contacts');
       const entries = Object.entries(lang.LANGS);
       const total = Math.ceil(entries.length / per);
       const slice = entries.slice((page - 1) * per, page * per);
-      if (!slice.length) return reply(`❌ Page ${page} nahi hy. Total ${total} pages.`);
+      if (!slice.length) return reply(`❌ Page ${page} does not exist. Total ${total} pages.`);
       await reply(
         `🌍 *LANGUAGES* (${entries.length}) — page ${page}/${total}\n` +
         `━━━━━━━━━━━━━━━\n` +
         slice.map(([c, [en, nat]]) => `▪️ \`${c}\` — ${en}${nat !== en ? ` (${nat})` : ''}`).join('\n') +
-        `\n━━━━━━━━━━━━━━━\n\`${config.PREFIX}botlanguage list ${page + 1}\` — agla page`
+        `\n━━━━━━━━━━━━━━━\n\`${config.PREFIX}botlanguage list ${page + 1}\` — next page`
       );
       return;
     }
 
     if (sub === 'reset' || sub === 'default') {
       lang.reset(senderNum);
-      await reply('✅ Language *English* par wapas aa gayi.');
+      await reply('✅ Language is back to *English*.');
       return;
     }
 
@@ -375,25 +376,25 @@ const contacts = require('../lib/contacts');
     const code = lang.set(senderNum, sub);
     if (code) {
       const [en, nat] = lang.LANGS[code];
-      await reply(`✅ Bot ki language ab *${en}* (${nat}) hy.\n_Ab HAR reply isi language me aayega._`);
+      await reply(`✅ The bot's language is now *${en}* (${nat}).\n_EVERY reply will come in this language._`);
       return;
     }
     const hits = lang.search(parts.join(' '));
     if (hits.length === 1) {
       const [c, [en, nat]] = hits[0];
       lang.set(senderNum, c);
-      await reply(`✅ Bot ki language ab *${en}* (${nat}) hy.`);
+      await reply(`✅ The bot's language is now *${en}* (${nat}).`);
       return;
     }
     if (hits.length > 1) {
       return reply(
-        `🤔 *${hits.length}* languages mili — exact code likho:\n` +
+        `🤔 *${hits.length}* languages matched — type the exact code:\n` +
         hits.slice(0, 15).map(([c, [en]]) => `▪️ \`${c}\` — ${en}`).join('\n')
       );
     }
     await reply(
-      `❌ \`${parts[0]}\` nahi mili.\n` +
-      `\`${config.PREFIX}botlanguage list\` se sab ${Object.keys(lang.LANGS).length} languages dekho.`
+      `❌ \`${parts[0]}\` was not found.\n` +
+      `See all ${Object.keys(lang.LANGS).length} languages with \`${config.PREFIX}botlanguage list\`.`
     );
     return;
   }
@@ -419,26 +420,26 @@ const contacts = require('../lib/contacts');
     if (!raw) {
       const mine = reacts.forUser(senderNum, config.REACT_EMOJIS);
       return reply(
-        `😀 *Tumhare auto-react emojis*\n${mine.join(' ')}\n\n` +
-        `Badalne ke liye: \`${config.PREFIX}setreact 🔥 ❤️ 🎉\`\n` +
-        `Default par wapas: \`${config.PREFIX}setreact reset\``
+        `😀 *Your auto-react emojis*\n${mine.join(' ')}\n\n` +
+        `To change them: \`${config.PREFIX}setreact 🔥 ❤️ 🎉\`\n` +
+        `Back to default: \`${config.PREFIX}setreact reset\``
       );
     }
     if (/^(reset|default|clear|off)$/i.test(raw)) {
       reacts.reset(senderNum);
-      return reply(`✅ Tumhare react emojis *default* par wapas aa gaye: ${config.REACT_EMOJIS.join(' ')}`);
+      return reply(`✅ Your react emojis are back to *default*: ${config.REACT_EMOJIS.join(' ')}`);
     }
     const list = raw.split(/[\s,]+/).map((x) => x.trim()).filter(Boolean);
-    if (!list.length) return reply(`❌ Emojis likho. Example: \`${config.PREFIX}setreact 🔥 ❤️ 🎉\``);
-    if (!reacts.set(senderNum, list)) return reply('❌ Emojis save nahi ho sake, dobara try karo.');
-    return reply(`✅ *Ho gaya!* Ab tumhare auto-react emojis:\n${reacts.forUser(senderNum, config.REACT_EMOJIS).join(' ')}\n\n_(${config.PREFIX}setreact reset se default wapas)_`);
+    if (!list.length) return reply(`❌ Give some emojis. Example: \`${config.PREFIX}setreact 🔥 ❤️ 🎉\``);
+    if (!reacts.set(senderNum, list)) return reply('❌ Could not save the emojis, please try again.');
+    return reply(`✅ *Done!* Your auto-react emojis are now:\n${reacts.forUser(senderNum, config.REACT_EMOJIS).join(' ')}\n\n_(${config.PREFIX}setreact reset to go back to default)_`);
   }
 
   // ---- simple toggles ----
   // Supports explicit args: `.antispam on` -> ON, `.antispam off` -> OFF.
   // With no arg it flips the current state.
   // ---- anti-call (special: asks instead of guessing, and supports a message) ----
-  //   .anticall              -> bot ASKS "on ya off?" instead of flipping blindly
+  //   .anticall              -> bot ASKS "on or off?" instead of flipping blindly
   //   .anticall on / off     -> set it
   //   .anticall message <txt>-> custom text sent when a call is rejected
   //   .anticall message clear-> stop sending any text (silent reject)
@@ -451,41 +452,41 @@ const contacts = require('../lib/contacts');
       return reply(
         `📵 *ANTI-CALL*\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `▪️ Abhi: *${config.ANTICALL ? 'ON 🟢' : 'OFF 🔴'}*\n` +
-        `▪️ Message: ${config.ANTICALL_MSG ? `_${config.ANTICALL_MSG}_` : '_koi nahi (chup chap reject)_'}\n` +
+        `▪️ Now: *${config.ANTICALL ? 'ON 🟢' : 'OFF 🔴'}*\n` +
+        `▪️ Message: ${config.ANTICALL_MSG ? `_${config.ANTICALL_MSG}_` : '_none (silent reject)_'}\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `*Batao kya karna hy:*\n` +
-        `▪️ \`${config.PREFIX}anticall on\` — calls reject karo\n` +
-        `▪️ \`${config.PREFIX}anticall off\` — calls aane do\n` +
-        `▪️ \`${config.PREFIX}anticall message <text>\` — apna message lagao\n` +
-        `▪️ \`${config.PREFIX}anticall message clear\` — message hatao`
+        `*What do you want to do?*\n` +
+        `▪️ \`${config.PREFIX}anticall on\` — reject calls\n` +
+        `▪️ \`${config.PREFIX}anticall off\` — allow calls\n` +
+        `▪️ \`${config.PREFIX}anticall message <text>\` — set your own message\n` +
+        `▪️ \`${config.PREFIX}anticall message clear\` — remove the message`
       );
     }
 
     if (sub === 'show' || sub === 'status') {
-      return reply(`📵 Anti-Call: *${config.ANTICALL ? 'ON 🟢' : 'OFF 🔴'}*\n💬 Message: ${config.ANTICALL_MSG || '_koi nahi_'}`);
+      return reply(`📵 Anti-Call: *${config.ANTICALL ? 'ON 🟢' : 'OFF 🔴'}*\n💬 Message: ${config.ANTICALL_MSG || '_none_'}`);
     }
 
     if (sub === 'message' || sub === 'msg') {
       const rest = parts.slice(1).join(' ').trim();
-      if (!rest) return reply(`❌ Message likho: \`${config.PREFIX}anticall message Aap call na karein.\``);
+      if (!rest) return reply(`❌ Write a message: \`${config.PREFIX}anticall message Please do not call.\``);
       if (['clear', 'reset', 'none', 'off', 'hatao'].includes(rest.toLowerCase())) {
         config.ANTICALL_MSG = '';
         settings.save();
-        return reply('✅ Anti-Call message hata diya — ab call chup chap reject hogi.');
+        return reply('✅ Anti-Call message removed — calls will be rejected silently.');
       }
       config.ANTICALL_MSG = rest;
       settings.save();
-      return reply(`✅ Anti-Call message set: _${rest}_\n_(call reject hone par ye bheja jayega)_`);
+      return reply(`✅ Anti-Call message set: _${rest}_\n_(this is sent when a call is rejected)_`);
     }
 
     const val = parseOnOff(sub);
     if (val === null) {
-      return reply(`❓ Samajh nahi aaya. \`${config.PREFIX}anticall on\` ya \`${config.PREFIX}anticall off\` likho.`);
+      return reply(`❓ Not understood. Type \`${config.PREFIX}anticall on\` or \`${config.PREFIX}anticall off\`.`);
     }
     config.ANTICALL = val;
     settings.save();
-    return reply(`✅ Anti-Call ab *${val ? 'ON 🟢' : 'OFF 🔴'}* hy.`);
+    return reply(`✅ Anti-Call is now *${val ? 'ON 🟢' : 'OFF 🔴'}*.`);
   }
 
   // ---- every other on/off toggle ----
@@ -499,9 +500,9 @@ const contacts = require('../lib/contacts');
       return reply(
         `⚙️ *${command.toUpperCase()}*\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `▪️ Abhi: *${config[key] ? 'ON 🟢' : 'OFF 🔴'}*\n` +
+        `▪️ Now: *${config[key] ? 'ON 🟢' : 'OFF 🔴'}*\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `Batao kya karna hy?\n` +
+        `What do you want to do?\n` +
         `▪️ \`${config.PREFIX}${command} on\`\n` +
         `▪️ \`${config.PREFIX}${command} off\``
       );
@@ -518,7 +519,7 @@ const contacts = require('../lib/contacts');
       } catch { /* ignore */ }
     }
 
-    await reply(`✅ *${command.toUpperCase()}* ab *${config[key] ? 'ON 🟢' : 'OFF 🔴'}* hy.`);
+    await reply(`✅ *${command.toUpperCase()}* is now *${config[key] ? 'ON 🟢' : 'OFF 🔴'}*.`);
     return;
   }
 
@@ -531,6 +532,7 @@ const contacts = require('../lib/contacts');
         `🔗 Anti-Link: ${config.ANTILINK ? 'ON 🟢' : 'OFF 🔴'}\n` +
         `🚫 Anti-Spam: ${config.ANTISPAM ? 'ON 🟢' : 'OFF 🔴'}\n` +
         `📵 Anti-Call: ${config.ANTICALL ? 'ON 🟢' : 'OFF 🔴'}\n` +
+        `🙅 Anti-Mention: ${config.ANTIMENTION ? 'ON 🟢' : 'OFF 🔴'}\n` +
         `😀 Auto-React: ${config.AUTO_REACT ? 'ON 🟢' : 'OFF 🔴'}\n` +
         `👁️ Auto-ViewOnce: ${config.AUTOVIEWONCE ? 'ON 🟢' : 'OFF 🔴'}\n` +
         `📊 Auto-Status: ${config.AUTOSTATUS ? 'ON 🟢' : 'OFF 🔴'}\n` +
@@ -546,26 +548,26 @@ const contacts = require('../lib/contacts');
 
     case 'vcf': {
       const num = (arg || '').replace(/[^0-9]/g, '');
-      if (!num) return reply(`❌ Number do. Example: ${config.PREFIX}vcf 923001234567`);
+      if (!num) return reply(`❌ Give a number. Example: ${config.PREFIX}vcf 923001234567`);
       const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${config.OWNER_NAME}\nTEL;type=CELL;type=VOICE;waid=${num}:+${num}\nEND:VCARD`;
       await ctx.send(ctx.from, { contacts: { displayName: config.OWNER_NAME, contacts: [{ vcard }] } }, { quoted: ctx.m });
       return;
     }
 
     case 'say': case 'speak': case 'voice': {
-      if (!arg) return reply(`❌ Text do. Example: ${config.PREFIX}say Assalam o alaikum`);
+      if (!arg) return reply(`❌ Give some text. Example: ${config.PREFIX}say Assalam o alaikum`);
       try {
         const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(arg)}&tl=ur&client=tw-ob`;
         const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
         if (!res.ok) throw new Error('TTS fail');
         const buf = Buffer.from(await res.arrayBuffer());
         await ctx.send(ctx.from, { audio: buf, mimetype: 'audio/mpeg', ptt: true }, { quoted: ctx.m });
-      } catch { await reply('❌ TTS fail ho gaya.'); }
+      } catch { await reply('❌ TTS failed.'); }
       return;
     }
 
     case 'carbon': {
-      if (!arg) return reply(`❌ Code do. Example: ${config.PREFIX}carbon console.log("hi")`);
+      if (!arg) return reply(`❌ Give some code. Example: ${config.PREFIX}carbon console.log("hi")`);
       try {
         const res = await fetch('https://carbonara.solopov.dev/api/cook', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -574,25 +576,25 @@ const contacts = require('../lib/contacts');
         if (!res.ok) throw new Error('carbon fail');
         const buf = Buffer.from(await res.arrayBuffer());
         await ctx.send(ctx.from, { image: buf, caption: '🎨 Code → Image' }, { quoted: ctx.m });
-      } catch { await reply('❌ Carbon fail ho gaya.'); }
+      } catch { await reply('❌ Carbon failed.'); }
       return;
     }
 
     case 'ss': {
-      if (!arg) return reply(`❌ URL do. Example: ${config.PREFIX}ss https://google.com`);
+      if (!arg) return reply(`❌ Give a URL. Example: ${config.PREFIX}ss https://google.com`);
       try {
         const url = arg.startsWith('http') ? arg : 'https://' + arg;
         const r = await getJSON(`https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&waitUntil=networkidle0`);
         const shot = r?.data?.screenshot?.url;
         if (!shot) throw new Error('no shot');
         await ctx.send(ctx.from, { image: { url: shot }, caption: `📸 Screenshot\n🔗 ${url}` }, { quoted: ctx.m });
-      } catch { await reply('❌ Screenshot fail ho gaya.'); }
+      } catch { await reply('❌ Screenshot failed.'); }
       return;
     }
 
     case 'tourl': {
       const imgMsg = ctx.m.message?.imageMessage || ctx.quoted?.message?.imageMessage;
-      if (!imgMsg) return reply(`❌ Kisi image ko reply karo ya image ke sath likho ${config.PREFIX}tourl`);
+      if (!imgMsg) return reply(`❌ Reply to an image, or send an image with ${config.PREFIX}tourl`);
       try {
         const buf = await downloadMedia(imgMsg, 'image');
         const form = new FormData();
@@ -602,18 +604,18 @@ const contacts = require('../lib/contacts');
         const url = (await res.text()).trim();
         if (!url.startsWith('http')) throw new Error('upload fail');
         await reply(`🔗 *URL:* ${url}`);
-      } catch { await reply('❌ Upload fail ho gaya.'); }
+      } catch { await reply('❌ Upload failed.'); }
       return;
     }
 
     case 'emojimix': case 'emix': {
       const [a, b] = (arg || '').split(/\s+/);
-      if (!a || !b) return reply(`❌ Do emoji do. Example: ${config.PREFIX}emojimix 😂 🥰`);
+      if (!a || !b) return reply(`❌ Give two emojis. Example: ${config.PREFIX}emojimix 😂 🥰`);
       try {
         const url = await emojiKitchen(a, b);
         if (!url) throw new Error('no mix');
         await ctx.send(ctx.from, { image: { url }, caption: `${a} + ${b} 🎨` }, { quoted: ctx.m });
-      } catch { await reply('❌ Ye emoji combo support nahi hy. Koi aur combo try karo.'); }
+      } catch { await reply('❌ That emoji combo is not supported. Try another combo.'); }
       return;
     }
 
@@ -627,16 +629,16 @@ const contacts = require('../lib/contacts');
           caption: `🖼️ *Profile Picture*\n👤 @${target ? target.num : ctx.senderNum}`,
           mentions: [who],
         }, { quoted: ctx.m });
-      } catch { await reply('❌ DP nahi mili ya private hy.'); }
+      } catch { await reply('❌ No profile picture found, or it is private.'); }
       return;
     }
 
     case 'gpp': case 'groupdp': case 'getgcdp': {
-      if (!ctx.isGroup) return reply('❌ Ye command sirf group me chalti hy.');
+      if (!ctx.isGroup) return reply('❌ This command only works in a group.');
       try {
         const pp = await cachedProfilePic(ctx.sock, ctx.from, 'image');
         await ctx.send(ctx.from, { image: { url: pp }, caption: `🖼️ *Group Profile Picture*\n👑 ${config.BOT_NAME}` }, { quoted: ctx.m });
-      } catch { await reply('❌ Group DP nahi mili.'); }
+      } catch { await reply('❌ No group profile picture found.'); }
       return;
     }
 

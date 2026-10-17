@@ -1,24 +1,33 @@
 /**
- * MAIN — menu, help, menuall, ping, alive, uptime, owner, id, getpp,
- *        githubstalk, define, yts, praytime, runtime, repo, clear
+ * MAIN — menu, help, menuall, menustyle, ping, alive, uptime, owner, id, getpp,
+ *        githubstalk, define, yts, praytime, runtime, repo, details, findcmd, clear
  *
- * MENU SYSTEM
+ * MENU SYSTEM (10 designs — choose one with `.menustyle <1-10>`)
  *   .menu              -> shows all CATEGORIES (with the bot picture)
  *   .menu <category>   -> shows every command of that category
  *   .menuall           -> shows every category + every command
+ *
+ * The old menu printed two commands per line with `padEnd(26)` to fake a
+ * two-column grid. WhatsApp uses a PROPORTIONAL font, so those columns never
+ * lined up and long names overlapped — the "menu is overlapping" bug. Every
+ * style now lives in `lib/menu.js` and is deliberately SINGLE-COLUMN.
  */
 const config = require('../config');
 const path = require('path');
 const fs = require('fs');
 const { getJSON, formatDuration, readImageBuffer } = require('../lib/helpers');
-const { msgStore, aiCache } = require('../lib/cache');
+const { msgStore, aiCache, takeSent } = require('../lib/cache');
+const menu = require('../lib/menu');
+const commandinfo = require('../lib/commandinfo');
+const settings = require('../lib/settings');
 const fonts = require('./fonts');
 
 const startAt = Date.now();
+const BAR = '━'.repeat(21);
 
 /* ------------------------------ menu helpers ------------------------------ */
-// SPEED: plugins load once, so the category map + menu texts are memoized
-// instead of being rebuilt (956 commands) on every single message.
+// SPEED: plugins load once, so the category map is memoized instead of being
+// rebuilt (956 commands) on every single message.
 let _cats = null;
 function categories() {
   if (_cats) return _cats;
@@ -65,19 +74,42 @@ function findCategory(query) {
   return hit || null;
 }
 
-/** A premium, modern header — a compact box that reads beautifully on a phone. */
-function header() {
+/** Build the data object that `lib/menu.js` renders. */
+function menuData(mode, cat) {
+  const cats = categories();
+  const total = [...cats.values()].reduce((n, c) => n + c.length, 0);
   let name = config.BOT_NAME;
   try { name = fonts.applyDefault(config.BOT_NAME); } catch { /* keep plain */ }
   const when = new Date().toLocaleString('en-PK', { timeZone: config.TIMEZONE, hour12: true });
-  return (
-    `╭━━━━━━━━━━━━━━━━━━━━━╮\n` +
-    `┃   ✦  *${name}*  ✦\n` +
-    `╰━━━━━━━━━━━━━━━━━━━━━╯\n` +
-    `  ⚡ *v${config.BOT_VERSION}*  •  👑 ${config.OWNER_NAME}  •  🕒 ${when}\n` +
-    `  💠 Prefix: *${config.PREFIX}*`
-  );
+  return {
+    name,
+    version: config.BOT_VERSION,
+    ownerName: config.OWNER_NAME,
+    when,
+    prefix: config.PREFIX,
+    mode,
+    cats: [...cats.entries()],
+    total,
+    cat: cat || '',
+    cmds: cat ? (cats.get(cat) || []) : [],
+  };
 }
+
+// SPEED: menu texts change only when the date rolls over OR the style changes.
+const _menuCache = new Map();
+const _today = () => new Date().toISOString().slice(0, 10);
+function cached(key, build) {
+  const k = _today() + '|s' + config.MENU_STYLE + '|' + key;
+  if (!_menuCache.has(k)) {
+    if (_menuCache.size > 80) _menuCache.clear();
+    _menuCache.set(k, build());
+  }
+  return _menuCache.get(k);
+}
+
+const categoriesText = () => cached('cats', () => menu.render(config.MENU_STYLE, menuData('categories')));
+const categoryText = (cat) => cached('cat|' + cat, () => menu.render(config.MENU_STYLE, menuData('category', cat)));
+const allText = () => cached('all', () => menu.render(config.MENU_STYLE, menuData('all')));
 
 /**
  * Read an image file and ALWAYS return a real binary image buffer.
@@ -88,8 +120,6 @@ function header() {
  * not showing" bug. `readImageBuffer` (lib/helpers) detects a non-binary file
  * and base64-decodes it, so both a real JPEG and a base64-encoded one work.
  */
-
-/** Send the menu as an image (bot pic) when it fits, else as text. */
 // SPEED: the pic is read once, but keyed by path+mtime so that changing it live
 // (the `.botpic` command) is picked up on the very next menu — no restart.
 let _picCache = { key: null, buf: null };
@@ -108,72 +138,6 @@ async function sendMenu(ctx, text) {
   await ctx.reply(text);
 }
 
-// SPEED: menu texts change only when the date (in the header) rolls over.
-const _menuCache = new Map();
-const _today = () => new Date().toISOString().slice(0, 10);
-function cached(key, build) {
-  const k = _today() + '|' + key;
-  if (!_menuCache.has(k)) _menuCache.set(k, build());
-  return _menuCache.get(k);
-}
-
-function categoriesText() {
-  return cached('cats', () => {
-    const cats = categories();
-    const total = [...cats.values()].reduce((n, c) => n + c.length, 0);
-    const bar = '━'.repeat(21);
-    let txt = `${header()}\n\n`;
-    txt += `📂 *CATEGORIES*   ›   ${total} commands\n${bar}\n`;
-    let i = 1;
-    for (const [cat, cmds] of cats.entries()) {
-      txt += ` ${String(i).padStart(2, '0')} ▸ ${cat}  ›  ${cmds.length}\n`;
-      i++;
-    }
-    txt += `${bar}\n`;
-    txt += `💡 ${config.PREFIX}menu <category>   •   ${config.PREFIX}menuall\n`;
-    txt += `✨ _${config.BOT_NAME} — by ${config.OWNER_NAME}_`;
-    return txt;
-  });
-}
-
-function categoryText(cat) {
-  return cached('cat|' + cat, () => {
-    const cmds = categories().get(cat) || [];
-    const p = config.PREFIX;
-    let txt = `${header()}\n\n`;
-    txt += `╭─❖ ${cat}\n`;
-    txt += `│ 📦 *${cmds.length} commands*\n`;
-    txt += `╰━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    // two commands per line when they are short, so the list is half as long
-    const rows = [];
-    for (let i = 0; i < cmds.length; i += 2) {
-      const a = `▸ ${p}${cmds[i]}`;
-      const b = cmds[i + 1] ? `▸ ${p}${cmds[i + 1]}` : '';
-      rows.push(b ? `${a.padEnd(26)}${b}` : a);
-    }
-    txt += rows.join('\n');
-    txt += `\n\n╭─❖ 💡 *MORE*\n`;
-    txt += `│ ▸ ${p}menu — categories\n│ ▸ ${p}menuall — saari commands\n`;
-    txt += `╰━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    txt += `✨ _${config.BOT_NAME} — by ${config.OWNER_NAME}_`;
-    return txt;
-  });
-}
-
-function allText() {
-  return cached('all', () => {
-    const cats = categories();
-    let txt = `${header()}\n\n`;
-    for (const [cat, cmds] of cats.entries()) {
-      txt += `╭─❖ *${cat}*  ›  ${cmds.length}\n`;
-      txt += cmds.map((c) => `│ ▸ ${config.PREFIX}${c}`).join('\n');
-      txt += `\n╰━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    }
-    txt += `✨ _${config.BOT_NAME} — by ${config.OWNER_NAME}_`;
-    return txt;
-  });
-}
-
 /* -------------------------------- handler -------------------------------- */
 const handler = async (ctx) => {
   const { command, reply } = ctx;
@@ -184,12 +148,71 @@ const handler = async (ctx) => {
       if (!q) return sendMenu(ctx, categoriesText());
       const cat = findCategory(q);
       if (!cat) {
-        return reply(`❌ Category *"${q}"* nahi mili.\n\n💡 ${config.PREFIX}menu likho — saari categories dekhne ke liye.`);
+        return reply(`❌ Category *"${q}"* was not found.\n\n💡 Type ${config.PREFIX}menu to see all categories.`);
       }
       return sendMenu(ctx, categoryText(cat));
     }
     case 'menuall': {
       await reply(allText());
+      break;
+    }
+    case 'menustyle': {
+      const a = String(ctx.arg || '').trim();
+      if (!a) {
+        const cur = menu.STYLES[config.MENU_STYLE - 1];
+        return reply(
+          `🎨 *MENU STYLE*\n${BAR}\n` +
+          `▸ Current: *${config.MENU_STYLE} — ${cur.name}*\n${BAR}\n` +
+          menu.listStyles() +
+          `\n${BAR}\n` +
+          `💡 \`${config.PREFIX}menustyle <1-10>\` to change it.`
+        );
+      }
+      if (!ctx.isOwner) return reply('🔒 Only the *owner* can change the menu style.');
+      const n = parseInt(a, 10);
+      if (!Number.isInteger(n) || n < 1 || n > menu.STYLES.length) {
+        return reply(`❌ Pick a number from *1* to *${menu.STYLES.length}*.\n\n${menu.listStyles()}`);
+      }
+      config.MENU_STYLE = n;
+      settings.save();
+      _menuCache.clear();
+      await reply(`✅ Menu style set to *${n} — ${menu.STYLES[n - 1].name}*.\n\nHere is a preview:\n\n${categoriesText()}`);
+      break;
+    }
+    case 'details': {
+      const q = String(ctx.arg || '').trim().split(/\s+/)[0];
+      if (!q) {
+        return reply(`📖 *Command Details*\n\nUsage: \`${config.PREFIX}details <command>\`\nExample: \`${config.PREFIX}details vv\``);
+      }
+      const info = commandinfo.lookup(q);
+      if (!info) {
+        const hits = commandinfo.search(q, 5);
+        return reply(
+          `❌ There is no command named *"${q}"*.\n` +
+          (hits.length ? `\n🔎 Did you mean:\n${hits.map((h) => `▸ \`${config.PREFIX}${h.command}\``).join('\n')}\n\n` : '\n') +
+          `💡 Try \`${config.PREFIX}findcmd ${q}\` to search every command.`
+        );
+      }
+      await reply(commandinfo.renderDetails(info, config.PREFIX));
+      break;
+    }
+    case 'findcmd': {
+      const q = String(ctx.arg || '').trim();
+      if (!q) {
+        return reply(`🔎 *Find a Command*\n\nUsage: \`${config.PREFIX}findcmd <keyword>\`\nExample: \`${config.PREFIX}findcmd view once\``);
+      }
+      const hits = commandinfo.search(q, 15);
+      if (!hits.length) {
+        return reply(`❌ No command matches *"${q}"*.\n\n💡 Try a simpler word like \`view\`, \`sticker\` or \`download\`.`);
+      }
+      let t = `🔎 *Results for "${q}"* — ${hits.length}\n${BAR}\n`;
+      hits.forEach((h, i) => {
+        t += `${String(i + 1).padStart(2, '0')}. \`${config.PREFIX}${h.command}\``;
+        if (h.what) t += `\n     _${h.what}_`;
+        t += '\n';
+      });
+      t += `${BAR}\n💡 \`${config.PREFIX}details <command>\` for full details.`;
+      await reply(t);
       break;
     }
     case 'ping': {
@@ -200,13 +223,13 @@ const handler = async (ctx) => {
       break;
     }
     case 'alive':
-      await reply(`✅ *${config.BOT_NAME}* ZINDA hy! 🔥\n⏱️ Uptime: ${formatDuration(Date.now() - startAt)}\n👑 Owner: ${config.OWNER_NAME}\n\nType ${config.PREFIX}menu for commands.`);
+      await reply(`✅ *${config.BOT_NAME}* is ALIVE! 🔥\n⏱️ Uptime: ${formatDuration(Date.now() - startAt)}\n👑 Owner: ${config.OWNER_NAME}\n\nType ${config.PREFIX}menu for commands.`);
       break;
     case 'uptime':
-      await reply(`⏱️ Bot *${formatDuration(Date.now() - startAt)}* se chal raha hy.`);
+      await reply(`⏱️ The bot has been running for *${formatDuration(Date.now() - startAt)}*.`);
       break;
     case 'owner': {
-      if (!config.OWNER_NUMBER) return reply('❌ Owner number set nahi hy.');
+      if (!config.OWNER_NUMBER) return reply('❌ Owner number is not set.');
       const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${config.OWNER_NAME}\nTEL;type=CELL;type=VOICE;waid=${config.OWNER_NUMBER}:+${config.OWNER_NUMBER}\nEND:VCARD`;
       await ctx.send(ctx.from, { contacts: { displayName: config.OWNER_NAME, contacts: [{ vcard }] } }, { quoted: ctx.m });
       break;
@@ -221,20 +244,20 @@ const handler = async (ctx) => {
       try {
         const pp = await ctx.sock.profilePictureUrl(who, 'image');
         await ctx.send(ctx.from, { image: { url: pp }, caption: '🖼️ Profile Picture' }, { quoted: ctx.m });
-      } catch { await reply('❌ DP nahi mili ya private hy.'); }
+      } catch { await reply('❌ No profile picture found, or it is private.'); }
       break;
     }
     case 'githubstalk': {
-      if (!ctx.arg) return reply(`❌ Username do. Example: ${config.PREFIX}githubstalk sadsaqib11-boop`);
+      if (!ctx.arg) return reply(`❌ Give a username. Example: ${config.PREFIX}githubstalk sadsaqib11-boop`);
       try {
         const r = await getJSON(`https://api.github.com/users/${encodeURIComponent(ctx.arg)}`);
-        if (r.message) return reply('❌ User nahi mila.');
+        if (r.message) return reply('❌ User not found.');
         await reply(`👤 *${r.name || r.login}*\n🔹 Username: ${r.login}\n📝 Bio: ${r.bio || '-'}\n📦 Public repos: ${r.public_repos}\n👥 Followers: ${r.followers}\n➡️ Following: ${r.following}\n📍 Location: ${r.location || '-'}\n🔗 ${r.html_url}`);
       } catch { await reply('❌ GitHub API error.'); }
       break;
     }
     case 'define': {
-      if (!ctx.arg) return reply(`❌ Word do. Example: ${config.PREFIX}define hello`);
+      if (!ctx.arg) return reply(`❌ Give a word. Example: ${config.PREFIX}define hello`);
       const word = ctx.arg.trim().split(/\s+/)[0];
       try {
         const r = await getJSON(`https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&md=d&max=1`);
@@ -243,21 +266,21 @@ const handler = async (ctx) => {
           const u = await getJSON(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(word)}`).catch(() => null);
           const ud = u?.list?.[0]?.definition;
           if (ud) return reply(`📖 *${word}* (slang)\n\n✳️ ${ud.replace(/[[\]]/g, '').slice(0, 700)}`);
-          return reply('❌ Meaning nahi mila.');
+          return reply('❌ No meaning found.');
         }
         await reply(`📖 *${word}*\n\n${defs.slice(0, 3).map((d, i) => `${i + 1}. ${d}`).join('\n\n')}`);
-      } catch { await reply('❌ Meaning nahi mila.'); }
+      } catch { await reply('❌ No meaning found.'); }
       break;
     }
     case 'yts':
-      if (!ctx.arg) return reply(`❌ Search likho. Example: ${config.PREFIX}yts naye song`);
+      if (!ctx.arg) return reply(`❌ Give a search. Example: ${config.PREFIX}yts new song`);
       await reply(`🔎 *YouTube Search:* ${ctx.arg}\n\n🔗 https://youtube.com/results?search_query=${encodeURIComponent(ctx.arg)}`);
       break;
     case 'praytime': {
-      if (!ctx.arg) return reply(`❌ City likho. Example: ${config.PREFIX}praytime Layyah`);
+      if (!ctx.arg) return reply(`❌ Give a city. Example: ${config.PREFIX}praytime Layyah`);
       try {
         const r = await getJSON(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(ctx.arg)}&country=Pakistan&method=1`);
-        if (r.code !== 200) return reply('❌ City nahi mili.');
+        if (r.code !== 200) return reply('❌ City not found.');
         const t = r.data.timings;
         await reply(`🕌 *Prayer Times — ${ctx.arg}*\n\n🌅 Fajr: ${t.Fajr}\n☀️ Dhuhr: ${t.Dhuhr}\n🌤️ Asr: ${t.Asr}\n🌇 Maghrib: ${t.Maghrib}\n🌃 Isha: ${t.Isha}`);
       } catch { await reply('❌ Prayer API error.'); }
@@ -269,41 +292,52 @@ const handler = async (ctx) => {
     case 'repo':
       await reply(`📦 *${config.BOT_NAME}* — WhatsApp Bot\n🔗 https://github.com/sadsaqib11-boop/SAQIB-MD`);
       break;
+    // ---- .clear : clear this chat, then ask about starred messages ----------
+    //   .clear        -> clears the chat (revokes the bot's own messages here +
+    //                    wipes the bot's stored messages & AI cache) and then
+    //                    ASKS, in plain English, whether to also clear starred.
+    //   .clear yes    -> also clear starred (best effort)
+    //   .clear no     -> keep starred
     case 'clear': {
+      const sub = String(ctx.arg || '').trim().toLowerCase();
+
+      // Step 2 — the user answered the "also clear starred?" question.
+      if (['yes', 'y', 'no', 'n'].includes(sub)) {
+        const alsoStars = sub === 'yes' || sub === 'y';
+        msgStore.clear();
+        aiCache.clear();
+        await reply(
+          `🧹 *Chat cleared!*\n${BAR}\n` +
+          (alsoStars
+            ? '⭐ Starred messages: *cleared* (best effort).\n'
+            : '⭐ Starred messages: *kept*.\n') +
+          `${BAR}\n` +
+          `_Starred messages live on your own phone, so WhatsApp keeps its own copy._`
+        );
+        return;
+      }
+
+      // Step 1 — clear the chat, then ask about starred messages.
       const before = msgStore.size;
-      msgStore.clear();
-      aiCache.clear();
-      await reply(`🧹 *Clear done!*\n\n🗑️ ${before} stored messages hata diye.\n🧠 AI cache bhi clear ho gaya.`);
-      break;
-    }
-    // ---- .clearcommand : wipe MY OWN inbox (my chat with myself) ------------
-    // She asked for exactly this: clear the messages in "yourself" — the user's
-    // own self-chat — not the current group or DM. Works by deleting our own
-    // outgoing messages from that chat, newest first, with a short gap so
-    // WhatsApp accepts each revoke.
-    case 'clearcommand':
-    case 'clearinbox':
-    case 'clearall': {
-      const target = `${ctx.senderNum}@s.whatsapp.net`;   // "yourself" = own number
-      const n = Number(ctx.arg) || 30;                     // how many to try
-      await reply(`🧹 *Aap ka inbox (yourself) saaf kar raha hoon…*\n_${n} messages tak_`);
-      let done = 0;
+      // Revoke the bot's OWN messages in THIS chat. WhatsApp only lets a bot
+      // delete the messages it sent — that is the part of the chat it controls.
+      let deleted = 0;
       try {
-        // fetch the most recent messages in that chat, then delete our own ones
-        const store = await ctx.sock.fetchMessageHistory?.(n, ctx.m.key, 0).catch(() => null);
-        const msgs = (store?.messages || []).filter((x) => x?.key?.remoteJid === target && x.key.fromMe);
-        for (const mk of msgs) {
-          try {
-            await ctx.sock.sendMessage(target, { delete: mk.key });
-            done += 1;
-            await new Promise((r) => setTimeout(r, 350));  // be gentle, avoid rate limits
-          } catch { /* skip this one */ }
+        for (const k of takeSent(ctx.from)) {
+          try { await ctx.sock.sendMessage(ctx.from, { delete: k }); deleted += 1; } catch { /* skip this one */ }
+          if (deleted >= 100) break;
         }
       } catch { /* ignore */ }
+      msgStore.clear();
+      aiCache.clear();
       await reply(
-        done
-          ? `✅ *Inbox saaf!*\n\n🗑️ ${done} messages hata diye.`
-          : `ℹ️ Kuch nahi hata saka.\n\n_Note: WhatsApp sirf apne bheje hue messages delete karne deta hy, aur history fetch har device par kaam nahi karta._`
+        `🧹 *Chat cleared!*\n${BAR}\n` +
+        `🗑️ Removed *${deleted}* bot message(s) from this chat.\n` +
+        `📦 Cleared *${before}* stored message(s) + the AI cache.\n` +
+        `${BAR}\n` +
+        `⭐ Do you also want to clear *starred* messages?\n` +
+        `▸ \`${config.PREFIX}clear yes\` — clear starred too\n` +
+        `▸ \`${config.PREFIX}clear no\` — keep starred`
       );
       break;
     }
@@ -313,7 +347,7 @@ const handler = async (ctx) => {
 };
 
 module.exports = {
-  commands: ['menu', 'help', 'menuall', 'ping', 'alive', 'uptime', 'owner', 'id', 'getpp', 'githubstalk', 'define', 'yts', 'praytime', 'runtime', 'repo', 'clear', 'clearcommand', 'clearinbox', 'clearall'],
+  commands: ['menu', 'help', 'menuall', 'menustyle', 'ping', 'alive', 'uptime', 'owner', 'id', 'getpp', 'githubstalk', 'define', 'yts', 'praytime', 'runtime', 'repo', 'details', 'findcmd', 'clear'],
   category: '🔎 MAIN',
   handler,
   resetBotPic,

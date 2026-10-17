@@ -2,9 +2,9 @@
 
 > A premium, fully-featured WhatsApp bot built with [Baileys](https://github.com/WhiskeySockets/Baileys).
 > **956 commands**, 150+ AI models, media downloaders, group management, audio effects,
-> **multi-session pairing (up to 50 numbers)** and a built-in web pairing portal.
+> **multi-session pairing (up to 500 numbers)** and a built-in web pairing portal.
 
-![status](https://img.shields.io/badge/status-online-22c55e) ![commands](https://img.shields.io/badge/commands-956-7c5cff) ![node](https://img.shields.io/badge/node-%3E%3D20-339933) ![sessions](https://img.shields.io/badge/sessions-50-22d3ee)
+![status](https://img.shields.io/badge/status-online-22c55e) ![commands](https://img.shields.io/badge/commands-956-7c5cff) ![node](https://img.shields.io/badge/node-%3E%3D20-339933) ![sessions](https://img.shields.io/badge/sessions-500-22d3ee)
 
 ---
 
@@ -28,7 +28,7 @@ The bot needs a host that keeps a **long-running Node process** + **persistent d
 
 1. Click → **Deploy Now** → Railway builds via `Dockerfile` (installs ffmpeg + yt-dlp).
 2. **Add a Volume** mounted at `/app/session` (so logins survive redeploys).
-3. Set env vars: `MODE=public`, `MAX_SESSIONS=50` (all auto/anti toggles stay `false`).
+3. Set env vars: `MODE=public`, `MAX_SESSIONS=500` (all auto/anti toggles stay `false`).
 4. Open the URL → pair your number.
 
 ### Option C — Any VPS / Docker
@@ -36,21 +36,21 @@ The bot needs a host that keeps a **long-running Node process** + **persistent d
 docker build -t saqib-md .
 docker run -d --name saqib-md -p 3000:3000 \
   -v $PWD/session:/app/session \
-  -e MODE=public -e MAX_SESSIONS=50 \
+  -e MODE=public -e MAX_SESSIONS=500 \
   saqib-md
 ```
 
 > ❌ **Vercel is NOT suitable** — it is serverless (no persistent process / WebSocket / disk), so a WhatsApp bot cannot run there. Use Render, Railway, Koyeb, Fly.io or a VPS.
 
 ### After deploying — pair (this part only you can do)
-Open the deployed URL, enter your number with country code (e.g. `923001234567`), copy the 8-digit code, then in WhatsApp: **Settings → Linked Devices → Link a device → Link with phone number** → enter the code. Up to **50 numbers** can pair this way.
+Open the deployed URL, enter your number with country code (e.g. `923001234567`), copy the 8-digit code, then in WhatsApp: **Settings → Linked Devices → Link a device → Link with phone number** → enter the code. Up to **500 numbers** can pair this way.
 
 ---
 
 ## ✨ Features
 
 - 🔗 **Pairing-code login** (no QR scan) via a beautiful web portal
-- 📱 **Multi-session** — up to **50 different WhatsApp numbers** can be linked at once; each number is its own owner
+- 📱 **Multi-session** — up to **500 different WhatsApp numbers** can be linked at once; each number is its own owner
 - 🤖 **150+ AI models** (GPT, Gemini, Claude, Grok, DeepSeek, Llama…) routed through a single engine
 - 🎨 **AI image generation** (`.imagine`) & 27 logo styles — no API key required
 - 📥 **Downloaders**: TikTok, Instagram, Facebook, Twitter/X, Pinterest, YouTube, CapCut, MediaFire, Google Drive, Git repos, npm, Quran audio
@@ -127,7 +127,7 @@ needs a persistent WebSocket connection.
 | `GEMINI_API_KEY` | — | Google Gemini API key (for AI commands) |
 | `GEMINI_MODEL` | `gemini-3.5-flash` | Gemini model id |
 | `MODE` | `public` | `public` (everyone) or `private` (owner only) |
-| `MAX_SESSIONS` | `50` | Max numbers that can be linked at once |
+| `MAX_SESSIONS` | `500` | Max numbers that can be linked at once |
 | `AUTO_READ` | `false` | Auto mark messages as read |
 | `AUTO_TYPING` | `false` | Show "typing…" presence |
 | `AUTO_REACT` | `false` | React to messages automatically |

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#05060a" />
 <title>SAQIB-MD • Premium WhatsApp Bot</title>
-<meta name="description" content="SAQIB-MD — Premium WhatsApp Bot. Link up to 50 WhatsApp numbers with an 8-digit pairing code." />
+<meta name="description" content="SAQIB-MD — Premium WhatsApp Bot. Link up to 500 WhatsApp numbers with an 8-digit pairing code." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
 <style>
   :root{
@@ -148,36 +148,36 @@
     <!-- LEFT: pairing -->
     <div class="card">
       <h2>🔗 Link Your WhatsApp</h2>
-      <p class="sub">Apna WhatsApp number country code ke sath likho aur 8-digit pairing code lo. Koi QR scan nahi — sirf code type karo. <b>Ek bot par 50 tak numbers link ho sakte hain.</b></p>
+      <p class="sub">Enter your WhatsApp number with the country code and get an 8-digit pairing code. No QR scan needed — just type the code. <b>Up to 500 numbers can be linked to one bot.</b></p>
 
-      <label for="num">WhatsApp Number (country code ke sath)</label>
+      <label for="num">WhatsApp Number (with country code)</label>
       <div class="field">
         <input id="num" type="tel" inputmode="numeric" placeholder="923001234567" autocomplete="off" />
         <button id="pairBtn">Get Code</button>
       </div>
-      <div class="hint">Example: Pakistan ➜ <b>923001234567</b> (0 aur + ke bina)</div>
+      <div class="hint">Example: Pakistan ➜ <b>923001234567</b> (no leading 0 or +)</div>
 
       <div id="msg" class="msg"></div>
 
       <div id="codebox" class="codebox">
-        <div style="font-size:13px;color:var(--muted)">Aapka Pairing Code</div>
+        <div style="font-size:13px;color:var(--muted)">Your Pairing Code</div>
         <div id="code" class="code">----</div>
         <button id="copyBtn" class="copy">📋 Copy Code</button>
       </div>
 
       <div class="steps">
-        <b>Kaise use karein:</b><br/>
-        1️⃣ WhatsApp kholo ➜ <b>Settings</b> ➜ <b>Linked Devices</b><br/>
-        2️⃣ <b>Link a Device</b> par tap karo<br/>
-        3️⃣ <b>"Link with phone number instead"</b> chuno<br/>
-        4️⃣ Ye 8-digit code type karo ✅
+        <b>How to use:</b><br/>
+        1️⃣ Open WhatsApp ➜ <b>Settings</b> ➜ <b>Linked Devices</b><br/>
+        2️⃣ Tap <b>Link a Device</b><br/>
+        3️⃣ Choose <b>"Link with phone number instead"</b><br/>
+        4️⃣ Type this 8-digit code ✅
       </div>
     </div>
 
     <!-- RIGHT: info -->
     <div class="card">
       <h2>⚡ Bot Status</h2>
-      <p class="sub">Live status aur available commands.</p>
+      <p class="sub">Live status and available commands.</p>
       <div class="stats">
         <div class="stat"><div class="k">Status</div><div class="v" id="sStatus">—</div></div>
         <div class="stat"><div class="k">Uptime</div><div class="v" id="sUptime">—</div></div>
@@ -199,8 +199,8 @@
 
   <!-- Linked sessions (owner-only) -->
   <div class="card sessions-card">
-    <h2>📱 Linked Sessions <span id="sessCount" class="chip" style="margin-left:6px">0 / 50</span></h2>
-    <p class="sub">Sirf owner connected numbers dekh sakta hy. Neeche apna owner token daalo (default: aapka owner number).</p>
+    <h2>📱 Linked Sessions <span id="sessCount" class="chip" style="margin-left:6px">0 / 500</span></h2>
+    <p class="sub">Only the owner can view connected numbers. Enter your owner token below (default: your owner number).</p>
     <div class="field" style="margin-bottom:14px;max-width:440px">
       <input id="token" type="password" placeholder="Owner token" autocomplete="off" />
       <button id="tokenBtn">Unlock</button>
@@ -236,7 +236,7 @@ async function refreshStatus() {
     $('statusText').textContent = d.connected ? 'Online ✅' : st.charAt(0).toUpperCase() + st.slice(1);
     $('sStatus').textContent = st;
     $('sUptime').textContent = d.uptime || '—';
-    $('sSess').textContent = (d.connectedCount || 0) + ' / ' + (d.maxSessions || 50);
+    $('sSess').textContent = (d.connectedCount || 0) + ' / ' + (d.maxSessions || 500);
   } catch { $('statusText').textContent = 'Offline'; }
 }
 async function refreshCommands() {
@@ -255,13 +255,13 @@ async function refreshSessions() {
     const r = await fetch(API + '/api/sessions' + (token ? '?token=' + encodeURIComponent(token) : ''));
     const d = await r.json();
     const list = d.sessions || [];
-    $('sessCount').textContent = (d.count != null ? d.count : list.length) + ' / ' + (d.max || 50);
+    $('sessCount').textContent = (d.count != null ? d.count : list.length) + ' / ' + (d.max || 500);
     const box = $('sessions');
     if (d.locked) {
-      box.innerHTML = '<div class="empty">🔒 Sirf owner connected numbers dekh sakta hy. Neeche owner token daal ke <b>Unlock</b> dabao.</div>';
+      box.innerHTML = '<div class="empty">🔒 Only the owner can view connected numbers. Enter the owner token below and press <b>Unlock</b>.</div>';
       return;
     }
-    if (!list.length) { box.innerHTML = '<div class="empty">Abhi koi session linked nahi hy. Upar number daal ke link karo.</div>'; return; }
+    if (!list.length) { box.innerHTML = '<div class="empty">No sessions are linked yet. Enter a number above to link one.</div>'; return; }
     box.innerHTML = list.map(s => `
       <div class="sess">
         <div>
@@ -274,12 +274,12 @@ async function refreshSessions() {
         </div>
       </div>`).join('');
     box.querySelectorAll('.rm').forEach(b => b.addEventListener('click', async () => {
-      if (!confirm('Session +' + b.dataset.num + ' remove karein?')) return;
+      if (!confirm('Remove session +' + b.dataset.num + '?')) return;
       b.disabled = true; b.textContent = '…';
       try { await fetch(API + '/api/session/remove', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ number: b.dataset.num, token: getToken() }) }); } catch {}
       refreshSessions(); refreshStatus();
     }));
-  } catch { $('sessions').innerHTML = '<div class="empty">Sessions load nahi ho sake.</div>'; }
+  } catch { $('sessions').innerHTML = '<div class="empty">Could not load sessions.</div>'; }
 }
 function showMsg(text, type) {
   const m = $('msg'); m.textContent = text; m.className = 'msg ' + type;
@@ -288,7 +288,7 @@ function showMsg(text, type) {
 /* ---------------- pairing ---------------- */
 $('pairBtn').addEventListener('click', async () => {
   const number = ($('num').value || '').replace(/[^0-9]/g, '');
-  if (number.length < 8) return showMsg('❌ Sahi number likho (country code ke sath).', 'err');
+  if (number.length < 8) return showMsg('❌ Enter a valid number (with country code).', 'err');
   const btn = $('pairBtn');
   btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Wait…';
   $('codebox').classList.remove('show');
@@ -315,11 +315,11 @@ $('pairBtn').addEventListener('click', async () => {
         if (evt.status === 'code' && evt.code) {
           $('code').textContent = evt.code;
           $('codebox').classList.add('show');
-          showMsg('✅ Code ban gaya! WhatsApp me type karo.', 'ok');
+          showMsg('✅ Code ready! Type it in WhatsApp.', 'ok');
         } else if (evt.status === 'linking') {
-          showMsg('⏳ Code accept ho gaya — link ho raha hy…', 'ok');
+          showMsg('⏳ Code accepted — linking…', 'ok');
         } else if (evt.status === 'paired') {
-          showMsg('✅ Device link ho gaya! Bot online hy 🎉', 'ok');
+          showMsg('✅ Device linked! The bot is online 🎉', 'ok');
           refreshSessions(); refreshStatus();
         } else if (evt.status === 'error') {
           showMsg('❌ ' + (evt.error || 'Pairing fail'), 'err');

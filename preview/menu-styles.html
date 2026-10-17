@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>SAQIB-MD — 10 Menu Styles</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 34px 28px 44px;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #0b141a;
+    background-image:
+      radial-gradient(1200px 700px at 12% -10%, rgba(124,92,255,.16), transparent 55%),
+      radial-gradient(1000px 600px at 100% 0%, rgba(34,211,238,.12), transparent 55%);
+    color: #e9edef;
+  }
+  h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: .3px; }
+  h1 .g { background: linear-gradient(90deg,#7c5cff,#22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { color: #8696a0; font-size: 14px; margin: 0 0 26px; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+  .cell {
+    background: #111b21; border: 1px solid #222d34; border-radius: 16px;
+    padding: 16px 16px 18px; position: relative;
+  }
+  .badge {
+    position: absolute; top: -11px; left: 16px; font-size: 11px; font-weight: 700;
+    background: linear-gradient(90deg,#7c5cff,#22d3ee); color: #06131a;
+    padding: 3px 10px; border-radius: 999px; letter-spacing: .5px;
+  }
+  .name { font-size: 15px; font-weight: 700; margin: 6px 0 1px; color: #e9edef; }
+  .desc { font-size: 12px; color: #8696a0; margin-bottom: 12px; }
+  .bubble {
+    background: #005c4b; border-radius: 10px 10px 10px 3px;
+    padding: 10px 12px 6px; max-width: 100%;
+    box-shadow: 0 1px 1px rgba(0,0,0,.35);
+  }
+  .msg {
+    font-size: 13.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", -apple-system, sans-serif;
+    color: #e9edef;
+  }
+  .msg .mono { font-family: "DejaVu Sans Mono", ui-monospace, Menlo, Consolas, monospace; }
+  .meta { text-align: right; font-size: 10.5px; color: #a5c9c0; margin-top: 4px; }
+  .tick { color: #53bdeb; margin-left: 4px; }
+  .foot { margin-top: 30px; color: #8696a0; font-size: 13px; }
+  .foot b { color: #e9edef; }
+</style>
+</head>
+<body>
+  <h1>SAQIB-MD <span class="g">Menu Designs</span></h1>
+  <p class="sub">10 single-column menu styles — nothing can overlap. Pick one with <b>.menustyle &lt;1-10&gt;</b>.</p>
+  <div class="grid">
+    <div class="cell">
+      <div class="badge">Style 1</div>
+      <div class="name">Classic</div>
+      <div class="desc">Boxed header + numbered categories</div>
+      <div class="bubble"><div class="msg">╭━━━━━━━━━━━━━━━━━━━━━╮
+┃   ✦  <b>SAQIB-MD</b>  ✦
+╰━━━━━━━━━━━━━━━━━━━━━╯
+  ⚡ <b>v3.0.0</b>  •  👑 Saqib  •  🕒 10/17/2025, 3:42 PM
+  💠 Prefix: <b>.</b>
+
+📂 <b>CATEGORIES</b>   ›   56 commands
+━━━━━━━━━━━━━━━━━━━━━
+ 01 ▸ 🔎 MAIN  ›  12
+ 02 ▸ ⬇️ DOWNLOAD  ›  10
+ 03 ▸ 🤖 AI  ›  8
+ 04 ▸ 👥 GROUP  ›  10
+ 05 ▸ 🎵 MEDIA &amp; FX  ›  9
+ 06 ▸ 💎 PREMIUM  ›  7
+━━━━━━━━━━━━━━━━━━━━━
+💡 .menu &lt;category&gt;   •   .menuall
+✨ <i>SAQIB-MD — by Saqib</i></div>
+        <div class="meta"><span>3:42 PM</span><span class="tick">✓✓</span></div>
+      </div>
+    </div>
+    <div class="cell">
+      <div class="badge">Style 2</div>
+      <div class="name">Minimal</div>
+      <div class="desc">Clean, no borders</div>
+      <div class="bubble"><div class="msg"><b>SAQIB-MD</b>
+v3.0.0 · Saqib · prefix .
+
+CATEGORIES (56)
+· 🔎 MAIN — 12
+· ⬇️ DOWNLOAD — 10
+· 🤖 AI — 8
+· 👥 GROUP — 10
+· 🎵 MEDIA &amp; FX — 9
+· 💎 PREMIUM — 7
+
+.menu &lt;cat&gt; / .menuall</div>
+        <div class="meta"><span>3:42 PM</span><span class="tick">✓✓</span></div>
+      </div>
+    </div>
+    <div class="cell">
+      <div class="badge">Style 3</div>
+      <div class="name">Neon</div>
+      <div class="desc">Bold neon bars & lightning</div>
+      <div class="bubble"><div class="msg">⚡⚡⚡ <b>SAQIB-MD</b> ⚡⚡⚡
+▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+⚙️ v3.0.0  ·  👑 Saqib
+🔑 prefix .  ·  🕒 10/17/2025, 3:42 PM
+
+▓▓ <b>CATEGORIES</b> ▓▓ 56
+🔹 🔎 MAIN ⋯ 12
+🔹 ⬇️ DOWNLOAD ⋯ 10
+🔹 🤖 AI ⋯ 8
+🔹 👥 GROUP ⋯ 10
+🔹 🎵 MEDIA &amp; FX ⋯ 9
+🔹 💎 PREMIUM ⋯ 7
+
+.menu &lt;cat&gt; ⋯ .menuall</div>
+        <div class="meta"><span>3:42 PM</span><span class="tick">✓✓</span></div>
+      </div>
+    </div>
+    <div class="cell">
+      <div class="badge">Style 4</div>
+      <div class="name">Elegant</div>
+      <div class="desc">Double-line frame, refined</div>
+      <div class="bubble"><div class="msg">╔═══════════════════╗
+║   <b>SAQIB-MD</b>
+╚═══════════════════╝
+  ✦ Saqib  ·  v3.0.0  ·  10/17/2025, 3:42 PM
+  ✦ Prefix  .
+
+❖ <b>CATEGORIES</b>  (56)
+─────────────────────
+  01. 🔎 MAIN  ·  12
+  02. ⬇️ DOWNLOAD  ·  10
+  03. 🤖 AI  ·  8
+  04. 👥 GROUP  ·  10
+  05. 🎵 MEDIA &amp; FX  ·  9
+  06. 💎 PREMIUM  ·  7
+─────────────────────
+❖ .menu &lt;category&gt;  ·  .menuall</div>
+        <div class="meta"><span>3:42 PM</span><span class="tick">✓✓</span></div>
+      </div>
+    </div>
+    <div class="cell">
+      <div class="badge">Style 5</div>
+      <div class="name">Compact</div>
+      <div class="desc">Everything on a few lines</div>
+      <div class="bubble"><div class="msg"><b>SAQIB-MD</b> · 56 cmds · prefix .
+─────────────────────
+🔎 MAIN(12)  ⬇️ DOWNLOAD(10)  🤖 AI(8)  👥 GROUP(10)  🎵 MEDIA &amp; FX(9)  💎 PREMIUM(7)  
+─────────────────────
+.menu &lt;cat&gt; / .menuall</div>
+        <div class="meta"><span>3:42 PM</span><span class="tick">✓✓</span></div>
+      </div>
+    </div>
+    <div class="cell">
+      <div class="badge">Style 6</div>
+      <div class="name">Card</div>
+      <div class="desc">Card-style panels</div>
+      <div class="bubble"><div class="msg">┏━━━ <b>SAQIB-MD</b> ━━━┓
+┃ 👑 Saqib  ·  v3.0.0
+┃ 🔑 .  ·  🕒 10/17/2025, 3:42 PM
+┗━━━━━━━━━━━━━━━┛
+
+┏━ 📂 CATEGORIES (56)
+┃ ▸ 🔎 MAIN  ›  12
+┃ ▸ ⬇️ DOWNLOAD  ›  10
+┃ ▸ 🤖 AI  ›  8
+┃ ▸ 👥 GROUP  ›  10
+┃ ▸ 🎵 MEDIA &amp; FX  ›  9
+┃ ▸ 💎 PREMIUM  ›  7
+┗━ .menu &lt;cat&gt; · .menuall</div>
+        <div class="meta"><span>3:42 PM</span><span class="tick">✓✓</span></div>
+      </div>
+    </div>
+    <div class="cell">
+      <div class="badge">Style 7</div>
+      <div class="name">Terminal</div>
+      <div class="desc">Monospace code block</div>
+      <div class="bubble"><div class="msg"><span class="mono">
+SAQIB-MD v3.0.0
+owner : Saqib
+prefix: .
+time  : 10/17/2025, 3:42 PM
+
+[CATEGORIES] 56
+ 01  🔎 MAIN  -&gt;  12
+ 02  ⬇️ DOWNLOAD  -&gt;  10
+ 03  🤖 AI  -&gt;  8
+ 04  👥 GROUP  -&gt;  10
+ 05  🎵 MEDIA &amp; FX  -&gt;  9
+ 06  💎 PREMIUM  -&gt;  7
+
+.menu &lt;cat&gt; | .menuall
+</span></div>
+        <div class="meta"><span>3:42 PM</span><span class="tick">✓✓</span></div>
+      </div>
+    </div>
+    <div class="cell">
+      <div class="badge">Style 8</div>
+      <div class="name">Royal</div>
+      <div class="desc">Crown & gold dividers</div>
+      <div class="bubble"><div class="msg">👑 ═══ <b>SAQIB-MD</b> ═══ 👑
+     ✦ Saqib ✦
+  v3.0.0  •  .  •  10/17/2025, 3:42 PM
+
+⚜️ <b>CATEGORIES</b>  ›  56
+━━━━━━━━━━━━━━━━━━━━━
+ 01 ✦ 🔎 MAIN  ›  12
+ 02 ✦ ⬇️ DOWNLOAD  ›  10
+ 03 ✦ 🤖 AI  ›  8
+ 04 ✦ 👥 GROUP  ›  10
+ 05 ✦ 🎵 MEDIA &amp; FX  ›  9
+ 06 ✦ 💎 PREMIUM  ›  7
+━━━━━━━━━━━━━━━━━━━━━
+👑 .menu &lt;cat&gt;  ·  .menuall</div>
+        <div class="meta"><span>3:42 PM</span><span class="tick">✓✓</span></div>
+      </div>
+    </div>
+    <div class="cell">
+      <div class="badge">Style 9</div>
+      <div class="name">Pills</div>
+      <div class="desc">Dotted pill list</div>
+      <div class="bubble"><div class="msg">● <b>SAQIB-MD</b> ●  v3.0.0
+● Saqib  ●  .  ●  10/17/2025, 3:42 PM
+
+◈ <b>CATEGORIES</b> (56)
+◈ 🔎 MAIN ⋯⋯ 12
+◈ ⬇️ DOWNLOAD ⋯⋯ 10
+◈ 🤖 AI ⋯⋯ 8
+◈ 👥 GROUP ⋯⋯ 10
+◈ 🎵 MEDIA &amp; FX ⋯⋯ 9
+◈ 💎 PREMIUM ⋯⋯ 7
+
+◈ .menu &lt;cat&gt;  ·  .menuall</div>
+        <div class="meta"><span>3:42 PM</span><span class="tick">✓✓</span></div>
+      </div>
+    </div>
+    <div class="cell">
+      <div class="badge">Style 10</div>
+      <div class="name">Modern</div>
+      <div class="desc">Rounded modern frame</div>
+      <div class="bubble"><div class="msg">╭─ <b>SAQIB-MD</b> ──────────╮
+│ ✦ v3.0.0  ·  👑 Saqib
+│ ✦ prefix .  ·  🕒 10/17/2025, 3:42 PM
+╰──────────────────────╯
+
+╭─ 📂 <b>CATEGORIES</b> (56)
+│ 01 ▸ 🔎 MAIN  ›  12
+│ 02 ▸ ⬇️ DOWNLOAD  ›  10
+│ 03 ▸ 🤖 AI  ›  8
+│ 04 ▸ 👥 GROUP  ›  10
+│ 05 ▸ 🎵 MEDIA &amp; FX  ›  9
+│ 06 ▸ 💎 PREMIUM  ›  7
+╰─ 💡 .menu &lt;cat&gt; · .menuall</div>
+        <div class="meta"><span>3:42 PM</span><span class="tick">✓✓</span></div>
+      </div>
+    </div></div>
+  <p class="foot">Default style is <b>1 — Classic</b>. Change anytime with <b>.menustyle &lt;number&gt;</b> (owner only).</p>
+</body>
+</html>

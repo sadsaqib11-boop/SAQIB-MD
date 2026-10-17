@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "name": "Classic",
+    "desc": "Boxed header + numbered categories",
+    "text": "╭━━━━━━━━━━━━━━━━━━━━━╮\n┃   ✦  *SAQIB-MD*  ✦\n╰━━━━━━━━━━━━━━━━━━━━━╯\n  ⚡ *v3.0.0*  •  👑 Saqib  •  🕒 10/17/2025, 3:42 PM\n  💠 Prefix: *.*\n\n📂 *CATEGORIES*   ›   56 commands\n━━━━━━━━━━━━━━━━━━━━━\n 01 ▸ 🔎 MAIN  ›  12\n 02 ▸ ⬇️ DOWNLOAD  ›  10\n 03 ▸ 🤖 AI  ›  8\n 04 ▸ 👥 GROUP  ›  10\n 05 ▸ 🎵 MEDIA & FX  ›  9\n 06 ▸ 💎 PREMIUM  ›  7\n━━━━━━━━━━━━━━━━━━━━━\n💡 .menu <category>   •   .menuall\n✨ _SAQIB-MD — by Saqib_"
+  },
+  {
+    "id": 2,
+    "name": "Minimal",
+    "desc": "Clean, no borders",
+    "text": "*SAQIB-MD*\nv3.0.0 · Saqib · prefix .\n\nCATEGORIES (56)\n· 🔎 MAIN — 12\n· ⬇️ DOWNLOAD — 10\n· 🤖 AI — 8\n· 👥 GROUP — 10\n· 🎵 MEDIA & FX — 9\n· 💎 PREMIUM — 7\n\n.menu <cat> / .menuall"
+  },
+  {
+    "id": 3,
+    "name": "Neon",
+    "desc": "Bold neon bars & lightning",
+    "text": "⚡⚡⚡ *SAQIB-MD* ⚡⚡⚡\n▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔\n⚙️ v3.0.0  ·  👑 Saqib\n🔑 prefix .  ·  🕒 10/17/2025, 3:42 PM\n\n▓▓ *CATEGORIES* ▓▓ 56\n🔹 🔎 MAIN ⋯ 12\n🔹 ⬇️ DOWNLOAD ⋯ 10\n🔹 🤖 AI ⋯ 8\n🔹 👥 GROUP ⋯ 10\n🔹 🎵 MEDIA & FX ⋯ 9\n🔹 💎 PREMIUM ⋯ 7\n\n.menu <cat> ⋯ .menuall"
+  },
+  {
+    "id": 4,
+    "name": "Elegant",
+    "desc": "Double-line frame, refined",
+    "text": "╔═══════════════════╗\n║   *SAQIB-MD*\n╚═══════════════════╝\n  ✦ Saqib  ·  v3.0.0  ·  10/17/2025, 3:42 PM\n  ✦ Prefix  .\n\n❖ *CATEGORIES*  (56)\n─────────────────────\n  01. 🔎 MAIN  ·  12\n  02. ⬇️ DOWNLOAD  ·  10\n  03. 🤖 AI  ·  8\n  04. 👥 GROUP  ·  10\n  05. 🎵 MEDIA & FX  ·  9\n  06. 💎 PREMIUM  ·  7\n─────────────────────\n❖ .menu <category>  ·  .menuall"
+  },
+  {
+    "id": 5,
+    "name": "Compact",
+    "desc": "Everything on a few lines",
+    "text": "*SAQIB-MD* · 56 cmds · prefix .\n─────────────────────\n🔎 MAIN(12)  ⬇️ DOWNLOAD(10)  🤖 AI(8)  👥 GROUP(10)  🎵 MEDIA & FX(9)  💎 PREMIUM(7)  \n─────────────────────\n.menu <cat> / .menuall"
+  },
+  {
+    "id": 6,
+    "name": "Card",
+    "desc": "Card-style panels",
+    "text": "┏━━━ *SAQIB-MD* ━━━┓\n┃ 👑 Saqib  ·  v3.0.0\n┃ 🔑 .  ·  🕒 10/17/2025, 3:42 PM\n┗━━━━━━━━━━━━━━━┛\n\n┏━ 📂 CATEGORIES (56)\n┃ ▸ 🔎 MAIN  ›  12\n┃ ▸ ⬇️ DOWNLOAD  ›  10\n┃ ▸ 🤖 AI  ›  8\n┃ ▸ 👥 GROUP  ›  10\n┃ ▸ 🎵 MEDIA & FX  ›  9\n┃ ▸ 💎 PREMIUM  ›  7\n┗━ .menu <cat> · .menuall"
+  },
+  {
+    "id": 7,
+    "name": "Terminal",
+    "desc": "Monospace code block",
+    "text": "```\nSAQIB-MD v3.0.0\nowner : Saqib\nprefix: .\ntime  : 10/17/2025, 3:42 PM\n\n[CATEGORIES] 56\n 01  🔎 MAIN  ->  12\n 02  ⬇️ DOWNLOAD  ->  10\n 03  🤖 AI  ->  8\n 04  👥 GROUP  ->  10\n 05  🎵 MEDIA & FX  ->  9\n 06  💎 PREMIUM  ->  7\n\n.menu <cat> | .menuall\n```"
+  },
+  {
+    "id": 8,
+    "name": "Royal",
+    "desc": "Crown & gold dividers",
+    "text": "👑 ═══ *SAQIB-MD* ═══ 👑\n     ✦ Saqib ✦\n  v3.0.0  •  .  •  10/17/2025, 3:42 PM\n\n⚜️ *CATEGORIES*  ›  56\n━━━━━━━━━━━━━━━━━━━━━\n 01 ✦ 🔎 MAIN  ›  12\n 02 ✦ ⬇️ DOWNLOAD  ›  10\n 03 ✦ 🤖 AI  ›  8\n 04 ✦ 👥 GROUP  ›  10\n 05 ✦ 🎵 MEDIA & FX  ›  9\n 06 ✦ 💎 PREMIUM  ›  7\n━━━━━━━━━━━━━━━━━━━━━\n👑 .menu <cat>  ·  .menuall"
+  },
+  {
+    "id": 9,
+    "name": "Pills",
+    "desc": "Dotted pill list",
+    "text": "● *SAQIB-MD* ●  v3.0.0\n● Saqib  ●  .  ●  10/17/2025, 3:42 PM\n\n◈ *CATEGORIES* (56)\n◈ 🔎 MAIN ⋯⋯ 12\n◈ ⬇️ DOWNLOAD ⋯⋯ 10\n◈ 🤖 AI ⋯⋯ 8\n◈ 👥 GROUP ⋯⋯ 10\n◈ 🎵 MEDIA & FX ⋯⋯ 9\n◈ 💎 PREMIUM ⋯⋯ 7\n\n◈ .menu <cat>  ·  .menuall"
+  },
+  {
+    "id": 10,
+    "name": "Modern",
+    "desc": "Rounded modern frame",
+    "text": "╭─ *SAQIB-MD* ──────────╮\n│ ✦ v3.0.0  ·  👑 Saqib\n│ ✦ prefix .  ·  🕒 10/17/2025, 3:42 PM\n╰──────────────────────╯\n\n╭─ 📂 *CATEGORIES* (56)\n│ 01 ▸ 🔎 MAIN  ›  12\n│ 02 ▸ ⬇️ DOWNLOAD  ›  10\n│ 03 ▸ 🤖 AI  ›  8\n│ 04 ▸ 👥 GROUP  ›  10\n│ 05 ▸ 🎵 MEDIA & FX  ›  9\n│ 06 ▸ 💎 PREMIUM  ›  7\n╰─ 💡 .menu <cat> · .menuall"
+  }
+]

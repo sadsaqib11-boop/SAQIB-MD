@@ -1,10 +1,11 @@
 /**
  * OWNER — owner-only commands
  *
- * .vv        -> unlocks view-once media and reveals it in the CURRENT chat.
- * .vv2/.vv3  -> unlocks view-once media and sends it to the bot's OWN chat
+ * .vv2/.vv3  -> unlock view-once media and send it to the bot's OWN chat
  *               ("Message yourself" / inbox). The *command* message then
  *               auto-deletes after ~1.5s; the unlocked media stays. Silent.
+ *               (The PUBLIC `.vv` that reveals media in the current chat lives
+ *               in `viewonce.js`.)
  * .ban / .unban / .banlist -> block + ignore a user's number.
  */
 const config = require('../config');
@@ -27,19 +28,18 @@ const appeals = require('../lib/appeals');
   const { sock, command, reply, quoted } = ctx;
 
   switch (command) {
-    case 'vv': case 'vv2': case 'vv3': {
-      if (!quoted) return reply('❌ View-once media ko *reply* kar ke .vv likho.');
+    case 'vv2': case 'vv3': {
+      if (!quoted) return reply('❌ Reply to a *view-once* photo/video with .vv2');
       const qm = unwrapViewOnce(quoted.message);
       const type = qm.imageMessage ? 'image' : qm.videoMessage ? 'video' : qm.audioMessage ? 'audio' : null;
-      if (!type) return reply('❌ Ye view-once media nahi lag raha (image/video par reply karo).');
+      if (!type) return reply('❌ That does not look like view-once media (reply to a photo/video).');
       const msg = qm.imageMessage || qm.videoMessage || qm.audioMessage;
       let buf;
       try { buf = await downloadMedia(msg, type); }
-      catch (e) { return reply('❌ Media download nahi ho saki (expired ho sakti hy): ' + String(e.message || e).slice(0, 80)); }
+      catch (e) { return reply('❌ Could not download the media (it may have expired): ' + String(e.message || e).slice(0, 80)); }
       const cap = `🔓 *View-once unlocked*\n👑 ${config.BOT_NAME}`;
       // .vv2 / .vv3 -> send to the bot's OWN chat ("Message yourself" / inbox).
-      // .vv        -> reveal it right here in the CURRENT chat.
-      const toSelf = command === 'vv2' || command === 'vv3';
+      const toSelf = true;
       // Resolve the bot's OWN number. Prefer the session number (always a real
       // MSISDN); fall back to sock.user.id, but ignore it when it is a LID
       // (a LID is not a phone number and would send to a bogus chat).
@@ -69,26 +69,26 @@ const appeals = require('../lib/appeals');
       break;
     }
     case 'forward': {
-      if (!quoted) return reply('❌ Kisi message ko reply karo.');
-      if (!ctx.arg) return reply(`❌ Number do. Example: ${config.PREFIX}forward 923xxxxxxxxxx`);
+      if (!quoted) return reply('❌ Reply to a message.');
+      if (!ctx.arg) return reply(`❌ Give a number. Example: ${config.PREFIX}forward 923xxxxxxxxxx`);
       const jid = cleanNumber(ctx.arg) + '@s.whatsapp.net';
       await sock.copyNForward(jid, quoted.message, true);
-      await reply(`✅ Forward ho gaya -> +${jid.split('@')[0]}`);
+      await reply(`✅ Forwarded to +${jid.split('@')[0]}`);
       break;
     }
     case 'block': case 'unblock': {
       const num = cleanNumber(quoted ? (quoted.key.participant || quoted.key.remoteJid) : ctx.arg);
-      if (!num) return reply('❌ Number do ya reply karo.');
+      if (!num) return reply('❌ Give a number or reply to a message.');
       await sock.updateBlockStatus(num + '@s.whatsapp.net', command === 'block' ? 'block' : 'unblock');
       await reply(`${command === 'block' ? '🚫' : '✅'} +${num} ${command}ed.`);
       break;
     }
     case 'ban': {
       const num = cleanNumber(quoted ? (quoted.key.participant || quoted.key.remoteJid) : ctx.arg);
-      if (!num) return reply('❌ Number do ya kisi ko reply karo.');
+      if (!num) return reply('❌ Give a number or reply to a message.');
       bans.add(num);
       await sock.updateBlockStatus(num + '@s.whatsapp.net', 'block').catch(() => {});
-      await reply(`🚫 +${num} *BAN* kar diya gaya (blocked + ignored).`);
+      await reply(`🚫 +${num} has been *BANNED* (blocked + ignored).`);
       break;
     }
     // ---- .unban -----------------------------------------------------------
@@ -108,7 +108,7 @@ const appeals = require('../lib/appeals');
         const info = appeals.lookup(platform);
         if (!info) {
           return reply(
-            `📮 *Ban Appeal*\n\nKis platform ka? Example:\n` +
+            `📬 *Ban Appeal*\n\nWhich platform? Example:\n` +
             `${config.PREFIX}unban whatsapp appeal\n${config.PREFIX}unban instagram appeal\n\n` +
             `_Available:_ ${appeals.listAll()}`
           );
@@ -118,29 +118,29 @@ const appeals = require('../lib/appeals');
       const num = cleanNumber(quoted ? (quoted.key.participant || quoted.key.remoteJid) : ctx.arg);
       if (!num) {
         return reply(
-          `ℹ️ *Unban kaise karein?*\n\n` +
-          `▸ *${config.PREFIX}unban <number>* — is bot ka ban hatao\n` +
-          `▸ *${config.PREFIX}unban <platform> appeal* — us app se unban ka tareeqa\n\n` +
+          `ℹ️ *How to unban*\n\n` +
+          `▸ *${config.PREFIX}unban <number>* — lift this bot's ban\n` +
+          `▸ *${config.PREFIX}unban <platform> appeal* — that app's own appeal route\n\n` +
           `_Platforms:_ ${appeals.listAll()}`
         );
       }
       bans.remove(num);
       await sock.updateBlockStatus(num + '@s.whatsapp.net', 'unblock').catch(() => {});
-      await reply(`✅ +${cleanNumber(num) || num} *UNBAN* ho gaya.`);
+      await reply(`✅ +${cleanNumber(num) || num} has been *UNBANNED*.`);
       break;
     }
     case 'banlist': {
       const l = bans.all();
-      await reply(`🚫 *Banlist (${l.length}):*\n\n${l.map((n) => `• +${n}`).join('\n') || '(khali)'}`);
+      await reply(`🚫 *Banlist (${l.length}):*\n\n${l.map((n) => `• +${n}`).join('\n') || '(empty)'}`);
       break;
     }
     case 'delete': {
-      if (!quoted) return reply('❌ Kisi message ko reply karo.');
+      if (!quoted) return reply('❌ Reply to a message.');
       await sock.sendMessage(ctx.from, { delete: quoted.key });
       break;
     }
     case 'leave': {
-      await reply('👋 Bot ja raha hy... Allah Hafiz!');
+      await reply('👋 Leaving the group... Goodbye!');
       setTimeout(() => {
         try { Promise.resolve(sock.groupLeave(ctx.from)).catch(() => {}); } catch { /* ignore */ }
       }, 1500);
@@ -148,10 +148,10 @@ const appeals = require('../lib/appeals');
     }
     case 'fullpp': case 'setpp': {
       const img = quoted?.message?.imageMessage || ctx.m.message.imageMessage;
-      if (!img) return reply('❌ Kisi photo par reply karo ya caption me .setpp likh ke photo bhejo.');
+      if (!img) return reply('❌ Reply to a photo, or send a photo with .setpp in the caption.');
       const buf = await downloadMedia(img, 'image');
       await sock.updateProfilePicture(sock.user.id, buf);
-      await reply('✅ Profile picture update ho gayi.');
+      await reply('✅ Profile picture updated.');
       break;
     }
     case 'status': case 'status2': {
@@ -160,11 +160,11 @@ const appeals = require('../lib/appeals');
       if (img || vid) {
         const buf = await downloadMedia(img || vid, img ? 'image' : 'video');
         await sock.sendMessage('status@broadcast', img ? { image: buf, caption: ctx.arg || '' } : { video: buf, caption: ctx.arg || '' });
-        await reply('✅ Status laga diya.');
+        await reply('✅ Status posted.');
       } else if (ctx.arg) {
         await sock.sendMessage('status@broadcast', { text: ctx.arg });
-        await reply('✅ Text status laga diya.');
-      } else reply('❌ Text likho ya media par reply karo.');
+        await reply('✅ Text status posted.');
+      } else reply('❌ Write some text, or reply to media.');
       break;
     }
     case 'getbio': {
@@ -172,42 +172,42 @@ const appeals = require('../lib/appeals');
       try {
         const s = await sock.fetchStatus(num + '@s.whatsapp.net');
         await reply(`📝 *Bio (+${num}):*\n${s[0]?.status || s?.status || '-'}`);
-      } catch { await reply('❌ Bio nahi mili.'); }
+      } catch { await reply('❌ Could not fetch the bio.'); }
       break;
     }
     case 'updatebio':
-      if (!ctx.arg) return reply('❌ Nayi bio likho.');
+      if (!ctx.arg) return reply('❌ Write the new bio.');
       await sock.updateProfileStatus(ctx.arg);
-      await reply('✅ Bio update ho gayi.');
+      await reply('✅ Bio updated.');
       break;
     case 'setname':
-      if (!ctx.arg) return reply('❌ Naya naam do.');
+      if (!ctx.arg) return reply('❌ Give the new name.');
       await sock.updateProfileName(ctx.arg);
-      await reply('✅ Naam update ho gaya.');
+      await reply('✅ Name updated.');
       break;
     case 'pair': {
       const num = cleanNumber(ctx.arg);
-      if (!num) return reply(`❌ Number do. Example: ${config.PREFIX}pair 923xxxxxxxxxx`);
+      if (!num) return reply(`❌ Give a number. Example: ${config.PREFIX}pair 923xxxxxxxxxx`);
       try {
         // Use the session manager so this links a NEW number (not the current sock).
         const bot = require('../lib/bot');
-        await reply('⏳ Code ban raha hy, 2-3 second...');
+        await reply('⏳ Generating the code, 2-3 seconds...');
         const code = await bot.requestPair(num);
         // Send the code ALONE so it can be copied with one tap — no label, no
         // extra text wrapped around it, and never inside a code block (some
         // clients make backtick-wrapped text hard to long-press).
         await ctx.send(ctx.from, { text: code }, { quoted: ctx.m });
         await ctx.send(ctx.from, {
-          text: '📲 Ye code WhatsApp me daalo:\n*Linked Devices → Link with phone number*\n\n_Code 45 second me expire ho jata hy._',
+          text: '📱 Enter this code in WhatsApp:\n*Linked Devices → Link with phone number*\n\n_The code expires in 45 seconds._',
         });
       } catch (e) { await reply('❌ ' + (e?.message || e)); }
       break;
     }
     case 'broadcast': {
-      if (!ctx.arg) return reply(`❌ Message do. Example: ${config.PREFIX}broadcast Salam sab ko!`);
+      if (!ctx.arg) return reply(`❌ Give a message. Example: ${config.PREFIX}broadcast Hello everyone!`);
       const groups = await sock.groupFetchAllParticipating();
       const jids = Object.keys(groups);
-      await reply(`📢 Broadcast ${jids.length} groups ko bhej raha hoon...`);
+      await reply(`📢 Broadcasting to ${jids.length} groups...`);
       let n = 0;
       for (const jid of jids) {
         try {
@@ -217,16 +217,16 @@ const appeals = require('../lib/appeals');
         // small delay so we don't get rate-limited / flagged as spam
         await new Promise((r) => setTimeout(r, 1200));
       }
-      await reply(`✅ Broadcast ${n}/${jids.length} groups me bhej diya.`);
+      await reply(`✅ Broadcast sent to ${n}/${jids.length} groups.`);
       break;
     }
     case 'blocklist': {
       const bl = await sock.fetchBlocklist();
-      await reply(`🚫 *Blocklist (${bl.length}):*\n\n${bl.map((j) => `• +${j.split('@')[0]}`).join('\n') || '(khali)'}`);
+      await reply(`🚫 *Blocklist (${bl.length}):*\n\n${bl.map((j) => `• +${j.split('@')[0]}`).join('\n') || '(empty)'}`);
       break;
     }
     case 'restart': {
-      await reply('🔄 Bot restart ho raha hy...');
+      await reply('🔄 Restarting the bot...');
       setTimeout(() => process.exit(0), 1500);
       break;
     }
@@ -235,7 +235,7 @@ const appeals = require('../lib/appeals');
 };
 
 module.exports = {
-  commands: ['vv', 'vv2', 'vv3', 'forward', 'block', 'unblock', 'ban', 'unban', 'banlist', 'delete', 'leave', 'fullpp', 'setpp', 'status', 'status2', 'getbio', 'updatebio', 'setname', 'pair', 'broadcast', 'blocklist', 'restart'],
+  commands: ['vv2', 'vv3', 'forward', 'block', 'unblock', 'ban', 'unban', 'banlist', 'delete', 'leave', 'fullpp', 'setpp', 'status', 'status2', 'getbio', 'updatebio', 'setname', 'pair', 'broadcast', 'blocklist', 'restart'],
   category: '👑 OWNER',
   ownerOnly: true,
   handler,

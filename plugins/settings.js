@@ -27,9 +27,9 @@ const handler = async (ctx) => {
 
   switch (command) {
     case 'mode': {
-      if (!['public', 'private'].includes(arg)) return reply(`ℹ️ Abhi: *${config.MODE}*\n❓ ${config.PREFIX}mode public  ya  ${config.PREFIX}mode private`);
+      if (!['public', 'private'].includes(arg)) return reply(`ℹ️ Current: *${config.MODE}*\n❓ ${config.PREFIX}mode public  or  ${config.PREFIX}mode private`);
       config.MODE = arg; settings.save();
-      await reply(`✅ Bot ab *${arg.toUpperCase()}* mode me hy.${arg === 'private' ? '\n(Owner ke ilawa koi command nahi chala sakta)' : '\n(Sab log commands use kar sakte hain)'}`);
+      await reply(`✅ The bot is now in *${arg.toUpperCase()}* mode.${arg === 'private' ? '\n(Only the owner can run commands)' : '\n(Everyone can use commands)'}`);
       break;
     }
     case 'prefix': case 'setprefix': {
@@ -38,61 +38,61 @@ const handler = async (ctx) => {
       if (!arg) {
         const own = prefixes.has(ctx.senderNum);
         return reply(
-          `ℹ️ *Aap ka prefix:* "${ctx.prefix}"\n` +
-          (own ? `_(aap ka apna — sirf aap par lagu)_\n` : `_(default — sab ke liye_)\n`) +
-          `❓ ${ctx.prefix}setprefix !   → apna prefix badlein\n` +
-          `❓ ${ctx.prefix}setprefix reset → default par wapas`
+          `ℹ️ *Your prefix:* "${ctx.prefix}"\n` +
+          (own ? `_(your own — applies only to you)_\n` : `_(default — applies to everyone)_\n`) +
+          `❓ ${ctx.prefix}setprefix !   → change your prefix\n` +
+          `❓ ${ctx.prefix}setprefix reset → back to default`
         );
       }
       if (arg.toLowerCase() === 'reset') {
         prefixes.set(ctx.senderNum, null);
-        await reply(`✅ Aap ka prefix default par wapas: "${config.PREFIX}"`);
+        await reply(`✅ Your prefix is back to the default: "${config.PREFIX}"`);
         break;
       }
-      if (arg.length > 2) return reply(`❌ Prefix 1-2 character ka ho. Example: ${ctx.prefix}setprefix !`);
+      if (arg.length > 2) return reply(`❌ The prefix must be 1-2 characters. Example: ${ctx.prefix}setprefix !`);
       prefixes.set(ctx.senderNum, arg);
-      await reply(`✅ *Aap ka* prefix ab "${arg}" hy.\n_Baqi users ka prefix wahi rahega — is se unhe koi farq nahi padega._`);
+      await reply(`✅ *Your* prefix is now "${arg}".\n_Other users keep their own prefix — this does not affect them._`);
       break;
     }
     case 'botname':
-      if (!arg) return reply(`ℹ️ Abhi: ${config.BOT_NAME}`);
+      if (!arg) return reply(`ℹ️ Current: ${config.BOT_NAME}`);
       config.BOT_NAME = arg; settings.save();
-      await reply(`✅ Bot ka naam: *${arg}*`);
+      await reply(`✅ Bot name: *${arg}*`);
       break;
     case 'ownername':
-      if (!arg) return reply('❌ Naya naam do.');
+      if (!arg) return reply('❌ Give the new name.');
       config.OWNER_NAME = arg; settings.save();
-      await reply(`✅ Owner ka naam: *${arg}*`);
+      await reply(`✅ Owner name: *${arg}*`);
       break;
     case 'ownernumber': {
       const num = (arg || '').replace(/[^0-9]/g, '');
-      if (!num) return reply('❌ Number do (92xxxxxxxxxx).');
+      if (!num) return reply('❌ Give a number (92xxxxxxxxxx).');
       config.OWNER_NUMBER = num; settings.save();
       await reply(`✅ Owner number: +${num}`);
       break;
     }
     case 'description':
-      if (!arg) return reply(`ℹ️ Abhi: ${config.DESCRIPTION}`);
+      if (!arg) return reply(`ℹ️ Current: ${config.DESCRIPTION}`);
       config.DESCRIPTION = arg; settings.save();
       await reply(`✅ Description set: *${arg}*`);
       break;
     case 'stickername':
-      if (!arg) return reply(`ℹ️ Abhi: ${config.STICKER_NAME}`);
+      if (!arg) return reply(`ℹ️ Current: ${config.STICKER_NAME}`);
       config.STICKER_NAME = arg; settings.save();
       await reply(`✅ Sticker pack name: *${arg}*`);
       break;
     case 'setwelcome':
-      if (!arg) return reply(`❌ Text do. Variables: @user @group\nExample: ${config.PREFIX}setwelcome Welcome @user`);
+      if (!arg) return reply(`❌ Give some text. Variables: @user @group\nExample: ${config.PREFIX}setwelcome Welcome @user`);
       config.WELCOME_MSG = arg; settings.save();
-      await reply(`✅ Welcome message set.`);
+      await reply('✅ Welcome message set.');
       break;
     case 'setgoodbye':
-      if (!arg) return reply(`❌ Text do. Variables: @user @group\nExample: ${config.PREFIX}setgoodbye Bye @user`);
+      if (!arg) return reply(`❌ Give some text. Variables: @user @group\nExample: ${config.PREFIX}setgoodbye Bye @user`);
       config.GOODBYE_MSG = arg; settings.save();
-      await reply(`✅ Goodbye message set.`);
+      await reply('✅ Goodbye message set.');
       break;
     case 'statusemoji':
-      if (!arg) return reply(`ℹ️ Abhi: ${config.STATUS_EMOJI}`);
+      if (!arg) return reply(`ℹ️ Current: ${config.STATUS_EMOJI}`);
       config.STATUS_EMOJI = arg; settings.save();
       await reply(`✅ Status emoji: ${arg}`);
       break;
@@ -100,10 +100,10 @@ const handler = async (ctx) => {
       await reply(`✅ Auto-react emojis: ${config.REACT_EMOJIS.join(' ')}`);
       break;
     case 'owneremojis':
-      await reply(`👑 Owner emojis: 👑 🔥 💯 ⚡`);
+      await reply('👑 Owner emojis: 👑 🔥 💯 ⚡');
       break;
     case 'delpath':
-      await reply(`🗑️ Auto-delete downloads: *ON* (temp files har download ke baad delete hoti hain).`);
+      await reply('🗑️ Auto-delete downloads: *ON* (temp files are deleted after every download).');
       break;
     case 'autoread': {
       const v = setFlag('AUTO_READ', arg);
@@ -186,7 +186,7 @@ const handler = async (ctx) => {
       } else {
         const pic = path.resolve(config.BOT_PIC);
         if (fs.existsSync(pic)) await ctx.send(ctx.from, { image: fs.readFileSync(pic), caption: cap }, { quoted: ctx.m });
-        else await reply('❌ Bot ki DP nahi mili (na WhatsApp par set hy na local asset mila).');
+        else await reply('❌ No bot picture found (neither on WhatsApp nor as a local asset).');
       }
       break;
     }
@@ -194,28 +194,28 @@ const handler = async (ctx) => {
       await reply(`🔒 *Privacy*\n▪️ Bot privacy: ${config.PRIVACY}\n▪️ Group privacy: ${config.GROUP_PRIVACY}\n\n_Change: ${config.PREFIX}groupsprivacy <all|contacts|none>_`);
       break;
     case 'groupsprivacy': {
-      if (!arg) return reply(`ℹ️ Abhi: ${config.GROUP_PRIVACY}\n❓ ${config.PREFIX}groupsprivacy all|contacts|none`);
+      if (!arg) return reply(`ℹ️ Current: ${config.GROUP_PRIVACY}\n❓ ${config.PREFIX}groupsprivacy all|contacts|none`);
       config.GROUP_PRIVACY = arg; settings.save();
       await reply(`✅ Group privacy: *${arg}*`);
       break;
     }
     case 'sudo': {
       const num = (arg || '').replace(/[^0-9]/g, '');
-      if (!num) return reply('❌ Number do.');
+      if (!num) return reply('❌ Give a number.');
       if (!config.SUDO.includes(num)) config.SUDO.push(num);
       settings.save();
-      await reply(`✅ +${num} ab *SUDO* (trusted user) hy.`);
+      await reply(`✅ +${num} is now a *SUDO* (trusted user).`);
       break;
     }
     case 'delsudo': {
       const num = (arg || '').replace(/[^0-9]/g, '');
       config.SUDO = config.SUDO.filter((n) => n !== num);
       settings.save();
-      await reply(`✅ +${num} ka sudo hat gaya.`);
+      await reply(`✅ Removed sudo from +${num}.`);
       break;
     }
     case 'listsudo':
-      await reply(`👑 *Sudo users:*\n${config.SUDO.length ? config.SUDO.map((n) => `+${n}`).join('\n') : '(koi nahi)'}`);
+      await reply(`👑 *Sudo users:*\n${config.SUDO.length ? config.SUDO.map((n) => `+${n}`).join('\n') : '(none)'}`);
       break;
     case 'setfont': {
       const fonts = require('./fonts');
@@ -227,24 +227,24 @@ const handler = async (ctx) => {
         return reply(`❌ Unknown font "${key}".\nAvailable: ${Object.keys(fonts.NAMED).join(', ')}`);
       }
       config.DEFAULT_FONT = key; settings.save();
-      await reply(`✅ Default font ab *${key}* hy.\nPreview: ${fonts.applyDefault('SAQIB-MD')}`);
+      await reply(`✅ Default font is now *${key}*.\nPreview: ${fonts.applyDefault('SAQIB-MD')}`);
       break;
     }
     case 'reset': {
-      if (!ctx.isOwner) return reply('\ud83d\udd12 Ye command sirf *owner* ke liye hai.');
+      if (!ctx.isOwner) return reply('🔒 This command is for the *owner* only.');
       const what = String(arg || '').trim();
       if (!what) {
-        return reply(`\u267b\ufe0f *Reset*\n\n\u25aa\ufe0f ${config.PREFIX}reset all \u2014 sab settings default par\n\u25aa\ufe0f ${config.PREFIX}reset <key> \u2014 ek setting reset\n\n_Keys:_ ${settings.KEYS.join(', ')}`);
+        return reply(`♻️ *Reset*\n\n▪️ ${config.PREFIX}reset all — reset every setting to default\n▪️ ${config.PREFIX}reset <key> — reset one setting\n\n_Keys:_ ${settings.KEYS.join(', ')}`);
       }
       if (what.toLowerCase() === 'all') {
         settings.reset();
-        await reply('\u267b\ufe0f Sab settings default par reset ho gayi.');
+        await reply('♻️ All settings have been reset to default.');
         return;
       }
       const key = what.toUpperCase();
-      if (!settings.KEYS.includes(key)) return reply(`\u274c Unknown setting "${what}".\n_Keys:_ ${settings.KEYS.join(', ')}`);
+      if (!settings.KEYS.includes(key)) return reply(`❌ Unknown setting "${what}".\n_Keys:_ ${settings.KEYS.join(', ')}`);
       settings.reset(key);
-      await reply(`\u267b\ufe0f *${key}* default par reset ho gayi.`);
+      await reply(`♻️ *${key}* has been reset to default.`);
       break;
     }
     case 'settings':
@@ -253,7 +253,8 @@ const handler = async (ctx) => {
         `▪️ Mode: ${config.MODE}\n▪️ Prefix: "${config.PREFIX}"\n` +
         `▪️ Auto-read: ${config.AUTO_READ ? 'ON' : 'OFF'}\n▪️ Auto-typing: ${config.AUTO_TYPING ? 'ON' : 'OFF'}\n` +
         `▪️ Welcome: ${config.WELCOME ? 'ON' : 'OFF'}\n▪️ Goodbye: ${config.GOODBYE ? 'ON' : 'OFF'}\n` +
-        `▪️ Anti-link: ${config.ANTILINK ? 'ON' : 'OFF'}\n▪️ Auto-status: ${config.AUTOSTATUS ? 'ON' : 'OFF'}\n` +
+        `▪️ Anti-link: ${config.ANTILINK ? 'ON' : 'OFF'}\n▪️ Anti-mention: ${config.ANTIMENTION ? 'ON' : 'OFF'}\n` +
+        `▪️ Auto-status: ${config.AUTOSTATUS ? 'ON' : 'OFF'}\n▪️ Auto-view-once: ${config.AUTOVIEWONCE ? 'ON' : 'OFF'}\n` +
         `▪️ Anti-delete: ${config.ANTIDELETE ? 'ON' : 'OFF'}\n▪️ Auto-react: ${config.AUTO_REACT ? 'ON' : 'OFF'}\n` +
         `▪️ Online: ${config.ONLINE ? 'ON' : 'OFF'}`
       );
