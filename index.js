@@ -6,6 +6,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const config = require('./config');
+const QRCode = require('qrcode');
 // Load persisted runtime overrides (toggles survive restarts/redeploys).
 require('./lib/settings').load();
 require('./lib/prefixes').load();
@@ -176,6 +177,7 @@ app.post('/api/pair/stream', async (req, res) => {
     if (closed) return;
     closed = true;
     bot.events.off('code', onCode);
+    bot.events.off('qr', onQr);
     bot.events.off('linking', onLinking);
     bot.events.off('paired', onPaired);
     bot.events.off('error', onError);
@@ -183,12 +185,22 @@ app.post('/api/pair/stream', async (req, res) => {
   };
   const mine = (num) => !want || !num || String(num) === want;
   const onCode = (e) => { if (!mine(e.number)) return; codeSentToClient = true; send({ status: 'code', code: e.code, number: e.number }); };
+  // QR mode: render the pairing QR locally (qrcode package) so the user can
+  // scan it in WhatsApp → Linked Devices → Link a Device. The raw QR string is
+  // a WhatsApp pairing secret, so it is converted to an image HERE and the
+  // image (data URL) is what travels to the portal.
+  const onQr = async (e) => {
+    if (!mine(e.number) || !e.qr) return;
+    try { send({ status: 'qr', image: await QRCode.toDataURL(e.qr, { width: 280, margin: 1 }), number: e.number }); }
+    catch { /* QR render fail — code mode still works */ }
+  };
   const onLinking = (e) => { if (!mine(e.number)) return; send({ status: 'linking', number: e.number, message: 'Code accepted — finishing the link...' }); };
   const onPaired = (e) => { if (!mine(e.number)) return; send({ status: 'paired', number: e.number }); setTimeout(cleanup, 1500); };
   const onError = (e) => { if (!mine(e.number)) return; send({ status: 'error', error: e.error, number: e.number }); cleanup(); };
 
   res.on('close', cleanup);
   bot.events.on('code', onCode);
+  bot.events.on('qr', onQr);
   bot.events.on('linking', onLinking);
   bot.events.on('paired', onPaired);
   bot.events.on('error', onError);

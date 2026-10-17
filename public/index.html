@@ -165,12 +165,16 @@
         <button id="copyBtn" class="copy">📋 Copy Code</button>
       </div>
 
+      <div id="qrbox" class="codebox" style="text-align:center">
+        <div style="font-size:13px;color:var(--muted)">Ya QR scan karo (Link a Device)</div>
+        <img id="qrimg" alt="Pairing QR" style="width:280px;height:280px;max-width:80vw;background:#fff;border-radius:12px;padding:8px;margin:10px 0"/>
+      </div>
+
       <div class="steps">
         <b>How to use:</b><br/>
         1️⃣ Open WhatsApp ➜ <b>Settings</b> ➜ <b>Linked Devices</b><br/>
         2️⃣ Tap <b>Link a Device</b><br/>
-        3️⃣ Choose <b>"Link with phone number instead"</b><br/>
-        4️⃣ Type this 8-digit code ✅
+        3️⃣ Code type karo <b>YA QR scan karo</b> ✅
       </div>
     </div>
 
@@ -292,6 +296,7 @@ $('pairBtn').addEventListener('click', async () => {
   const btn = $('pairBtn');
   btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Wait…';
   $('codebox').classList.remove('show');
+  $('qrbox').classList.remove('show');
   $('msg').className = 'msg';
   try {
     const r = await fetch(API + '/api/pair/stream', {
@@ -315,7 +320,10 @@ $('pairBtn').addEventListener('click', async () => {
         if (evt.status === 'code' && evt.code) {
           $('code').textContent = evt.code;
           $('codebox').classList.add('show');
-          showMsg('✅ Code ready! Type it in WhatsApp.', 'ok');
+          showMsg('✅ Code ready! Type it in WhatsApp — ya QR scan karo.', 'ok');
+        } else if (evt.status === 'qr' && evt.image) {
+          $('qrimg').src = evt.image;
+          $('qrbox').classList.add('show');
         } else if (evt.status === 'linking') {
           showMsg('⏳ Code accepted — linking…', 'ok');
         } else if (evt.status === 'paired') {
