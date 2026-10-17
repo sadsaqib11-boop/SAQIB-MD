@@ -38,6 +38,11 @@ const probeDuration = (file) => new Promise((resolve) => {
 });
 
 async function sendMedia(ctx, filePath, caption, asAudio) {
+  // GUARD: an undefined/missing file used to crash with "path argument must be
+  // of type string" — report it in words instead.
+  if (!filePath || !fs.existsSync(filePath)) {
+    throw new Error('download ke baad file mili hi nahi — dobara try karo');
+  }
   const stat = fs.statSync(filePath);
   const buf = fs.readFileSync(filePath);
   try {
@@ -73,7 +78,16 @@ async function ytSearchDownload(ctx, query, asAudio) {
   const meta = isUrl(input) ? await ytdlp.info(input).catch(() => ({ title: '' })) : { title: query };
   await ctx.reply(`⬇️ *${meta.title || query}*\n_${asAudio ? '🎵 Audio' : '🎬 Video'} download ho raha hy…_`);
   if (asAudio) {
-    const file = await ytdlp.downloadAudioSmart(input);
+    // SIX lanes race: YouTube, SoundCloud, Dailymotion, Invidious mirror,
+    // JioSaavn, and TikTok (this closure uses the same scraper as .tts).
+    const audioViaTiktok = async () => {
+      const urls = await tiktokSearch(String(input).trim(), 3);
+      for (const u of urls) {
+        try { return await ytdlp.downloadAudioByUrl(u); } catch { /* next clip */ }
+      }
+      throw new Error('tiktok lane came up empty');
+    };
+    const file = await ytdlp.downloadAudioSmart(input, [audioViaTiktok]);
     await sendMedia(ctx, file, `🎵 *${meta.title || query}*\n👑 ${config.BOT_NAME}`, true);
     return;
   }
