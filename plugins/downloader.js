@@ -244,22 +244,45 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     catch { await ctx.reply('❌ Kuch nahi mila — doosra keyword try karo.'); }
     return;
   }
-  // Send REAL BUFFERS. The old code passed {video:{url}} and let Baileys fetch
-  // server-side — TikTok's CDN blocks datacenter IPs, so "search likha, video
-  // nahi aayi". Fetch here, send buffers, skip dead clips, and ALWAYS report
-  // the outcome — no more silence.
+  // ALBUM MODE — she asked for the videos to arrive as ONE WhatsApp album
+  // (thumbnails in a grid/row), not as 5 separate vertical messages. The
+  // album parent is a tiny metadata message; each video then references it
+  // via albumParentKey so WhatsApp groups them together.
   let delivered = 0;
-  const total = picks.length;
-  for (let i = 0; i < total; i++) {
-    const v = picks[i];
+  const bufs = [];
+  for (let i = 0; i < picks.length; i++) {
     try {
-      const buf = await fetchVideoBuffer(v.url);
+      const buf = await fetchVideoBuffer(picks[i].url);
+      bufs.push({ buf, title: (picks[i].title || '').slice(0, 120) });
+    } catch { /* dead clip — skip */ }
+  }
+  if (!bufs.length) {
+    await ctx.reply('❌ TikTok ne videos bhejne se rok liya (server IP block). Thori dair baad dobara try karo — ya .video se search karo.');
+    return;
+  }
+  try {
+    const parent = await ctx.send(ctx.from, { album: { expectedVideoCount: bufs.length } }, { quoted: ctx.m });
+    const parentKey = { id: parent?.key?.id, remoteJid: ctx.from, fromMe: true };
+    for (let i = 0; i < bufs.length; i++) {
+      const v = bufs[i];
       await ctx.send(ctx.from, {
-        video: buf,
-        caption: `🎬 *TikTok* (${i + 1}/${total})\n📝 ${(v.title || '').slice(0, 120)}\n👑 ${config.BOT_NAME}`,
+        video: v.buf,
+        caption: i === 0
+          ? `🎬 *TikTok* — ${query} (${bufs.length} videos)\n📝 ${v.title}\n👑 ${config.BOT_NAME}`
+          : undefined,
+        albumParentKey: parentKey,
       }, { quoted: ctx.m });
       delivered++;
-    } catch { /* this clip is dead — try the next */ }
+    }
+  } catch (e) {
+    // Album path failed on this WhatsApp version → old way, one message each.
+    console.error('[TTS] album send fail, fallback:', e?.message || e);
+    for (const v of bufs) {
+      try {
+        await ctx.send(ctx.from, { video: v.buf, caption: `🎬 *TikTok*\n📝 ${v.title}\n👑 ${config.BOT_NAME}` }, { quoted: ctx.m });
+        delivered++;
+      } catch { /* dead clip — skip */ }
+    }
   }
   if (!delivered) {
     await ctx.reply('❌ TikTok ne videos bhejne se rok liya (server IP block). Thori dair baad dobara try karo — ya .video se search karo.');
