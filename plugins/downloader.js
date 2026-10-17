@@ -176,6 +176,7 @@ async function tiktokSearch(query, limit = 5) {
     `${query} tiktok punjabi`,
     `${query} site:tiktok.com`,
     `${query} tiktok`,
+    `${query} tiktok video`,
   ];
   const found = []; // [{ url, rank }] — rank = variant index (lower = PK-er)
   const collect = (html0, rank) => {
@@ -188,24 +189,45 @@ async function tiktokSearch(query, limit = 5) {
       if (found.length >= limit * 4) break;
     }
   };
-  // SPEED: every engine x variant fires AT ONCE (Promise.allSettled) — wall
-  // time is the slowest single fetch (~12s cap), not the sum. The old
-  // sequential loop could stack 15 fetches x 20s and was why .tts felt
-  // "boht slow". Four lanes per variant: Bing videos page, Bing web page
-  // (different HTML, extra hits), DDG direct (PK region), DDG via Jina.
+  // SPEED + YIELD: every engine x variant fires AT ONCE (Promise.allSettled)
+  // — wall time is the slowest single fetch (~12s cap), not the sum. Four
+  // lanes per variant: Bing videos, BRAVE (best yield of all — real TikTok
+  // video URLs, tested live), DDG html (PK region), DDG lite. Bing gets a
+  // small stagger because a 6-wide burst makes it throttle to 2-3 urls
+  // (verified live 17:23 UTC: parallel burst -> 2 urls, staggered -> 9+).
   const jobs = variants.map((v, i) => {
     const q = encodeURIComponent(v);
     return [
-      { rank: i, url: `https://www.bing.com/videos/search?q=${q}`, h: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } },
-      { rank: i, url: `https://www.bing.com/search?q=${q}`, h: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } },
-      { rank: i, url: `https://html.duckduckgo.com/html/?q=${q}&kl=pk-en`, h: { 'User-Agent': UA, 'Accept': 'text/plain' } },
-      { rank: i, url: `https://r.jina.ai/https://html.duckduckgo.com/html/?q=${q}&kl=pk-en`, h: { 'User-Agent': UA, 'Accept': 'text/plain' } },
+      { rank: i, delay: i * 250, url: `https://www.bing.com/videos/search?q=${q}`, h: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } },
+      { rank: i, delay: 0, url: `https://search.brave.com/search?q=${q}`, h: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8' } },
+      { rank: i, delay: 0, url: `https://html.duckduckgo.com/html/?q=${q}&kl=pk-en`, h: { 'User-Agent': UA, 'Accept': 'text/plain' } },
+      { rank: i, delay: 0, url: `https://lite.duckduckgo.com/lite/?q=${q}&kl=pk-en`, h: { 'User-Agent': UA, 'Accept': 'text/plain' } },
+      { rank: i, delay: 0, url: `https://r.jina.ai/https://html.duckduckgo.com/html/?q=${q}&kl=pk-en`, h: { 'User-Agent': UA, 'Accept': 'text/plain' } },
     ];
   }).flat();
   const results = await Promise.allSettled(jobs.map((j) =>
-    getText(j.url, { headers: j.h }, 12000).then((html) => ({ html, rank: j.rank }))));
+    new Promise((r) => setTimeout(r, j.delay))
+      .then(() => getText(j.url, { headers: j.h }, 12000))
+      .then((html) => ({ html, rank: j.rank }))));
   for (const r of results) {
     if (r.status === 'fulfilled') collect(r.value.html, r.value.rank);
+  }
+  // THIN-YIELD RETRY: a throttled round can come back with almost nothing
+  // (live: 2 urls). Re-run once with reworded variants before giving up.
+  if (found.length < limit * 2) {
+    await sleep(800);
+    const retryJobs = ['tiktok viral', 'tiktok new', 'tiktok best'].flatMap((suffix, i) => {
+      const q = encodeURIComponent(`${query} ${suffix}`);
+      return [
+        { rank: 3 + i, url: `https://search.brave.com/search?q=${q}`, h: { 'User-Agent': UA } },
+        { rank: 3 + i, url: `https://html.duckduckgo.com/html/?q=${q}&kl=pk-en`, h: { 'User-Agent': UA, 'Accept': 'text/plain' } },
+      ];
+    });
+    const retry = await Promise.allSettled(retryJobs.map((j) =>
+      getText(j.url, { headers: j.h }, 12000).then((html) => ({ html, rank: j.rank }))));
+    for (const r of retry) {
+      if (r.status === 'fulfilled') collect(r.value.html, r.value.rank);
+    }
   }
   found.sort((a, b) => a.rank - b.rank);
   return found.slice(0, limit * 4).map((f) => f.url);
@@ -273,11 +295,9 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
       return { src: u, url: '', title: '' };
     }))).filter((v) => v.src);
     debug.info('[TTS] resolve done', { seconds: Math.round((Date.now() - tResolve) / 1000), clips: resolved.filter((v) => v.url).length, candidates: resolved.length });
-    // RELEVANCE SCORE + PAKISTAN BIAS (user rule: "sirf Pakistan ki videos —
-    // urdu, hindi, punjabi — angreezi ki nahi"). Every video earns points for
-    // query-word overlap in its title, plus a bonus for desi markers. Sort is
-    // stable, so equal scores keep the PK-variant rank from tiktokSearch
-    // (pakistan/urdu/punjabi variants feed their URLs in first).
+    // RELEVANCE GATE: zero-score (off-topic) clips only fill the row when
+    // genuinely relevant ones can't — no more "2 ajeeb videos" when enough
+    // matching clips exist.
     const words = String(query).toLowerCase().split(/\s+/).filter((w) => w.length > 2);
     const DESI = /(urdu|pak|punjab|saraiki|sindhi|hindi|desi|bollywood|lollywood)/i;
     const score = (v) => {
@@ -286,7 +306,9 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
       if (DESI.test(t)) s += 2;
       return s;
     };
-    picks = [...resolved].sort((a, b) => score(b) - score(a)).slice(0, limit);
+    const ranked = [...resolved].sort((a, b) => score(b) - score(a));
+    const relevant = ranked.filter((v) => score(v) > 0);
+    picks = (relevant.length >= limit ? relevant : ranked).slice(0, limit);
     if (picks.length) ttCache.set(ckey, picks);
   }
   if (!picks.length) {
