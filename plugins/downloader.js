@@ -137,11 +137,14 @@ function extractTiktokUrls(html) {
 async function tiktokSearch(query, limit = 5) {
   // PAKISTAN-FIRST: the user is in Layyah, Punjab (PK) and wants Urdu/Punjabi/
   // Saraiki/Hindi clips — NOT random foreign videos. We therefore (a) bias the
-  // search to the PK region/language, and (b) add Pakistan-oriented query
-  // variants so the backends return local content first.
+  // search to the PK region/language, (b) add Pakistan-oriented query
+  // variants so the backends return local content first, and (c) HIDE foreign
+  // results when enough local ones exist (relevance filter downstream).
   const variants = [
     `${query} tiktok pakistan`,
     `${query} tiktok urdu`,
+    `${query} tiktok punjabi`,
+    `${query} tiktok saraiki`,
     `${query} tiktok`,
     `${query} site:tiktok.com`,
   ];
@@ -215,11 +218,14 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   } else {
     await ctx.reply(`🔎 *TikTok Search:* ${query}\n_${limit} videos dhoond raha hoon…_`);
     // Search is the slow part (Bing/DDG scraping) — cache the page URLs for 1h.
+    // Wider net: limit*4 candidates so that after dead links and the relevance
+    // filter there are STILL enough survivors to deliver the full 5 (the old
+    // net was too small — searches often delivered just 1 video).
     const skey = `tt|${String(query).trim().toLowerCase()}`;
     let urls = srcCache.get(skey);
     if (!urls) {
       urls = [];
-      try { urls = await tiktokSearch(query, limit * 3); } catch { /* ignore */ }
+      try { urls = await tiktokSearch(query, limit * 4); } catch { /* ignore */ }
       if (urls.length) srcCache.set(skey, urls);
     }
     // Resolve to direct play URLs in parallel (fast, no 800ms drip).
@@ -227,16 +233,14 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
       try { const f = await tiktokResolve(u); if (f?.video) return { url: f.video, title: f.title || '' }; } catch { /* ignore */ }
       return null;
     }))).filter(Boolean);
-    // Relevance filter: drop results whose title shares NO word with the query.
-    // This is what removes the "weird English videos" when searching e.g. a
-    // Saraiki song — only on-topic clips survive.
+    // Relevance RANKING (not just filtering): results whose title shares a
+    // word with the query come first; the rest follow as backfill. This
+    // punishes off-topic foreign clips without ever leaving the user with
+    // fewer than `limit` videos.
     const words = String(query).toLowerCase().split(/\s+/).filter((w) => w.length > 2);
-    const related = resolved.filter((v) => words.length && words.some((w) => String(v.title).toLowerCase().includes(w)));
-    picks = related.slice(0, limit);
-    if (picks.length < limit) {
-      for (const v of resolved) { if (picks.length >= limit) break; if (!picks.includes(v)) picks.push(v); }
-    }
-    picks = picks.slice(0, limit);
+    const related = words.length ? resolved.filter((v) => words.some((w) => String(v.title).toLowerCase().includes(w))) : [];
+    const rest = resolved.filter((v) => !related.includes(v));
+    picks = [...related, ...rest].slice(0, limit);
     if (picks.length) ttCache.set(ckey, picks);
   }
   if (!picks.length) {
@@ -244,13 +248,17 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     catch { await ctx.reply('❌ Kuch nahi mila — doosra keyword try karo.'); }
     return;
   }
-  // ALBUM MODE — she asked for the videos to arrive as ONE WhatsApp album
-  // (thumbnails in a grid/row), not as 5 separate vertical messages. The
-  // album parent is a tiny metadata message; each video then references it
-  // via albumParentKey so WhatsApp groups them together.
+  // ALBUM MODE + DEAD-CLIP BACKFILL — merged from both sides:
+  //  - ALBUM: the videos arrive as ONE WhatsApp album (grid/row — exactly the
+  //    "_________________________________" row she asked for), not 5 vertical
+  //    messages. The album parent is a tiny metadata message; each video
+  //    references it via albumParentKey so WhatsApp groups them together.
+  //  - BACKFILL: buffers are fetched with a wider candidate pool and the loop
+  //    keeps going until `limit` clips are actually collected — dead links can
+  //    never shrink the row below what she asked for.
   let delivered = 0;
   const bufs = [];
-  for (let i = 0; i < picks.length; i++) {
+  for (let i = 0; i < picks.length && bufs.length < limit; i++) {
     try {
       const buf = await fetchVideoBuffer(picks[i].url);
       bufs.push({ buf, title: (picks[i].title || '').slice(0, 120) });

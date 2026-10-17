@@ -12,15 +12,24 @@ const config = require('../config');
 const { downloadMedia, cleanNumber } = require('../lib/helpers');
 const bans = require('../lib/bans');
 
-/** Unwrap view-once wrappers into the inner media message. */
+/** Unwrap view-once wrappers into the inner media message.
+ * RECURSIVE on purpose: WhatsApp sometimes nests view-once inside
+ * ephemeralMessage (disappearing-mode chats) or wraps the wrappers — a single
+ * level of unwrap misses those and .vv2 then says "not view-once". Same
+ * recursive unwrap the public .vv uses. */
 function unwrapViewOnce(qm) {
-  if (!qm) return null;
-  return (
-    qm.viewOnceMessage?.message ||
-    qm.viewOnceMessageV2?.message ||
-    qm.viewOnceMessageV2Extension?.message ||
-    qm
-  );
+  let m = qm;
+  for (let i = 0; m && i < 6; i++) {
+    const next =
+      m.viewOnceMessage?.message ||
+      m.viewOnceMessageV2?.message ||
+      m.viewOnceMessageV2Extension?.message ||
+      m.ephemeralMessage?.message ||
+      null;
+    if (!next) break;
+    m = next;
+  }
+  return m || qm || null;
 }
 
 const handler = async (ctx) => {
@@ -29,14 +38,34 @@ const appeals = require('../lib/appeals');
 
   switch (command) {
     case 'vv2': case 'vv3': {
-      if (!quoted) return reply('❌ Reply to a *view-once* photo/video with .vv2');
+      // RULE from the user: the chat where the view-once arrived must stay
+      // COMPLETELY silent — no success text, no error text. Every complaint
+      // goes to the bot's OWN inbox instead, and the command message ALWAYS
+      // deletes itself — success or fail.
+      let selfNum0 = cleanNumber(String(ctx.session?.number || '').split(':')[0].split('@')[0]);
+      if (!selfNum0) {
+        const uid0 = String(sock.user?.id || '');
+        if (uid0 && !uid0.endsWith('@lid')) selfNum0 = cleanNumber(uid0.split(':')[0].split('@')[0]);
+      }
+      const selfJid0 = selfNum0 ? `${selfNum0}@s.whatsapp.net` : ctx.from;
+      const selfError = async (txt) => {
+        try { await ctx.send(selfJid0, { text: txt }, {}); } catch { /* never surface an error in the source chat */ }
+      };
+      // Command self-destruct: delete the .vv2/.vv3 message from the source chat.
+      const deleteCmd = async () => {
+        const k0 = ctx.m?.key;
+        if (!k0) return;
+        const delKey0 = { remoteJid: k0.remoteJid || ctx.from, id: k0.id, fromMe: true, participant: k0.participant };
+        try { await sock.sendMessage(ctx.from, { delete: delKey0 }); } catch { /* ignore */ }
+      };
+      if (!quoted) { await deleteCmd(); return selfError('❌ Kisi *view-once* photo/video pe .vv2 ka reply karo.'); }
       const qm = unwrapViewOnce(quoted.message);
       const type = qm.imageMessage ? 'image' : qm.videoMessage ? 'video' : qm.audioMessage ? 'audio' : null;
-      if (!type) return reply('❌ That does not look like view-once media (reply to a photo/video).');
+      if (!type) { await deleteCmd(); return selfError('❌ Yeh view-once media nahi lagta (photo/video pe reply karo).'); }
       const msg = qm.imageMessage || qm.videoMessage || qm.audioMessage;
       let buf;
       try { buf = await downloadMedia(msg, type); }
-      catch (e) { return reply('❌ Could not download the media (it may have expired): ' + String(e.message || e).slice(0, 80)); }
+      catch (e) { await deleteCmd(); return selfError('❌ View-once download nahi ho saka (expire ho gaya?): ' + String(e.message || e).slice(0, 80)); }
       const cap = `🔓 *View-once unlocked*\n👑 ${config.BOT_NAME}`;
       // .vv2 / .vv3 -> send to the bot's OWN chat ("Message yourself" / inbox).
       const toSelf = true;
@@ -59,14 +88,8 @@ const appeals = require('../lib/appeals');
 
       if (toSelf) {
         // The USER asked for this: the moment the unlocked media lands in the
-        // inbox, the command message (.vv2) deletes IMMEDIATELY — no 1.5s
-        // delay (the old timer made it look like nothing happened). The key
-        // carries remoteJid/participant so the delete also works in groups.
-        const k = ctx.m?.key;
-        if (k) {
-          const delKey = { remoteJid: k.remoteJid || ctx.from, id: k.id, fromMe: true, participant: k.participant };
-          try { await sock.sendMessage(ctx.from, { delete: delKey }); } catch { /* ignore */ }
-        }
+        // inbox, the command message deletes IMMEDIATELY — no 1.5s delay.
+        await deleteCmd();
       }
       break;
     }

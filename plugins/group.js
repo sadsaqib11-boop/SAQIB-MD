@@ -124,7 +124,25 @@ const handler = async (ctx) => {
   if (needAdmin.includes(command)) {
     // Owner always passes; everyone else is matched by normalised number so a
     // LID-vs-phone-JID mismatch can never reject a real group admin.
-    const ok = ctx.isOwner || await isGroupAdmin(sock, from, ctx.sender, ctx.m).catch(() => false);
+    let ok = ctx.isOwner || await isGroupAdmin(sock, from, ctx.sender, ctx.m).catch(() => false);
+    if (!ok && !ctx.isOwner) {
+      // STALE-CACHE GUARD: the group-metadata cache lives 3 minutes. An admin
+      // promoted in the last few minutes (or a LID jid that only the FRESH
+      // participant list carries) used to be rejected with "only for admins"
+      // even though she really was an admin. Refetch UNCACHED and recheck
+      // against EVERY jid variant the message carries before giving up.
+      try {
+        const meta2 = await sock.groupMetadata(from);
+        contacts.learnFromGroupMeta(meta2);
+        const targets = [ctx.sender, ctx.m?.key?.participant, ctx.m?.key?.participantPn, ctx.m?.key?.senderPn]
+          .map((j) => String(j || '').split('@')[0].split(':')[0].replace(/[^0-9]/g, ''))
+          .filter(Boolean);
+        ok = (meta2.participants || []).some((x) => {
+          const ids = [x.id, x.lid, x.phoneNumber, x.jid].map((j) => String(j || '').split('@')[0].split(':')[0].replace(/[^0-9]/g, '')).filter(Boolean);
+          return ids.some((id) => targets.includes(id)) && (x.admin === 'admin' || x.admin === 'superadmin');
+        });
+      } catch { /* still no */ }
+    }
     if (!ok) return reply('\u274c Ye command sirf *group admins* ke liye hai.');
   }
 
