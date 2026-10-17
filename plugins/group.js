@@ -65,7 +65,10 @@ const handler = async (ctx) => {
     'updategcname', 'updategcdesc', 'link', 'invite', 'del', 'hidetag', 'poll', 'warn', 'resetwarn',
     'acceptall', 'rejectall', 'requests', 'accept', 'reject'];
   if (needAdmin.includes(command)) {
-    if (!(await isGroupAdmin(sock, from, ctx.sender))) return reply('\u274c Ye command sirf *group admins* ke liye hai.');
+    // Owner always passes; everyone else is matched by normalised number so a
+    // LID-vs-phone-JID mismatch can never reject a real group admin.
+    const ok = ctx.isOwner || await isGroupAdmin(sock, from, ctx.sender, ctx.m).catch(() => false);
+    if (!ok) return reply('\u274c Ye command sirf *group admins* ke liye hai.');
   }
 
   const target = quoted ? (quoted.key.participant || quoted.key.remoteJid) : (arg ? arg.replace(/[^0-9]/g, '') + '@s.whatsapp.net' : null);

@@ -1,16 +1,15 @@
 /**
  * OWNER — owner-only commands
  *
- * .vv2  -> unlocks view-once media and sends it to the bot's OWN chat
- *          ("Message yourself"), then auto-deletes it after a few seconds.
- * .vv / .vv3 -> unlocks and sends it to the current chat (normal).
+ * .vv        -> unlocks view-once media and reveals it in the CURRENT chat.
+ * .vv2/.vv3  -> unlocks view-once media and sends it to the bot's OWN chat
+ *               ("Message yourself" / inbox). The *command* message then
+ *               auto-deletes after ~1.5s; the unlocked media stays. Silent.
  * .ban / .unban / .banlist -> block + ignore a user's number.
  */
 const config = require('../config');
 const { downloadMedia, cleanNumber } = require('../lib/helpers');
 const bans = require('../lib/bans');
-
-const SELF_DELETE_MS = 10000; // .vv2 self-message auto-delete delay
 
 /** Unwrap view-once wrappers into the inner media message. */
 function unwrapViewOnce(qm) {
@@ -38,7 +37,9 @@ const appeals = require('../lib/appeals');
       try { buf = await downloadMedia(msg, type); }
       catch (e) { return reply('❌ Media download nahi ho saki (expired ho sakti hy): ' + String(e.message || e).slice(0, 80)); }
       const cap = `🔓 *View-once unlocked*\n👑 ${config.BOT_NAME}`;
-      const toSelf = command === 'vv2';
+      // .vv2 / .vv3 -> send to the bot's OWN chat ("Message yourself" / inbox).
+      // .vv        -> reveal it right here in the CURRENT chat.
+      const toSelf = command === 'vv2' || command === 'vv3';
       // Resolve the bot's OWN number. Prefer the session number (always a real
       // MSISDN); fall back to sock.user.id, but ignore it when it is a LID
       // (a LID is not a phone number and would send to a bogus chat).
@@ -57,8 +58,13 @@ const appeals = require('../lib/appeals');
       else sent = await ctx.send(target, { audio: buf, mimetype: 'audio/mpeg' }, opts);
 
       if (toSelf) {
-        await reply(`✅ View-once tumhari *own chat (yourself)* me bhej diya.\n🕐 ${Math.round(SELF_DELETE_MS / 1000)} sec me auto-delete ho jayega.`);
-        setTimeout(() => { try { sock.sendMessage(target, { delete: sent.key }); } catch { /* ignore */ } }, SELF_DELETE_MS);
+        // The USER asked for this: after unlocking to the inbox, the *command*
+        // message (.vv2) must vanish on its own in ~1.5s — but the unlocked
+        // media stays. No chat reply is sent (silent, so the inbox stays clean).
+        const cmdKey = ctx.m?.key;
+        setTimeout(() => {
+          try { sock.sendMessage(ctx.from, { delete: cmdKey }); } catch { /* ignore */ }
+        }, 1500);
       }
       break;
     }

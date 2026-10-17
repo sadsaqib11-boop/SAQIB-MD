@@ -158,7 +158,7 @@ async function onMessage(ctx) {
 
   // ---- anti-link (groups) ----
   if (config.ANTILINK && isGroup && !isOwner && text && LINK_RE.test(text)) {
-    const admin = await isGroupAdmin(sock, from, sender).catch(() => false);
+    const admin = await isGroupAdmin(sock, from, sender, m).catch(() => false);
     if (!admin) {
       try {
         await sock.sendMessage(from, { delete: m.key });
@@ -371,11 +371,11 @@ const contacts = require('../lib/contacts');
       return;
     }
 
-    // exact code first, then fuzzy search by name
+    // exact code first, then alias/name, then fuzzy search
     const code = lang.set(senderNum, sub);
     if (code) {
       const [en, nat] = lang.LANGS[code];
-      await reply(`✅ Bot ki language ab *${en}* (${nat}) hy.\n_AI replies isi language me aayenge._`);
+      await reply(`✅ Bot ki language ab *${en}* (${nat}) hy.\n_Ab HAR reply isi language me aayega._`);
       return;
     }
     const hits = lang.search(parts.join(' '));

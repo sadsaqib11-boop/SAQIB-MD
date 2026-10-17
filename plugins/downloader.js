@@ -124,28 +124,37 @@ function extractTiktokUrls(html) {
  * returns up to `limit` video URLs (first working backend wins).
  */
 async function tiktokSearch(query, limit = 5) {
-  const variants = [`${query} tiktok`, `tiktok ${query}`, `${query} site:tiktok.com`];
+  // PAKISTAN-FIRST: the user is in Layyah, Punjab (PK) and wants Urdu/Punjabi/
+  // Saraiki/Hindi clips — NOT random foreign videos. We therefore (a) bias the
+  // search to the PK region/language, and (b) add Pakistan-oriented query
+  // variants so the backends return local content first.
+  const variants = [
+    `${query} tiktok pakistan`,
+    `${query} tiktok urdu`,
+    `${query} tiktok`,
+    `${query} site:tiktok.com`,
+  ];
   const found = [];
   const collect = (html) => {
     for (const u of extractTiktokUrls(html)) { if (!found.includes(u)) found.push(u); if (found.length >= limit) break; }
   };
 
-  // Backend 1: Bing Videos
+  // Backend 1: Bing Videos — cc=PK + setlang=ur biases results to Pakistan.
   for (const v of variants) {
     if (found.length >= limit) break;
     try {
-      const html = await getText(`https://www.bing.com/videos/search?q=${encodeURIComponent(v)}`, { headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9', 'Cookie': 'SRCHHPGUSR=SRCHLANG=en' } }, 20000);
+      const html = await getText(`https://www.bing.com/videos/search?q=${encodeURIComponent(v)}&cc=PK&setlang=ur`, { headers: { 'User-Agent': UA, 'Accept-Language': 'ur-PK,ur;q=0.9,en;q=0.8', 'Cookie': 'SRCHHPGUSR=SRCHLANG=ur&SRCHHPGUSR=CC=PK' } }, 20000);
       collect(html);
     } catch { /* next */ }
     await sleep(150);
   }
 
-  // Backend 2: DuckDuckGo (direct then Jina reader proxy)
+  // Backend 2: DuckDuckGo (direct then Jina reader proxy), PK region.
   for (const v of variants) {
     if (found.length >= limit) break;
     for (const url of [
-      `https://html.duckduckgo.com/html/?q=${encodeURIComponent(v)}`,
-      `https://r.jina.ai/https://html.duckduckgo.com/html/?q=${encodeURIComponent(v)}`,
+      `https://html.duckduckgo.com/html/?q=${encodeURIComponent(v)}&kl=pk-en`,
+      `https://r.jina.ai/https://html.duckduckgo.com/html/?q=${encodeURIComponent(v)}&kl=pk-en`,
     ]) {
       if (found.length >= limit) break;
       try {
@@ -171,7 +180,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   if (!ytdlp.available()) return ctx.reply('❌ Downloader engine (yt-dlp) available nahi hy.');
   await ctx.reply(`🔎 *TikTok Search:* ${query}\n_${limit} videos dhoond raha hoon…_`);
   let urls = [];
-  try { urls = await tiktokSearch(query, limit * 2); } catch { /* ignore */ }
+  try { urls = await tiktokSearch(query, limit * 3); } catch { /* ignore */ }
   // Resolve to direct play URLs in parallel (fast, no 800ms drip).
   const resolved = (await Promise.all(urls.map(async (u) => {
     try { const f = await tiktokResolve(u); if (f?.video) return { url: f.video, title: f.title || '' }; } catch { /* ignore */ }
@@ -181,8 +190,11 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   // This is what removes the "weird English videos" when searching e.g. a
   // Saraiki song — only on-topic clips survive.
   const words = String(query).toLowerCase().split(/\s+/).filter((w) => w.length > 2);
-  let picks = resolved.filter((v) => !words.length || words.some((w) => String(v.title).toLowerCase().includes(w)));
-  if (!picks.length) picks = resolved;
+  const related = resolved.filter((v) => words.length && words.some((w) => String(v.title).toLowerCase().includes(w)));
+  let picks = related.slice(0, limit);
+  if (picks.length < limit) {
+    for (const v of resolved) { if (picks.length >= limit) break; if (!picks.includes(v)) picks.push(v); }
+  }
   picks = picks.slice(0, limit);
   if (!picks.length) {
     try { await ytSearchDownload(ctx, query, false); }
@@ -255,10 +267,11 @@ const handler = async (ctx) => {
     return;
   }
 
-  // ---- movie: dedicated "full movie" search ----
-  // She asked for two specific things here: the bot must SAY "movie aa rahi hy"
-  // while it works, and the film must arrive as a DOCUMENT (not as a playable
-  // video that WhatsApp compresses to mush). Both are handled below.
+  // ---- movie: dedicated "full movie" search (720p, DOCUMENT, never audio) ----
+  // Two hard rules from the user: (1) the film must arrive as a DOCUMENT in
+  // 720p (not a compressed playable video, not an MP3), and (2) it must NEVER
+  // silently fall back to audio. We therefore search the top candidates, try
+  // each in 720p, and refuse any audio result.
   if (command === 'movie') {
     if (!arg) return reply(`❌ Movie naam do. Example: ${config.PREFIX}movie Interstellar`);
     // Reply INSTANTLY so the bot never feels stuck, then work in the background.
@@ -274,13 +287,14 @@ const handler = async (ctx) => {
       candidates.push(`${arg} full movie`, arg);
       let file = null;
       for (const c of candidates.slice(0, 4)) {
-        file = await ytdlp.downloadVideo(c).catch(() => null);
+        file = await ytdlp.downloadVideo(c, { maxHeight: 720 }).catch(() => null);
         if (file) break;
       }
       if (!file) {
         // Mirror fallback before giving up (YouTube blocks datacenter IPs).
-        const alt = await ytdlp.downloadVideoSmart(`${arg} full movie`).catch(() => null);
-        if (alt && alt.file) { await sendMovieDoc(ctx, alt.file, arg, alt.audio); return; }
+        // allowAudio:false -> a movie is NEVER returned as an MP3.
+        const alt = await ytdlp.downloadVideoSmart(`${arg} full movie`, { maxHeight: 720, allowAudio: false }).catch(() => null);
+        if (alt && alt.file && !alt.audio) { await sendMovieDoc(ctx, alt.file, arg, false); return; }
         return reply(`❌ *${arg}* nahi mili — naam check karo ya seedha link bhejo.`);
       }
       await sendMovieDoc(ctx, file, arg, false);
@@ -550,8 +564,15 @@ async function sendMovieDoc(ctx, file, title, audio) {
   try {
     const size = fs.statSync(file).size;
     const mb = (size / 1048576).toFixed(1);
+    // STREAM the file instead of reading it all into RAM: a 2-hour 720p film can
+    // be 1.5-2.5 GB, which would OOM a small container if buffered. WhatsApp's
+    // document cap is ~2 GB, so we also guard against oversized files.
+    if (size > MAX_DOC_BYTES) {
+      await ctx.reply('\u274c Movie ' + mb + ' MB ki hy \u2014 WhatsApp ki 2GB limit se bari, bhej nahi sakta.');
+      return;
+    }
     await ctx.send(ctx.from, {
-      document: fs.readFileSync(file),
+      document: fs.createReadStream(file),
       mimetype: audio ? 'audio/mpeg' : 'video/mp4',
       fileName: `${String(title).replace(/[^\w.-]+/g, '_')}.${audio ? 'mp3' : 'mp4'}`,
       caption: `🎬 *${title}*\n📏 ${mb} MB\n📄 Full movie (document)\n👑 ${config.BOT_NAME}`,
@@ -559,7 +580,9 @@ async function sendMovieDoc(ctx, file, title, audio) {
   } catch (e) {
     await ctx.reply(`❌ File bhejne me masla: ${e.message || e}`);
   } finally {
-    try { fs.unlinkSync(file); } catch { /* ignore */ }
+    // Delete AFTER the upload has finished (the stream has been consumed by the
+    // awaited send). A short delay is a safety margin for the socket flush.
+    setTimeout(() => { try { fs.unlinkSync(file); } catch { /* ignore */ } }, 15000);
   }
 }
 

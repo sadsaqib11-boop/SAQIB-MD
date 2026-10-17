@@ -10,7 +10,7 @@
 const config = require('../config');
 const path = require('path');
 const fs = require('fs');
-const { getJSON, formatDuration } = require('../lib/helpers');
+const { getJSON, formatDuration, readImageBuffer } = require('../lib/helpers');
 const { msgStore, aiCache } = require('../lib/cache');
 const fonts = require('./fonts');
 
@@ -79,6 +79,16 @@ function header() {
   );
 }
 
+/**
+ * Read an image file and ALWAYS return a real binary image buffer.
+ *
+ * Some bot pictures ship as BASE64 TEXT (e.g. a `.jpg` whose bytes are actually
+ * "/9j/4AAQSkZJRg…"). Sending that raw text to WhatsApp makes the image send
+ * fail silently and the menu falls back to plain text — the exact "bot picture
+ * not showing" bug. `readImageBuffer` (lib/helpers) detects a non-binary file
+ * and base64-decodes it, so both a real JPEG and a base64-encoded one work.
+ */
+
 /** Send the menu as an image (bot pic) when it fits, else as text. */
 // SPEED: the pic is read once, but keyed by path+mtime so that changing it live
 // (the `.botpic` command) is picked up on the very next menu — no restart.
@@ -90,7 +100,7 @@ async function sendMenu(ctx, text) {
     if (text.length <= 1024 && fs.existsSync(pic)) {
       const st = fs.statSync(pic);
       const key = pic + '|' + st.mtimeMs + '|' + st.size;
-      if (_picCache.key !== key) _picCache = { key, buf: fs.readFileSync(pic) };
+      if (_picCache.key !== key) _picCache = { key, buf: readImageBuffer(pic) };
       await ctx.send(ctx.from, { image: _picCache.buf, caption: text }, { quoted: ctx.m });
       return;
     }

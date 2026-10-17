@@ -71,6 +71,9 @@ const config = {
   // this to be on by default.
   AUTOVIEWONCE: bool(process.env.AUTOVIEWONCE, true),
   AUTOBIO: bool(process.env.AUTOBIO, false),
+  // Push the bot picture to WhatsApp's own profile avatar on every connect.
+  // ON by default so the bot's picture always shows correctly.
+  AUTOPP: bool(process.env.AUTOPP, true),
   CHATBOT: bool(process.env.CHATBOT, false),
   AUTOREAD_STATUS: bool(process.env.AUTOREAD_STATUS, false),
   // DEFAULT ON: the bot stays online 24/7.
