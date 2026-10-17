@@ -216,7 +216,14 @@ app.get('/api/commands', (req, res) => {
 const debug = require('./lib/debug');
 app.get('/api/debug', (req, res) => {
   const n = Math.min(200, parseInt(req.query.n || '80', 10) || 80);
-  res.json({ ok: true, prefix: config.PREFIX, mode: config.MODE, owner: config.OWNER_NUMBER, events: debug.recent(n) });
+  const mem = process.memoryUsage();
+  res.json({
+    ok: true, prefix: config.PREFIX, mode: config.MODE, owner: config.OWNER_NUMBER,
+    events: debug.recent(n),
+    latency: debug.latencySummary(),
+    memory_mb: { rss: Math.round(mem.rss / 1048576), heap: Math.round(mem.heapUsed / 1048576) },
+    uptime_s: Math.round(process.uptime()),
+  });
 });
 app.post('/api/debug/clear', (req, res) => { debug.clear(); res.json({ ok: true }); });
 
