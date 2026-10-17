@@ -98,6 +98,22 @@ async function sendGroupStatus(sock, groupJid, { text = '', mediaBuffer = null, 
   await sock.relayMessage(groupJid, generated.message, { messageId: generated.key.id });
 }
 
+/** Fetch group metadata, learn LID pairs, and verify the BOT itself is an
+ * admin. Replies the clear admin message and returns null when it is not —
+ * WhatsApp rejects every mutation (revoke/name/desc/delete/add) from a
+ * non-admin bot with forbidden/not-authorized, so we ask for admin BEFORE. */
+async function adminMetaOrReply(ctx, sock, from, reply) {
+  const meta = await sock.groupMetadata(from);
+  contacts.learnFromGroupMeta(meta);
+  const selfNum = String(ctx.session?.number || sock.user?.id || '').split(':')[0].split('@')[0];
+  const me = botParticipant(meta, selfNum);
+  if (!me?.admin) {
+    await reply('\u26a0\ufe0f Bot ko pehle is group ka *ADMIN* banao (group settings \u2192 admins \u2192 add), phir ye command chalegi.');
+    return null;
+  }
+  return meta;
+}
+
 const handler = async (ctx) => {
   const { sock, command, reply, from, arg, quoted } = ctx;
 
@@ -185,6 +201,7 @@ const handler = async (ctx) => {
       break;
     }
     case 'revoke': {
+      if (!(await adminMetaOrReply(ctx, sock, from, reply))) return;
       await sock.groupRevokeInvite(from);
       await reply('\u267b\ufe0f Purana link khatam, naya link ban gaya.');
       break;
@@ -220,11 +237,13 @@ const handler = async (ctx) => {
     }
     case 'updategcname':
       if (!arg) return reply('\u274c Naya naam do.');
+      if (!(await adminMetaOrReply(ctx, sock, from, reply))) return;
       await sock.groupUpdateSubject(from, arg);
       await reply('\u2705 Group name update ho gaya.');
       break;
     case 'updategcdesc':
       if (!arg) return reply('\u274c Nayi description do.');
+      if (!(await adminMetaOrReply(ctx, sock, from, reply))) return;
       await sock.groupUpdateDescription(from, arg);
       await reply('\u2705 Description update ho gayi.');
       break;
@@ -236,12 +255,26 @@ const handler = async (ctx) => {
     }
     case 'del':
       if (!quoted) return reply('\u274c Kisi message ko reply karo.');
-      await sock.sendMessage(from, { delete: quoted.key });
+      try {
+        await sock.sendMessage(from, { delete: quoted.key });
+      } catch (e) {
+        // Deleting SOMEONE ELSE'S message needs bot-admin; own-message deletes
+        // always work. Surface which one it is instead of a raw error.
+        if (!quoted.key?.fromMe && !(await adminMetaOrReply(ctx, sock, from, reply))) return;
+        throw e;
+      }
       break;
     case 'add': {
       const num = arg.replace(/[^0-9]/g, '');
       if (!num) return reply('\u274c Number do.');
-      await sock.groupParticipantsUpdate(from, [num + '@s.whatsapp.net'], 'add');
+      if (!(await adminMetaOrReply(ctx, sock, from, reply))) return;
+      try {
+        await sock.groupParticipantsUpdate(from, [num + '@s.whatsapp.net'], 'add');
+      } catch (e) {
+        // 'add' also fails on privacy settings / non-WhatsApp numbers, not
+        // only missing admin — say the real possibilities.
+        return reply('\u274c Add nahi ho saka — number WhatsApp pr nahi, uski privacy settings add ko block karti hain, ya bot admin nahi.');
+      }
       await reply(`\u2705 +${num} ko group me add kar diya.`);
       break;
     }
