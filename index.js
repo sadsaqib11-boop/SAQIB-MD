@@ -333,7 +333,11 @@ app.post('/api/run-command', async (req, res) => {
     const sock = bot.getSock();
     if (!sock) return res.status(503).json({ ok: false, error: 'no connected session' });
     const ownerJid = `${config.OWNER_NUMBER}@s.whatsapp.net`;
-    const m = { key: { remoteJid: ownerJid, fromMe: false, id: 'IRISTEST' + Date.now().toString(36).toUpperCase() }, pushName: 'IrisTest', message: {} };
+    // HARNESS: fromMe=true mirrors how real owner input arrives (the bot is a
+    // linked device). The remoteJid is already the owner DM, so isOwner() would
+    // pass on the number too — but setting fromMe keeps the harness faithful and
+    // means a future MODE=private switch can never silently zero out these tests.
+    const m = { key: { remoteJid: ownerJid, fromMe: true, id: 'IRISTEST' + Date.now().toString(36).toUpperCase() }, pushName: 'IrisTest', message: {} };
     if (quoteMedia) {
       const media = await makeTestMedia(quoteMedia, sock);
       m.message = { extendedTextMessage: { text, contextInfo: { quotedMessage: media.quoted, participant: ownerJid, remoteJid: ownerJid, stanzaId: 'IRISQ' + Date.now().toString(36).toUpperCase() } } };
@@ -367,7 +371,13 @@ app.get('/api/selftest', async (req, res) => {
       sendMessage: async (jid, content) => { sent.push(content); return { key: { id: 'x' } }; },
       readMessages: async () => {}, sendPresenceUpdate: async () => {},
     };
-    const m = { key: { remoteJid: '0@s.whatsapp.net', id: 'T' + Math.random().toString(36).slice(2, 9) }, message: { conversation: t }, pushName: 'SelfTest' };
+    // HARNESS: the fake message must carry fromMe=true. The bot runs as a linked
+    // device of the owner, so real owner input always arrives that way — and
+    // isOwner() returns true on fromMe before any number matching. Without it the
+    // fake sender '0@s.whatsapp.net' resolves to the number "0", which is truthy,
+    // so isOwner() bails at its `if (!num)` guard and every test is reported as a
+    // failure — logged misleadingly as "private mode: non-owner blocked".
+    const m = { key: { remoteJid: '0@s.whatsapp.net', fromMe: true, id: 'T' + Math.random().toString(36).slice(2, 9) }, message: { conversation: t }, pushName: 'SelfTest' };
     try {
       await require('./lib/handler').handleMessage(sock, m, { number: config.OWNER_NUMBER, ownerNumber: config.OWNER_NUMBER });
       await new Promise((r) => setTimeout(r, 300));
