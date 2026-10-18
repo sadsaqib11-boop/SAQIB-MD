@@ -6,6 +6,46 @@ const { getJSON, getText, pick } = require('../lib/helpers');
 
 const P = () => config.PREFIX;
 
+/**
+ * NASA APOD — fetch today's Astronomy Picture of the Day.
+ *
+ * NASA migrated APOD off api.nasa.gov/planetary/apod to a WordPress endpoint
+ * (science.nasa.gov/wp-json/wp/v2/apod-basic) on 2026-09-10; the legacy API is
+ * archived 2026-12-01. The new endpoint needs NO api key, which also removes
+ * the old DEMO_KEY rate-limiting (intermittent HTTP 500s, 6-9s stalls).
+ *
+ * Shape differences that matter:
+ *   - `url` is the ARTICLE page now, not the image — the image lives in `hdurl`.
+ *   - `hdurl` is EMPTY on some video days, so fall back to the legacy API.
+ *   - `explanation` carries HTML tags; strip them.
+ * Keeps the legacy call as a fallback so the command survives either outage.
+ */
+async function apod() {
+  const clean = (s) =>
+    String(s || '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&#8217;/g, "'")
+      .replace(/&#8211;/g, '-')
+      .replace(/\s+/g, ' ')
+      .replace(/^\s*Explanation:\s*/i, '')
+      .trim();
+
+  try {
+    const d = await getJSON('https://science.nasa.gov/wp-json/wp/v2/apod-basic');
+    const x = Array.isArray(d) ? d[0] : d;
+    const img = x?.hdurl || (x?.media_type === 'image' ? x.url : '');
+    if (x?.title && img) {
+      return { title: x.title, url: img, explanation: clean(x.explanation) };
+    }
+  } catch { /* fall through to legacy */ }
+
+  // Legacy fallback (archived 2026-12-01).
+  const d = await getJSON('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY');
+  return { title: d.title, url: d.hdurl || d.url, explanation: clean(d.explanation) };
+}
+
 const WORDS = ['serendipity', 'ephemeral', 'resilience', 'eloquent', 'gratitude', 'wanderlust', 'solitude', 'euphoria', 'pragmatic', 'tenacious', 'vivacious', 'lucid'];
 const PROVERBS = [
   'Jaldi ka kaam shaitan ka — jaldbazi me nuqsan hota hai.',
@@ -98,7 +138,7 @@ const handler = async (ctx) => {
     /* ---------------- space ---------------- */
     case 'space': {
       try {
-        const d = await getJSON('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY');
+        const d = await apod();
         await ctx.send(ctx.from, { image: { url: d.url }, caption: `🌌 *${d.title}*\n\n${(d.explanation || '').slice(0, 600)}` }, { quoted: ctx.m });
       } catch {
         return reply('❌ NASA image nahi mili. Thori der baad try karo.');
