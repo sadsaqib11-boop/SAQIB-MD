@@ -186,7 +186,7 @@ function compactMenuText(prefix, live) {
   // HEADER: har cheez apni line par (vertical) — user rule.
   lines.push(`🕌 *${config.BOT_NAME}* v${config.BOT_VERSION}`);
   lines.push(`👤 ${live.user}`);
-  lines.push(`👑 ${live.rank}`);
+  lines.push(live.rank); // rank already carries its own emoji (👑/⭐)
   lines.push(`🟢 *${String(config.MODE).toUpperCase()}*`);
   lines.push(`📦 ${total} commands`);
   lines.push(`⌨️ prefix *${prefix}*`);
