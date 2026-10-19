@@ -23,6 +23,11 @@ const config = {
   OWNER_NAME: process.env.OWNER_NAME || 'Saqib',
   OWNER_NUMBER: (process.env.OWNER_NUMBER || '923106762478').replace(/[^0-9]/g, ''),
   OWNER_EMAIL: process.env.OWNER_EMAIL || '',
+  // Number shown on the PUBLIC landing page (the "Add Bot" link + QR). Leave
+  // unset to auto-pick: a session matching OWNER_NUMBER first, then any
+  // Pakistani (92…) session, then the first connected one. Set PUBLIC_NUMBER
+  // in Railway to pin a specific bot number regardless of connection order.
+  PUBLIC_NUMBER: (process.env.PUBLIC_NUMBER || '').replace(/[^0-9]/g, ''),
   // Secret used to protect the owner-only parts of the pairing portal
   // (the list of linked numbers + the remove button). Defaults to the owner
   // number so it works out of the box; set ADMIN_TOKEN in Railway to change it.

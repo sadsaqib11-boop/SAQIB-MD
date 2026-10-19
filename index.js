@@ -192,11 +192,20 @@ app.get('/api/public', (req, res) => {
   let number = '';
   try {
     const st = bot.getStatus();
-    const list = Array.isArray(st.sessions) ? st.sessions : [];
-    const primary = list.find((s) => s.status === 'connected') || list[0] || null;
-    number = (primary && primary.number) || '';
+    const list = (Array.isArray(st.sessions) ? st.sessions : []).filter((s) => s && s.number);
+    const connected = list.filter((s) => s.status === 'connected');
+    const pool = connected.length ? connected : list;
+    // Preference: PUBLIC_NUMBER (pinned) > OWNER_NUMBER > Pakistani (92…) > first.
+    const pick = (pred) => pool.find(pred);
+    const chosen =
+      (config.PUBLIC_NUMBER && pool.find((s) => s.number === config.PUBLIC_NUMBER)) ||
+      pick((s) => s.number === config.OWNER_NUMBER) ||
+      pick((s) => String(s.number).startsWith('92')) ||
+      pool[0] ||
+      null;
+    number = (chosen && chosen.number) || config.PUBLIC_NUMBER || '';
   } catch { /* ignore */ }
-  if (!number) number = String(config.OWNER_NUMBER || '');
+  if (!number) number = String(config.PUBLIC_NUMBER || config.OWNER_NUMBER || '');
   res.json({
     ok: true,
     bot: config.BOT_NAME,
