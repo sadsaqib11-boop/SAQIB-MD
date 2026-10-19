@@ -10,7 +10,7 @@
     "patch:libsignal": "node scripts/patch-libsignal.js"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "^7.0.0-rc.9",
+    "@whiskeysockets/baileys": "npm:@rexxhayanasi/elaina-baileys@^1.4.6",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "pino": "^9.5.0",
