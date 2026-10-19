@@ -148,20 +148,6 @@ app.get('/api/groups', async (req, res) => {
   }
 });
 
-app.get('/api/gmeta', async (req, res) => {
-  try {
-    const jid = String(req.query.jid || '');
-    if (!jid.endsWith('@g.us')) return res.json({ ok: false, error: 'bad jid' });
-    const s = bot.listSessions().find((x) => x.status === 'connected');
-    const sock = s && bot.getSock(s.number);
-    if (!sock) return res.json({ ok: false, error: 'no session' });
-    const meta = await sock.groupMetadata(jid);
-    const meId = String(sock.user?.id || '').split(':')[0].split('@')[0];
-    const me = (meta.participants || []).find((p) => String(p.id || '').split('@')[0].split(':')[0] === meId);
-    res.json({ ok: true, jid, subject: meta.subject, announce: !!meta.announce, myAdmin: me ? me.admin : 'NOT_MEMBER', participants: (meta.participants || []).length });
-  } catch (e) { res.json({ ok: false, error: e?.message || String(e) }); }
-});
-
 // Build marker — lets us confirm which code is actually live (deploy check).
 const BUILD = process.env.BUILD_MARKER || 'watchdog+lastUpdate+diag';
 app.get('/api/version', (req, res) => {
