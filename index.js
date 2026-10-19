@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const config = require('./config');
 const QRCode = require('qrcode');
+const { readImageBuffer } = require('./lib/helpers');
 // Load persisted runtime overrides (toggles survive restarts/redeploys).
 require('./lib/settings').load();
 require('./lib/prefixes').load();
@@ -67,6 +68,31 @@ app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 app.get('/health', (req, res) => {
   const s = bot.getStatus();
   res.json({ ok: true, bot: config.BOT_NAME, version: config.BOT_VERSION, status: s.status, connected: s.connected, uptime: s.uptime, sessions: s.connectedCount });
+});
+
+// ---------------------------------------------------------------------------
+// SPEED: the bot picture, served over the LOCAL loopback so Baileys can fetch
+// it as a URL and CACHE the upload (see `mediaCache` in lib/bot.js). A Buffer
+// send re-encrypts + re-uploads the whole file on every `.menu`; a URL send
+// uploads it ONCE and then reuses the prepared media for every later menu.
+// The bytes are read live (mtime-keyed) so `.botpic` changes take effect
+// immediately, and the response is strongly cacheable.
+// ---------------------------------------------------------------------------
+app.get('/botpic', (req, res) => {
+  try {
+    const pic = path.resolve(config.BOT_PIC);
+    if (!fs.existsSync(pic)) return res.status(404).end();
+    const st = fs.statSync(pic);
+    const etag = `"${st.size}-${Math.round(st.mtimeMs)}"`;
+    if (req.headers['if-none-match'] === etag) return res.status(304).end();
+    const buf = readImageBuffer(pic);
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('ETag', etag);
+    res.end(buf);
+  } catch (e) {
+    res.status(500).end();
+  }
 });
 
 // ---------------------------------------------------------------------------

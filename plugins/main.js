@@ -24,6 +24,12 @@ const menustyles = require('../lib/menustyles');
 const fonts = require('./fonts');
 
 const startAt = Date.now();
+
+// SPEED: the bot picture is served by our own web server at /botpic, and we send
+// it by URL (not as a Buffer) so Baileys uploads it ONCE and then reuses the
+// prepared media via the socket's `mediaCache` on every later menu. A Buffer
+// send re-encrypts + re-uploads the whole file on every single `.menu`.
+const BOTPIC_URL = `http://127.0.0.1:${config.PORT}/botpic`;
 const BAR = '━'.repeat(21);
 
 /* ------------------------------ menu helpers ------------------------------ */
@@ -169,6 +175,11 @@ async function sendMenu(ctx, text, opts = {}) {
       const st = fs.statSync(pic);
       const key = pic + '|' + st.mtimeMs + '|' + st.size;
       if (_picCache.key !== key) _picCache = { key, buf: readImageBuffer(pic) };
+      // SPEED: send by URL so the upload is cached (mediaCache) and reused on
+      // every later menu. Fall back to the raw buffer if the URL send fails.
+      try {
+        return await ctx.send(ctx.from, { image: { url: BOTPIC_URL }, caption: text }, { quoted: ctx.m });
+      } catch { /* URL send failed \u2014 fall through to the buffer */ }
       return await ctx.send(ctx.from, { image: _picCache.buf, caption: text }, { quoted: ctx.m });
     }
   } catch { /* fall back to text */ }
