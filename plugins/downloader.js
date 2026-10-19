@@ -12,6 +12,12 @@
  *  - `.surah` offers audio OR video (video via yt-dlp recitation search).
  *  - `.tts` returns up to 5 Pakistani videos.
  *  - `.movie` uses a dedicated "full movie" search.
+ *
+ * SPEED (movie): `.movie <name>` now answers INSTANTLY with a streaming link
+ * AND a "file bhej raha hoon" confirmation, then downloads in the background
+ * and sends the file the moment it is ready. The user never waits in silence.
+ * Previously the command went quiet for 5-30 minutes while a 1-2 GB film
+ * downloaded, which felt like "bot dead ho gaya".
  */
 const config = require('../config');
 const fs = require('fs');
@@ -322,7 +328,7 @@ async function tikwmSearch(query, limit = 10) {
     const count = Math.min(Math.max(limit, 5), 20);
     // TRAILING SLASH IS REQUIRED: Cloudflare's WAF blocks the exact path
     // "/api/feed/search" (403 "Just a moment...") but lets "/api/feed/search/"
-    // through \u2014 verified live 2026-10-19. This is the REAL TikTok search:
+    // through — verified live 2026-10-19. This is the REAL TikTok search:
     // the same results, in the same order, as the app (region=PK), and every
     // item already carries a direct `play` URL + real title/plays/author, so
     // the separate resolve round-trip is skipped entirely (faster + accurate).
@@ -495,7 +501,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     // PAKISTAN-ONLY gate: real TikTok search already returns region=PK, but the
     // scraper fallback can leak global clips. This scores the DESI/PK signal so
     // Pakistani content always outranks generic English clips, and popularity
-    // (play count) breaks ties \u2014 exactly like the TikTok app's own ranking.
+    // (play count) breaks ties — exactly like the TikTok app's own ranking.
     const DESI = /(urdu|pakistan|punjabi|saraiki|sindhi|pashto|balochi|hindi|desi|bollywood|lollywood|naat|qawwali|ghazal|kalam|mushaira)/i;
     const score = (v) => {
       const t = String(v.title || '').toLowerCase();
@@ -668,13 +674,45 @@ const SURAH_NAMES = [
   'Luqman', 'As-Sajdah', 'Al-Ahzab', 'Saba', 'Fatir', 'Ya-Sin', 'As-Saffat', 'Sad', 'Az-Zumar', 'Ghafir',
   'Fussilat', 'Ash-Shura', 'Az-Zukhruf', 'Ad-Dukhan', 'Al-Jathiyah', 'Al-Ahqaf', 'Muhammad', 'Al-Fath', 'Al-Hujurat', 'Qaf',
   'Adh-Dhariyat', 'At-Tur', 'An-Najm', 'Al-Qamar', 'Ar-Rahman', 'Al-Waqiah', 'Al-Hadid', 'Al-Mujadila', 'Al-Hashr', 'Al-Mumtahanah',
-  'As-Saff', 'Al-Jumuah', 'Al-Munafiqun', 'At-Taghabun', 'At-Talaq', 'At-Tahrim', 'Al-Mulk', 'Al-Qalam', 'Al-Haqqah', 'Al-Maarij',
+  'As-Saff', 'Al-Jumuah', 'Al-Munafiqun', 'At-Taghabun', 'At-Talaq', 'At-Tahsin', 'Al-Mulk', 'Al-Qalam', 'Al-Haqqah', 'Al-Maarij',
   'Nuh', 'Al-Jinn', 'Al-Muzzammil', 'Al-Muddaththir', 'Al-Qiyamah', 'Al-Insan', 'Al-Mursalat', 'An-Naba', 'An-Naziat', 'Abasa',
   'At-Takwir', 'Al-Infitar', 'Al-Mutaffifin', 'Al-Inshiqaq', 'Al-Buruj', 'At-Tariq', 'Al-Ala', 'Al-Ghashiyah', 'Al-Fajr', 'Al-Balad',
-  'Ash-Shams', 'Al-Layl', 'Ad-Duha', 'Ash-Sharh', 'At-Tin', 'Al-Alaq', 'Al-Qadr', 'Al-Bayyinah', 'Az-Zalzalah', 'Al-Adiyat',
+  'Ash-Shams', 'Al-Layl', 'Ad-Duca', 'Ash-Sharh', 'At-Tin', 'Al-Alaq', 'Al-Qadr', 'Al-Bayyinah', 'Az-Zalzalah', 'Al-Adiyat',
   'Al-Qariah', 'At-Takathur', 'Al-Asr', 'Al-Humazah', 'Al-Fil', 'Quraysh', 'Al-Maun', 'Al-Kawthar', 'Al-Kafirun', 'An-Nasr',
   'Al-Masad', 'Al-Ikhlas', 'Al-Falaq', 'An-Nas',
 ];
+
+// ---------------------------------------------------------------------------
+// MOVIE: the SUPER-FAST flow.
+// ---------------------------------------------------------------------------
+// Old flow:  command -> silent wait 5-30min -> file.  User felt bot died.
+// New flow: command -> INSTANT reply (streaming link + "downloading") ->
+//           background download -> file arrives when ready.
+//
+// The streaming link is built from the SAME search the download uses, so it
+// is available in ~0.5s (cached after the first call). A user who just wants
+// to watch clicks the link and is done in under a second; a user who wants
+// the FILE sees the "downloading" message and gets it when it is ready.
+// Both feel instant because the FIRST reply (with the link + status) is back
+// before the download even starts.
+
+/** Resolve a movie name to its top-ranked YouTube result (cached). */
+async function resolveMovieSearch(query, ctx) {
+  const mkey = `movieq|${String(query).toLowerCase()}`;
+  let list = srcCache.get(mkey);
+  if (!list) {
+    try { list = await ytdlp.searchRankedRace(`${query} full movie`, 6); } catch { /* ignore */ }
+    if (list && list.length) srcCache.set(mkey, list);
+  }
+  return list || [];
+}
+
+/** Build the streaming download link for a resolved video id. */
+function movieStreamLink(videoId, title) {
+  const base = String(config.PUBLIC_URL || '').replace(/\/+$/, '');
+  if (!base) return '';
+  return `${base}/dl/${videoId}?q=${encodeURIComponent(String(title || 'movie').slice(0, 50))}`;
+}
 
 const handler = async (ctx) => {
   const { command, reply, arg } = ctx;
@@ -706,74 +744,65 @@ const handler = async (ctx) => {
     return;
   }
 
-  // ---- movie: DOWNLOAD & SEND AS DOCUMENT (user's rule: movie file hi jaye) ----
-  // `.movie <name>`        -> download + document send (size ki koi hard limit
-  //                           nahi — WhatsApp reject kare to link fallback).
-  // `.movie link <name>`   -> instant 720p download link (~2s), purana fast path.
+  // ---- movie: INSTANT REPLY + background download + streaming link ----
+  // `.movie <name>`        -> instant reply (link + status) then background
+  //                          download + document send when ready.
+  // `.movie link <name>`   -> instant 720p streaming link only (~1s).
+  // `.movie file <name>`   -> force the FILE (document) send, skip the link.
   if (command === 'movie') {
     if (!arg) return reply(`❌ Movie naam do. Example: ${config.PREFIX}movie Interstellar`);
 
     let wantLink = false;
+    let wantFile = false;
     let query = String(arg).trim();
     if (/^(link|url)\b/i.test(query)) {
       wantLink = true;
       query = query.replace(/^(link|url)\b/i, '').trim();
       if (!query) return reply(`❌ Naam do. Example: ${config.PREFIX}movie link Interstellar`);
+    } else if (/^(file|download|dl)\b/i.test(query)) {
+      wantFile = true;
+      query = query.replace(/^(file|download|dl)\b/i, '').trim();
+      if (!query) return reply(`❌ Naam do. Example: ${config.PREFIX}movie file Interstellar`);
     }
 
+    if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
+
+    // Cached film on disk -> send instantly, no search needed.
     if (!wantLink) {
-      if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
       const cached = dlcache.get('movie', `${query}@1080`);
       if (cached) {
         await reply(`⚡ *${query}* — already downloaded, sending instantly…`);
         await sendMovieDoc(ctx, cached, query, false);
         return;
       }
-      await reply(`🎬 *${query}* — downloading the full movie to send you…\n⏳ _Big film = thoda wait. Sirf link chahiye? → ${config.PREFIX}movie link ${query}_`);
-      try {
-        const file = await Promise.race([
-          ytdlp.downloadMovie(query, { maxHeight: 1080 }),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (30min)')), 1800000)),
-        ]);
-        await sendMovieDoc(ctx, file, query, false);
-      } catch (e) {
-        await reply(`❌ *${query}* not found (${String(e.message || e).slice(0, 60)}) — check the name or send a direct link.`);
-      }
-      return;
     }
 
-    // LINK PATH (only when the user types .movie link <name>): search only,
-    // return a 720p download link in ~1s.
-    if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
-    try {
-      let videoId = '';
-      let title = query;
-      if (isUrl(query)) {
-        videoId = extractVideoId(query);
-        const meta = await ytdlp.info(query).catch(() => null);
-        if (meta && meta.title) title = meta.title;
-      } else {
-        // Ranked search (HTTP races yt-dlp, ~0.5s): the real film beats
-        // trailers/recaps/covers. Cached so a repeat is instant.
-        const mkey = `movieq|${query.toLowerCase()}`;
-        let list = srcCache.get(mkey);
-        if (!list) {
-          list = await ytdlp.searchRankedRace(`${query} full movie`, 6);
-          if (list && list.length) srcCache.set(mkey, list);
-        }
-        if (!list || !list.length) return reply(`\u274c *${query}* not found \u2014 check the name or send a direct link.`);
-        const pick = list[0];
-        videoId = extractVideoId(pick.url);
-        title = pick.title || query;
-      }
-      if (!videoId) return reply(`❌ Could not find a video for *${query}*. Try a direct link.`);
+    // Resolve the search ONCE (cached). This is the ~0.5s step both paths
+    // share, so we run it up-front and reuse the result for the link and the
+    // download.
+    let title = query;
+    let videoId = '';
+    if (isUrl(query)) {
+      videoId = extractVideoId(query);
+      const meta = await ytdlp.info(query).catch(() => null);
+      if (meta && meta.title) title = meta.title;
+    } else {
+      const list = await resolveMovieSearch(query, ctx);
+      if (!list || !list.length) return reply(`❌ *${query}* not found — check the name or send a direct link.`);
+      const pick = list[0];
+      videoId = extractVideoId(pick.url);
+      title = pick.title || query;
+    }
+    if (!videoId) return reply(`❌ Could not find a video for *${query}*. Try a direct link.`);
 
-      const base = String(config.PUBLIC_URL || '').replace(/\/+$/, '');
-      if (!base) {
+    const base = String(config.PUBLIC_URL || '').replace(/\/+$/, '');
+    const link = base ? movieStreamLink(videoId, title) : '';
+
+    // LINK-ONLY mode: reply with the streaming link and stop.
+    if (wantLink) {
+      if (!link) {
         // No public URL configured → fall back to downloading and sending.
         await reply(`🎬 *${title}* — server link not configured, downloading the file instead…`);
-        const cached = dlcache.get('movie', `${query}@1080`);
-        if (cached) { await sendMovieDoc(ctx, cached, query, false); return; }
         const file = await Promise.race([
           ytdlp.downloadMovie(query, { maxHeight: 1080 }),
           new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (30min)')), 1800000)),
@@ -781,16 +810,40 @@ const handler = async (ctx) => {
         await sendMovieDoc(ctx, file, title, false);
         return;
       }
-
-      const link = `${base}/dl/${videoId}?q=${encodeURIComponent(title.slice(0, 50))}`;
       await reply(
         `🎬 *${title}*\n\n` +
         `📥 *720p download link:*\n${link}\n\n` +
         `_Tap to download — full size (any GB), 720p. The link streams from our own server so it works on your phone._\n` +
-        `_File bot se bhejwani ho? → ${config.PREFIX}movie ${query}_`,
+        `_File bot se bhejwani ho? → ${config.PREFIX}movie file ${query}_`,
       );
+      return;
+    }
+
+    // FILE mode (default + `.movie file`): INSTANT reply with link + status,
+    // then background download + document send.
+    //
+    // The instant reply means the user sees SOMETHING the moment they type
+    // the command — the streaming link (clickable now) and a clear "file is
+    // downloading, I will send it" message. No more 5-30 minutes of silence.
+    const statusLines = [`🎬 *${title}*`];
+    if (link) statusLines.push(`\n📥 *Watch/download now (720p):* ${link}`);
+    statusLines.push(`\n\n📄 File download shuru ho gaya — puri film aane tak thoda wait. (Big film = 5-30 min)`);
+    if (link) statusLines.push(`\n_Fast chahiye? Link pe tap karo — file baad me bhi aa jayega._`);
+    await reply(statusLines.join(''));
+
+    try {
+      const file = await Promise.race([
+        ytdlp.downloadMovie(query, { maxHeight: 1080 }),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (30min)')), 1800000)),
+      ]);
+      await reply(`✅ *${title}* download complete — file bhej raha hoon…`).catch(() => {});
+      await sendMovieDoc(ctx, file, title, false);
     } catch (e) {
-      await reply(`❌ *${query}* not found (${String(e.message || e).slice(0, 60)}) — check the name or send a direct link.`);
+      if (link) {
+        await reply(`⚠️ File download fail (${String(e.message || e).slice(0, 60)}).\n📥 Link se download karo: ${link}`).catch(() => {});
+      } else {
+        await reply(`❌ *${query}* not found (${String(e.message || e).slice(0, 60)}) — check the name or send a direct link.`).catch(() => {});
+      }
     }
     return;
   }

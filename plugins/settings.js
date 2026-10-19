@@ -170,6 +170,57 @@ const handler = async (ctx) => {
       await reply(`✅ Online presence: *${v ? 'ON 🟢' : 'OFF 🔴'}*`);
       break;
     }
+    // ---- .antidelete — catch deleted messages and re-send the original ----
+    //   .antidelete               -> show all three settings
+    //   .antidelete on|off        -> toggle GROUP anti-delete
+    //   .antidelete inbox on|off  -> toggle INBOX/DM anti-delete (INDEPENDENT
+    //                                of the group setting — this was the bug)
+    //   .antidelete chat on|off   -> destination: true = the chat the message
+    //                                was deleted in, false = owner's own inbox
+    case 'antidelete': {
+      const parts = String(arg || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+      const sub = parts[0] || '';
+      const val = parts[1] || '';
+      const BAR = '━'.repeat(18);
+      if (sub === 'inbox') {
+        const v = setFlag('ANTIDELETE_INBOX', val);
+        await reply(
+          `✅ *Inbox (DM) anti-delete: ${v ? 'ON 🟢' : 'OFF 🔴'}*\n${BAR}\n` +
+          `_Catches deleted messages in PRIVATE chats._\n` +
+          `_Group anti-delete is ${config.ANTIDELETE ? 'ON 🟢' : 'OFF 🔴'} (independent)._`
+        );
+        break;
+      }
+      if (sub === 'chat') {
+        const v = setFlag('ANTIDELETE_TO_CHAT', val);
+        await reply(
+          `✅ *Anti-delete destination: ${v ? 'the chat it was deleted in' : 'your own inbox (yourself)'}*\n${BAR}\n` +
+          `\`${config.PREFIX}antidelete chat off\` → deleted msgs go to YOUR own chat (private)\n` +
+          `\`${config.PREFIX}antidelete chat on\`  → deleted msgs go to the chat they were deleted in`
+        );
+        break;
+      }
+      if (sub === '') {
+        await reply(
+          `🛡️ *Anti-delete*\n${BAR}\n` +
+          `▪️ Groups: ${config.ANTIDELETE ? 'ON 🟢' : 'OFF 🔴'}\n` +
+          `▪️ Inbox (DM): ${config.ANTIDELETE_INBOX ? 'ON 🟢' : 'OFF 🔴'}\n` +
+          `▪️ Destination: ${config.ANTIDELETE_TO_CHAT ? 'chat it was deleted in' : 'your own inbox'}\n${BAR}\n` +
+          `❓ \`${config.PREFIX}antidelete on|off\`        — groups\n` +
+          `❓ \`${config.PREFIX}antidelete inbox on|off\`  — private chats\n` +
+          `❓ \`${config.PREFIX}antidelete chat on|off\`   — destination`
+        );
+        break;
+      }
+      // sub is on/off/true/false/etc → toggle GROUP anti-delete
+      const v = setFlag('ANTIDELETE', sub);
+      await reply(
+        `✅ *Group anti-delete: ${v ? 'ON 🟢' : 'OFF 🔴'}*\n${BAR}\n` +
+        `_Catches deleted messages in GROUPS._\n` +
+        `_Inbox anti-delete is ${config.ANTIDELETE_INBOX ? 'ON 🟢' : 'OFF 🔴'} (independent)._`
+      );
+      break;
+    }
     case 'botdp': {
       // Show the bot's profile picture. profilePictureUrl() throws for the
       // bot's OWN id on some accounts (and the id may be a LID), so we try the
@@ -259,9 +310,9 @@ const handler = async (ctx) => {
         `▪️ Auto-read: ${config.AUTO_READ ? 'ON' : 'OFF'}\n▪️ Auto-typing: ${config.AUTO_TYPING ? 'ON' : 'OFF'}\n` +
         `▪️ Welcome: ${config.WELCOME ? 'ON' : 'OFF'}\n▪️ Goodbye: ${config.GOODBYE ? 'ON' : 'OFF'}\n` +
         `▪️ Anti-link: ${config.ANTILINK ? 'ON' : 'OFF'}\n▪️ Anti-mention: ${config.ANTIMENTION ? 'ON' : 'OFF'}\n` +
+        `▪️ Anti-delete (groups): ${config.ANTIDELETE ? 'ON' : 'OFF'}\n▪️ Anti-delete (inbox): ${config.ANTIDELETE_INBOX ? 'ON' : 'OFF'}\n` +
         `▪️ Auto-status: ${config.AUTOSTATUS ? 'ON' : 'OFF'}\n▪️ Auto-view-once: ${config.AUTOVIEWONCE ? 'ON' : 'OFF'}\n` +
-        `▪️ Anti-delete: ${config.ANTIDELETE ? 'ON' : 'OFF'}\n▪️ Auto-react: ${config.AUTO_REACT ? 'ON' : 'OFF'}\n` +
-        `▪️ Online: ${config.ONLINE ? 'ON' : 'OFF'}`
+        `▪️ Auto-react: ${config.AUTO_REACT ? 'ON' : 'OFF'}\n▪️ Online: ${config.ONLINE ? 'ON' : 'OFF'}`
       );
       break;
     default: await reply('❓ Unknown setting');
@@ -273,7 +324,7 @@ module.exports = {
     'mode', 'prefix', 'setprefix', 'botname', 'ownername', 'ownernumber', 'description', 'stickername',
     'setwelcome', 'setgoodbye', 'statusemoji', 'reactemojis', 'owneremojis', 'delpath',
     'autoread', 'autotyping', 'recording', 'statusview', 'statuslike', 'administration',
-    'mentionreply', 'welcome', 'goodbye', 'antilink', 'antistatus', 'setonline',
+    'mentionreply', 'welcome', 'goodbye', 'antilink', 'antistatus', 'setonline', 'antidelete',
     'botdp', 'privacy', 'getprivacy', 'groupsprivacy', 'sudo', 'delsudo', 'listsudo', 'setfont', 'reset', 'settings',
   ],
   category: '⚙️ SETTINGS',

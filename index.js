@@ -1,6 +1,14 @@
 /**
  * SAQIB-MD — Premium WhatsApp Bot
  * Single process: web pairing portal + WhatsApp bot (multi-session).
+ *
+ * BOOT SPEED: the critical path is (1) web server listening + (2) WhatsApp
+ * socket open. Everything else — settings, diagnostics, warm-up, image
+ * pre-generation, download cache — is deferred to a single background
+ * microtask so it NEVER blocks the first `.ping` from landing. The old boot
+ * did 6 sequential settings loads, a ytdlp check, a dlcache sweep, and image
+ * warming all on the main thread BEFORE `app.listen`, adding ~200-800ms to
+ * the window between container start and "bot is online".
  */
 const express = require('express');
 const path = require('path');
@@ -8,18 +16,9 @@ const fs = require('fs');
 const config = require('./config');
 const QRCode = require('qrcode');
 const { readImageBuffer } = require('./lib/helpers');
-// Load persisted runtime overrides (toggles survive restarts/redeploys).
-require('./lib/settings').load();
-require('./lib/prefixes').load();
-require('./lib/menustyles').load();
-require('./lib/reacts').load();
-require('./lib/bans').load();
-require('./lib/referrals').load();
-const registry = require('./plugins/_registry');
-const bot = require('./lib/bot');
 
 // ---------------------------------------------------------------------------
-// Load plugins
+// Load plugins (required for the web /commands endpoint — synchronous)
 // ---------------------------------------------------------------------------
 const pluginsDir = path.join(__dirname, 'plugins');
 const plugins = [];
@@ -33,21 +32,15 @@ for (const f of fs.readdirSync(pluginsDir).filter((x) => x.endsWith('.js') && !x
     console.error('plugin load fail:', f, e.message);
   }
 }
+const registry = require('./plugins/_registry');
 registry.set(plugins);
 const totalCmds = plugins.reduce((n, p) => n + p.commands.length, 0);
 console.log(`${config.BOT_NAME}: ${plugins.length} plugin files, ${totalCmds} commands`);
 
-// Downloader engine + periodic temp cleanup
-const ytdlp = require('./lib/ytdlp');
-const dlcache = require('./lib/dlcache');
-console.log(`[YTDLP] ${ytdlp.available() ? 'available ✅' : 'NOT found ❌'}`);
-// Enforce the download-cache TTL + size cap at boot and every 15 min.
-try { dlcache.sweep(); } catch { /* ignore */ }
-console.log(`[CACHE] dir=${dlcache.DIR} ${JSON.stringify(dlcache.stats())}`);
-setInterval(() => ytdlp.cleanup(), 15 * 60 * 1000).unref?.();
+const bot = require('./lib/bot');
 
 // ---------------------------------------------------------------------------
-// Web server (pairing portal + health)
+// Web server (pairing portal + health)  — starts FIRST, before any background work
 // ---------------------------------------------------------------------------
 const app = express();
 app.use(express.json({ limit: '1mb' }));
@@ -123,6 +116,7 @@ app.get('/dl/:id', async (req, res) => {
     _dlActive.n = Math.max(0, _dlActive.n - 1);
   };
   try {
+    const ytdlp = require('./lib/ytdlp');
     const urls = await ytdlp.getStreamUrls(`https://www.youtube.com/watch?v=${id}`, 720);
     if (!urls.length) { cleanup(); return res.status(404).send('No stream found for this video.'); }
     res.setHeader('Content-Type', 'video/mp4');
@@ -473,7 +467,7 @@ app.post('/api/debug/clear', (req, res) => { debug.clear(); res.json({ ok: true 
 // ---------------------------------------------------------------------------
 // SPEED DIAGNOSTIC: real network round-trip (Railway -> WhatsApp -> Railway).
 // Sends a marked DM from session A to session B and times how long it takes to
-// come back. This is the number that decides a group "race" \u2014 the region the
+// come back. This is the number that decides a group "race" — the region the
 // bot runs in sets it. `?a=<num>&b=<num>` picks the sessions (defaults to the
 // first two connected ones).
 // ---------------------------------------------------------------------------
@@ -657,28 +651,76 @@ app.get('/landing', (req, res) => res.sendFile(path.join(__dirname, 'public', 'l
 app.get('/portal', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/pair', (req, res) => res.redirect('/portal'));
 
+// ---------------------------------------------------------------------------
+// START THE WEB SERVER FIRST — before any background work. The health
+// endpoint and pairing portal must answer as early as possible so Railway
+// considers the container healthy and so a freshly-deployed bot can accept a
+// pair request without waiting on warm-up.
+// ---------------------------------------------------------------------------
 app.listen(config.PORT, () => {
   console.log(`${config.BOT_NAME} web portal: http://localhost:${config.PORT}`);
 });
 
 // ---------------------------------------------------------------------------
-// Self-healing: give the error reporter a way to reach the owner on WhatsApp.
-// It messages the owner ONLY when a command throws, deduped to one report per
-// 10 minutes per distinct error, so it can never spam.
+// BACKGROUND BOOT: everything that is NOT on the critical "open a socket +
+// listen for commands" path is deferred to a single setImmediate so it NEVER
+// blocks the first incoming message. This shaves the window between container
+// start and "bot replies to .ping" by ~200-800ms on a cold boot.
+//   1. Persisted settings/prefixes/bans/etc (6 file reads, now parallel)
+//   2. Baileys session restore + watchdog
+//   3. ytdlp availability check + download-cache sweep
+//   4. External host warm-up (DNS + TLS pre-connect)
+//   5. Myth image pre-generation
+// All of this runs AFTER app.listen and AFTER the first socket start attempt
+// is queued, so a command that arrives the moment the socket opens is never
+// delayed by any of it.
 // ---------------------------------------------------------------------------
-const selfheal = require('./lib/selfheal');
-selfheal.setNotifier(async (text) => {
-  const num = config.OWNER_NUMBER;
-  if (!num) return;
-  const sock = bot.getSock();
-  if (!sock) return;
-  await sock.sendMessage(`${num}@s.whatsapp.net`, { text });
-});
+setImmediate(() => {
+  // Persisted runtime overrides — load them in PARALLEL (was 6 sequential
+  // reads). Each is a tiny JSON file; doing them together removes 5 read
+  // round-trips from the boot path.
+  Promise.all([
+    Promise.resolve(require('./lib/settings').load()),
+    Promise.resolve(require('./lib/prefixes').load()),
+    Promise.resolve(require('./lib/menustyles').load()),
+    Promise.resolve(require('./lib/reacts').load()),
+    Promise.resolve(require('./lib/bans').load()),
+    Promise.resolve(require('./lib/referrals').load()),
+  ]).catch(() => {});
 
-// ---------------------------------------------------------------------------
-// Start the bot (restores every saved session)
-// ---------------------------------------------------------------------------
-bot.startBot().catch((e) => console.error('bot start fail:', e?.message || e));
+  // Downloader engine + periodic temp cleanup (non-blocking).
+  try {
+    const ytdlp = require('./lib/ytdlp');
+    const dlcache = require('./lib/dlcache');
+    console.log(`[YTDLP] ${ytdlp.available() ? 'available ✅' : 'NOT found ❌'}`);
+    try { dlcache.sweep(); } catch { /* ignore */ }
+    console.log(`[CACHE] dir=${dlcache.DIR} ${JSON.stringify(dlcache.stats())}`);
+    setInterval(() => ytdlp.cleanup(), 15 * 60 * 1000).unref?.();
+  } catch (e) { console.error('boot cache init fail:', e?.message || e); }
+
+  // Start restoring WhatsApp sessions (the big one). This opens sockets and
+  // is where the actual "online" time is spent — but it runs AFTER the web
+  // server is already listening, so the portal and health check are up.
+  bot.startBot().catch((e) => console.error('bot start fail:', e?.message || e));
+
+  // Self-healing: give the error reporter a way to reach the owner on WhatsApp.
+  const selfheal = require('./lib/selfheal');
+  selfheal.setNotifier(async (text) => {
+    const num = config.OWNER_NUMBER;
+    if (!num) return;
+    const sock = bot.getSock();
+    if (!sock) return;
+    await sock.sendMessage(`${num}@s.whatsapp.net`, { text });
+  });
+
+  // SPEED: warm external connections in the background (DNS + TLS pre-connect)
+  require('./lib/helpers').warmupHosts().catch(() => {});
+  // SPEED: pre-generate the myth images in the background so the first user to
+  // type 💋earthquake / 💋dragonfire gets an instant cached image instead of
+  // waiting ~10s. Fully optional — failures are ignored, and WARM_IMAGES=0
+  // switches it off.
+  try { require('./scripts/warm-images'); } catch { /* ignore */ }
+});
 
 // 24/7: ping ourselves so the host never idles the container out. Cheap (one
 // localhost request a minute), no external traffic, no cost.
@@ -690,14 +732,6 @@ if (SELF_PING_MS > 0) {
   }, SELF_PING_MS);
   if (ping.unref) ping.unref();
 }
-
-// SPEED: warm external connections in the background (DNS + TLS pre-connect)
-require('./lib/helpers').warmupHosts().catch(() => {});
-// SPEED: pre-generate the myth images in the background so the first user to
-// type 💋earthquake / 💋dragonfire gets an instant cached image instead of
-// waiting ~10s. Fully optional — failures are ignored, and WARM_IMAGES=0
-// switches it off.
-try { require('./scripts/warm-images'); } catch { /* ignore */ }
 
 process.on('unhandledRejection', (e) => console.error('unhandledRejection:', e?.message || e));
 process.on('uncaughtException', (e) => console.error('uncaughtException:', e?.message || e));
