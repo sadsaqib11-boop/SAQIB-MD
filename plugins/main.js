@@ -190,6 +190,7 @@ function compactMenuText(prefix, live) {
   lines.push(`🟢 *${String(config.MODE).toUpperCase()}*`);
   lines.push(`📦 ${total} commands`);
   lines.push(`⌨️ prefix *${prefix}*`);
+  lines.push(`📂 *CATEGORIES:*`);
   lines.push('──────────');
   // VERTICAL list, one category per line — no counts, no emojis.
   cats.forEach(([cat], i) => {
@@ -197,7 +198,9 @@ function compactMenuText(prefix, live) {
     lines.push(`${String(i + 1).padStart(2, '0')}. *${name}*`);
   });
   lines.push('──────────');
-  lines.push(`✨ _${config.BOT_NAME} — by ${config.OWNER_NAME}_`);
+  lines.push(`💡 ${prefix}menu <category> → us ke commands`);
+  lines.push(`💡 ${prefix}menuall → sab commands`);
+  lines.push(`✨ _${config.BOT_NAME} — powered by ${config.OWNER_NAME}_`);
   return lines.join('\n');
 }
 
