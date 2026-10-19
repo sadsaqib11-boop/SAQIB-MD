@@ -209,9 +209,17 @@ const fun = require('../plugins/fun');
     ok('antidelete chat on -> ANTIDELETE_TO_CHAT=true', config.ANTIDELETE_TO_CHAT === true);
     ok('antidelete status text shown', /Anti-delete/i.test(p._sent[0]?.text || ''), p._sent[0]?.text);
 
+    p = mockCtx({ command: 'antidelete', arg: 'inbox on' });
+    await premium.handler(p);
+    ok('antidelete inbox on -> ANTIDELETE_TO_CHAT=false', config.ANTIDELETE_TO_CHAT === false && config.ANTIDELETE === true);
+
+    p = mockCtx({ command: 'antidelete', arg: 'inbox' });
+    await premium.handler(p);
+    ok('antidelete inbox -> ANTIDELETE_TO_CHAT=false', config.ANTIDELETE_TO_CHAT === false);
+
     p = mockCtx({ command: 'antidelete', arg: 'inbox off' });
     await premium.handler(p);
-    ok('antidelete inbox off -> ANTIDELETE_TO_CHAT=false', config.ANTIDELETE_TO_CHAT === false);
+    ok('antidelete inbox off -> ANTIDELETE=false, destination kept', config.ANTIDELETE === false && config.ANTIDELETE_TO_CHAT === false);
 
     // anti-delete all
     p = mockCtx({ command: 'antidelete', arg: 'all on' });
