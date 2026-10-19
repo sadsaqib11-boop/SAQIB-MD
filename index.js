@@ -468,34 +468,6 @@ app.post('/api/run-command', async (req, res) => {
 });
 
 // In-process self-test: runs the real command engine (no WhatsApp needed).
-// TEMP DIAGNOSTIC: does saavn.sumit.co + its CDN work from Railway's egress?
-app.get('/api/saavn-test', async (req, res) => {
-  const name = String(req.query.name || 'tum hi ho');
-  const out = { name };
-  try {
-    const t0 = Date.now();
-    const r = await fetch(`https://saavn.sumit.co/api/search/songs?query=${encodeURIComponent(name)}&limit=1`, { signal: AbortSignal.timeout(6000) });
-    out.apiStatus = r.status; out.apiMs = Date.now() - t0;
-    const j = await r.json();
-    const song = j?.data?.results?.[0];
-    out.song = song ? song.name : null;
-    const urls = (song && song.downloadUrl) || [];
-    const best = urls[urls.length - 1] || {};
-    const dl = best.url || best.link;
-    out.dlUrl = dl ? dl.slice(0, 60) : null;
-    if (dl) {
-      const t1 = Date.now();
-      const dr = await fetch(dl, { signal: AbortSignal.timeout(20000) });
-      out.dlStatus = dr.status; out.dlMs = Date.now() - t1;
-      const buf = Buffer.from(await dr.arrayBuffer());
-      out.bytes = buf.length;
-    }
-  } catch (e) {
-    out.error = String((e && e.message) || e).slice(0, 140);
-  }
-  res.json(out);
-});
-
 app.get('/api/selftest', async (req, res) => {
   const results = [];
   const tests = ['.menu', '.ping', '.alive', '.help'];
