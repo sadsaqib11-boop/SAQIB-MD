@@ -26,6 +26,11 @@ const { ttCache, srcCache, ttBufCache, TT_BUF_CACHE_MAX_BYTES } = require('../li
 const debug = require('../lib/debug');
 
 const isUrl = (s) => /^https?:\/\//i.test(s || '');
+/** Extract the 11-char YouTube video id from any watch/short/embed URL. */
+const extractVideoId = (u) => {
+  const m = String(u || '').match(/(?:v=|youtu\.be\/|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+};
 const MAX_MEDIA_BYTES = 64 * 1024 * 1024;   // WhatsApp audio/video cap (~64 MB)
 const MAX_DOC_BYTES = 2 * 1024 * 1024 * 1024; // WhatsApp document cap (~2 GB)
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
@@ -164,10 +169,11 @@ async function askSongSearch(ctx, query) {
   const ckey = `songq|${q.toLowerCase()}`;
   let list = srcCache.get(ckey);
   if (!list) {
-    // searchRanked: YouTube's own order lets covers/remixes outrank the real
-    // track — re-rank by relevance so the correct song is #1 in the list.
-    try { list = (await ytdlp.searchRanked(q, 6)).slice(0, 6); } catch { /* ignore */ }
-    if (list.length) srcCache.set(ckey, list);
+    // searchRankedRace: the HTTP search (~0.5s) RACES the yt-dlp search (~1s)
+    // and the first to answer wins, then it is relevance-ranked so the real
+    // track beats covers/remixes. Up to 8 results = a fuller "related" list.
+    try { list = (await ytdlp.searchRankedRace(q, 8)).slice(0, 8); } catch { /* ignore */ }
+    if (list && list.length) srcCache.set(ckey, list);
   }
   if (!list || !list.length) return askDownload(ctx, q);
   interactions.set(ctx.from, ctx.sender, 'choice', {
@@ -177,18 +183,38 @@ async function askSongSearch(ctx, query) {
         const tail = raw.replace(/^[0-9]+/, ' ');
         const wantsVideo = /(^|\s)(v|video|mp4)(\s|$)/.test(tail) || /^[0-9]+v/.test(raw);
         try { await ytSearchDownload(c, r.url, !wantsVideo); }
-        catch (e) { await c.reply('❌ ' + (e.message || 'Download fail.')); }
+        catch (e) { await c.reply('\u274c ' + (e.message || 'Download fail.')); }
       },
     })),
   });
   const lines = list.map((r, i) => {
-    const meta = [fmtDur(r.duration), r.views ? `▶️ ${fmtViews(r.views)}` : ''].filter(Boolean).join(' · ');
-    return `${i + 1}️⃣ *${r.title.slice(0, 60)}*${meta ? `\n      _${meta}_` : ''}`;
+    const meta = [
+      r.channel ? `\ud83d\udc64 ${String(r.channel).slice(0, 20)}` : '',
+      fmtDur(r.duration),
+      r.views ? `\u25b6\ufe0f ${fmtViews(r.views)}` : '',
+    ].filter(Boolean).join(' \u00b7 ');
+    return `${i + 1}\ufe0f\u20e3 *${String(r.title).slice(0, 52)}*${meta ? `\n      _${meta}_` : ''}`;
   }).join('\n');
-  return ctx.reply(
-    `🎧 *${q}* — related results:\n\n${lines}\n\n` +
-    `_Number bhejo → 🎵 *audio* | Number + *v* (jaise *2v*) → 🎬 *video*_`,
-  );
+  const caption =
+    `\ud83c\udfa7 *${q}* \u2014 related results:\n\n${lines}\n\n` +
+    `_Number bhejo \u2192 \ud83c\udfb5 *audio* | Number + *v* (jaise *2v*) \u2192 \ud83c\udfac *video*_`;
+  // PREMIUM: show the top result's thumbnail with the list as the caption.
+  // The thumbnail is fetched HERE with a short timeout so it can never stall
+  // the reply; if it fails, we fall back to a plain text list.
+  const topId = extractVideoId(list[0] && list[0].url);
+  if (topId) {
+    try {
+      const tr = await fetch(`https://i.ytimg.com/vi/${topId}/mqdefault.jpg`, { signal: AbortSignal.timeout(2500) });
+      if (tr.ok) {
+        const buf = Buffer.from(await tr.arrayBuffer());
+        if (buf.length > 500) {
+          await ctx.send(ctx.from, { image: buf, caption }, { quoted: ctx.m });
+          return;
+        }
+      }
+    } catch { /* fall back to text */ }
+  }
+  return ctx.reply(caption);
 }
 
 /* --------------------------- TikTok search helpers --------------------------- */
@@ -299,45 +325,79 @@ async function tiktokSearch(query, limit = 5) {
  * outruns the search-engine scraper. Also returns the app's RELATED SEARCH
  * keywords when the response carries them. */
 async function tikwmSearch(query, limit = 10) {
-  const empty = { urls: [], related: [] };
+  const empty = { urls: [], related: [], items: [] };
   try {
+    const count = Math.min(Math.max(limit, 5), 20);
+    // TRAILING SLASH IS REQUIRED: Cloudflare's WAF blocks the exact path
+    // "/api/feed/search" (403 "Just a moment...") but lets "/api/feed/search/"
+    // through \u2014 verified live 2026-10-19. This is the REAL TikTok search:
+    // the same results, in the same order, as the app (region=PK), and every
+    // item already carries a direct `play` URL + real title/plays/author, so
+    // the separate resolve round-trip is skipped entirely (faster + accurate).
     const r = await getJSON(
-      `https://tikwm.com/api/feed/search?keywords=${encodeURIComponent(query)}&count=${Math.min(limit, 20)}&region=PK&language=ur`,
-      { 'User-Agent': UA },
+      `https://tikwm.com/api/feed/search/?keywords=${encodeURIComponent(query)}&count=${count}&region=PK`,
+      { 'User-Agent': UA, 'Referer': 'https://tikwm.com/' },
       9000,
     );
-    if (r?.code !== 0 && !Array.isArray(r?.data?.videos)) return empty;
-    const vids = r?.data?.videos || [];
-    const urls = vids
-      .map((v) => (v && v.video_id && v.author?.unique_id
-        ? `https://www.tiktok.com/@${v.author.unique_id}/video/${v.video_id}`
-        : null))
-      .filter(Boolean);
-    const rel = Array.isArray(r?.data?.relatedKeywords) ? r.data.relatedKeywords.map(String) : [];
-    return { urls, related: rel };
+    const vids = Array.isArray(r?.data?.videos) ? r.data.videos : [];
+    const items = vids.map((v) => ({
+      url: v && v.video_id && v.author?.unique_id ? `https://www.tiktok.com/@${v.author.unique_id}/video/${v.video_id}` : '',
+      play: (v && v.play) || '',
+      title: (v && (v.title || v.content_desc)) || '',
+      author: (v && v.author?.unique_id) || '',
+      plays: Number(v && v.play_count) || 0,
+      duration: Number(v && v.duration) || 0,
+      region: (v && v.region) || '',
+      cover: (v && v.cover) || '',
+    })).filter((v) => v.url);
+    let rel = Array.isArray(r?.data?.relatedKeywords) ? r.data.relatedKeywords.map(String) : [];
+    // tikwm doesn't always return relatedKeywords, so rebuild the TikTok-style
+    // related row from the real clips we just got (always populated, on-topic).
+    if (!rel.length) rel = deriveRelated(query, items.map((i) => i.title));
+    return { urls: items.map((i) => i.url), related: rel, items };
   } catch { return empty; }
 }
 
-/** RELATED SEARCHES, scraper edition: real TikTok shows a "related" row under
- *  every search — this rebuilds it from the words that actually recur in the
- *  results' titles (query words and noise dropped), so the row always exists
- *  even when tikwm is blocked. */
-const STOPWORDS = new Set(['the', 'and', 'for', 'with', 'this', 'that', 'from', 'your', 'have', 'video', 'videos', 'full', 'new', 'best', 'official', 'tiktok', 'shorts', 'short', 'part', 'episode', 'compilation', 'latest', 'trending', 'viral', 'hai', 'ka', 'ki', 'ke', 'ko', 'me', 'se', 'ka', 'aur', 'wala', 'wali', 'song', 'status']);
+/** RELATED SEARCHES, TikTok-style: real TikTok anchors every suggestion on the
+ *  query you typed and appends a modifier ("saraiki song" -> "saraiki songs",
+ *  "saraiki song status", ...). This rebuilds that row by keeping only the
+ *  modifiers that actually recur in the returned clips (so it stays on-topic
+ *  and Pakistan-relevant), then topping up with the common TikTok modifiers so
+ *  the row is never empty. */
+const TT_MODS = [
+  ['new', /\bnew\b/], ['status', /\bstatus\b/], ['sharif', /\bsharif\b/], ['pak', /\bpak\b/],
+  ['dj', /\bdj\b/], ['remix', /\bremix\b/], ['lyrics', /\blyric/], ['naat', /\bnaat\b/],
+  ['trending', /\btrending\b/], ['best', /\bbest\b/], ['full', /\bfull\b/], ['live', /\blive\b/],
+  ['cover', /\bcover\b/], ['punjabi', /\bpunjabi\b/], ['urdu', /\burdu\b/], ['saraiki', /\bsaraiki\b/],
+  ['pashto', /\bpashto\b/], ['sindhi', /\bsindhi\b/], ['hindi', /\bhindi\b/], ['mashup', /\bmashup\b/],
+  ['whatsapp status', /\bwhatsapp\b/], ['ringtone', /\bringtone\b/], ['slow reverb', /\bslow/],
+];
 function deriveRelated(query, titles) {
-  const qw = new Set(String(query).toLowerCase().split(/\s+/));
-  const counts = new Map();
-  for (const t of titles) {
-    const words = String(t).toLowerCase()
-      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-      .split(/\s+/)
-      .filter((w) => w.length > 2 && !qw.has(w) && !STOPWORDS.has(w));
-    for (let i = 0; i < words.length - 1; i++) {
-      const bg = `${words[i]} ${words[i + 1]}`;
-      counts.set(bg, (counts.get(bg) || 0) + 2);
-    }
-    for (const w of words) counts.set(w, (counts.get(w) || 0) + 1);
+  const q = String(query).toLowerCase().trim().replace(/\s+/g, ' ');
+  if (!q) return [];
+  const qw = new Set(q.split(' '));
+  const text = titles
+    .map((t) => String(t).toLowerCase().replace(/#[^\s#]+/g, ' ').replace(/[^\p{L}\p{N}\s]/gu, ' '))
+    .join(' ');
+  const has = (re) => re.test(text);
+  const out = [];
+  const add = (s) => { s = s.trim().replace(/\s+/g, ' '); if (s && s !== q && !out.includes(s)) out.push(s); };
+  // 1) plural / natural variant of the query itself
+  if (/\bsong\b/.test(q)) add(q.replace(/\bsong\b/, 'songs'));
+  else add(q + ' song');
+  // 2) query + modifiers that actually appear in the results (on-topic, PK-biased)
+  for (const [m, re] of TT_MODS) {
+    if (out.length >= 4) break;
+    if (m.split(' ').every((w) => qw.has(w))) continue;
+    if (has(re)) add(q + ' ' + m);
   }
-  return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k]) => k);
+  // 3) top up with the common TikTok modifiers so the row is never empty
+  for (const m of ['new', 'status', 'best', 'trending', 'lyrics', 'dj', 'remix', 'full']) {
+    if (out.length >= 4) break;
+    if (m.split(' ').every((w) => qw.has(w))) continue;
+    add(q + ' ' + m);
+  }
+  return out.slice(0, 4);
 }
 
 /** Resolve a TikTok URL to a playable mp4 (tikwm fast path). */
@@ -392,15 +452,17 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     // net was too small — searches often delivered just 1 video).
     const skey = `tt2|${String(query).trim().toLowerCase()}`;
     let urls = srcCache.get(skey);
+    let tikItems = srcCache.get(skey + '|items');   // tikwm items (carry play URLs)
     if (!urls) {
       const tSearch = Date.now();
       urls = [];
-      // LANE 0 — REAL TikTok search (tikwm, region=PK): jo app pe aata hai
-      // yahan bhi wahi, wahi order me. Mirror up ho to scraper skip ho jata hai
-      // (ek HTTP call vs a dozen search-engine pages).
+      // LANE 0 - REAL TikTok search (tikwm, region=PK, TRAILING-SLASH path):
+      // jo app pe aata hai yahan bhi wahi, wahi order me. Items already carry
+      // direct play URLs + real titles/plays, so the resolve step is skipped.
       if (!memTight()) {
-        const wm = await tikwmSearch(query, limit * 2);
-        if (wm.urls.length >= limit) {
+        const wm = await tikwmSearch(query, Math.max(limit * 2, 10));
+        if (wm.items.length) {
+          tikItems = wm.items;
           urls = wm.urls;
           related = wm.related;
           debug.info('[TTS] tikwm lane won', { urls: urls.length, related: related.length });
@@ -409,8 +471,11 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
       if (!urls.length) {
         try { urls = await tiktokSearch(query, limit * 4); } catch { /* ignore */ }
       }
-      if (urls.length) srcCache.set(skey, urls);
-      debug.info('[TTS] search done', { seconds: Math.round((Date.now() - tSearch) / 1000), urls: urls.length });
+      if (urls.length) {
+        srcCache.set(skey, urls);
+        if (tikItems && tikItems.length) srcCache.set(skey + '|items', tikItems);
+      }
+      debug.info('[TTS] search done', { seconds: Math.round((Date.now() - tSearch) / 1000), urls: urls.length, tik: (tikItems || []).length });
     }
     // Resolve to direct play URLs in parallel (fast, no 800ms drip).
     // KEEP THE SOURCE PAGE URL — tikwm (the resolver) is Cloudflare-blocked
@@ -418,21 +483,35 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     // yt-dlp clip-download fallback needs the original TikTok URL to work
     // from. Both travel with every pick now.
     const tResolve = Date.now();
-    const resolved = (await Promise.all(urls.map(async (u) => {
-      try { const f = await tiktokResolve(u); if (f?.video) return { src: u, url: f.video, title: f.title || '', plays: f.plays || 0 }; } catch { /* ignore */ }
-      // Resolver refused — still a candidate, yt-dlp lane will fetch it.
-      return { src: u, url: '', title: '' };
-    }))).filter((v) => v.src);
+    // If tikwm already returned play URLs + metadata, use them straight away
+    // (no resolve round-trip - faster, and the titles are the REAL ones).
+    let resolved;
+    if (tikItems && tikItems.length) {
+      resolved = tikItems.map((it) => ({ src: it.url, url: it.play || '', title: it.title || '', plays: it.plays || 0, author: it.author || '', region: it.region || '' }));
+    } else {
+      resolved = (await Promise.all(urls.map(async (u) => {
+        try { const f = await tiktokResolve(u); if (f?.video) return { src: u, url: f.video, title: f.title || '', plays: f.plays || 0 }; } catch { /* ignore */ }
+        // Resolver refused - still a candidate, yt-dlp lane will fetch it.
+        return { src: u, url: '', title: '' };
+      }))).filter((v) => v.src);
+    }
     debug.info('[TTS] resolve done', { seconds: Math.round((Date.now() - tResolve) / 1000), clips: resolved.filter((v) => v.url).length, candidates: resolved.length });
     // RELEVANCE GATE: zero-score (off-topic) clips only fill the row when
     // genuinely relevant ones can't — no more "2 ajeeb videos" when enough
     // matching clips exist.
     const words = String(query).toLowerCase().split(/\s+/).filter((w) => w.length > 2);
-    const DESI = /(urdu|pak|punjab|saraiki|sindhi|hindi|desi|bollywood|lollywood)/i;
+    // PAKISTAN-ONLY gate: real TikTok search already returns region=PK, but the
+    // scraper fallback can leak global clips. This scores the DESI/PK signal so
+    // Pakistani content always outranks generic English clips, and popularity
+    // (play count) breaks ties \u2014 exactly like the TikTok app's own ranking.
+    const DESI = /(urdu|pakistan|punjabi|saraiki|sindhi|pashto|balochi|hindi|desi|bollywood|lollywood|naat|qawwali|ghazal|kalam|mushaira)/i;
     const score = (v) => {
-      const t = String(v.title).toLowerCase();
-      let s = words.reduce((n, w) => n + (t.includes(w) ? 1 : 0), 0);
-      if (DESI.test(t)) s += 2;
+      const t = String(v.title || '').toLowerCase();
+      const a = String(v.author || '').toLowerCase();
+      let s = words.reduce((n, w) => n + (t.includes(w) ? 2 : 0) + (a.includes(w) ? 1 : 0), 0);
+      if (DESI.test(t)) s += 3;
+      if (v.region && /PK/i.test(v.region)) s += 3;      // tikwm told us it is PK
+      if (v.plays) s += Math.log10(v.plays + 1);          // popular tiebreak
       return s;
     };
     const ranked = [...resolved].sort((a, b) => score(b) - score(a));
@@ -681,17 +760,21 @@ const handler = async (ctx) => {
       let videoId = '';
       let title = query;
       if (isUrl(query)) {
-        const m = query.match(/(?:v=|youtu\.be\/|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/);
-        videoId = m ? m[1] : '';
+        videoId = extractVideoId(query);
         const meta = await ytdlp.info(query).catch(() => null);
         if (meta && meta.title) title = meta.title;
       } else {
-        // Ranked search: the real film beats trailers/recaps/covers.
-        const list = await ytdlp.searchRanked(`${query} full movie`, 5);
-        if (!list.length) return reply(`❌ *${query}* not found — check the name or send a direct link.`);
+        // Ranked search (HTTP races yt-dlp, ~0.5s): the real film beats
+        // trailers/recaps/covers. Cached so a repeat is instant.
+        const mkey = `movieq|${query.toLowerCase()}`;
+        let list = srcCache.get(mkey);
+        if (!list) {
+          list = await ytdlp.searchRankedRace(`${query} full movie`, 6);
+          if (list && list.length) srcCache.set(mkey, list);
+        }
+        if (!list || !list.length) return reply(`\u274c *${query}* not found \u2014 check the name or send a direct link.`);
         const pick = list[0];
-        const m = String(pick.url).match(/(?:v=|youtu\.be\/|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/);
-        videoId = m ? m[1] : '';
+        videoId = extractVideoId(pick.url);
         title = pick.title || query;
       }
       if (!videoId) return reply(`❌ Could not find a video for *${query}*. Try a direct link.`);
