@@ -138,6 +138,39 @@ async function askDownload(ctx, query) {
   return ctx.reply(`🎬 *${query}*\n\n1️⃣ 🎵 Audio (MP3)\n2️⃣ 🎬 Video (MP4)\n\n_Reply with *1* or *2*!_`);
 }
 
+/**
+ * SONG with RELATED SEARCH (premium upgrade):
+ * `.song <query>` first runs ONE fast flat search and shows the TOP related
+ * results as a numbered list. The user replies with a number — `3` delivers
+ * 🎵 audio, `3v` (ya `3 video`) delivers 🎬 video. The picked URL goes STRAIGHT
+ * into the download lanes, so there is no second search: one search, one
+ * reply, one download. Falls back to the old audio/video prompt when the
+ * search comes up empty or the input is a direct link.
+ */
+async function askSongSearch(ctx, query) {
+  const q = String(query).trim();
+  if (isUrl(q)) return askDownload(ctx, q);
+  let list = [];
+  try { list = (await ytdlp.search(q, 6)).slice(0, 6); } catch { /* ignore */ }
+  if (!list.length) return askDownload(ctx, q);
+  interactions.set(ctx.from, ctx.sender, 'choice', {
+    options: list.map((r) => ({
+      run: async (c) => {
+        const raw = String(c.text || '').trim().toLowerCase();
+        const tail = raw.replace(/^[0-9]+/, ' ');
+        const wantsVideo = /(^|\s)(v|video|mp4)(\s|$)/.test(tail) || /^[0-9]+v/.test(raw);
+        try { await ytSearchDownload(c, r.url, !wantsVideo); }
+        catch (e) { await c.reply('❌ ' + (e.message || 'Download fail.')); }
+      },
+    })),
+  });
+  const lines = list.map((r, i) => `${i + 1}️⃣ ${r.title.slice(0, 70)}`).join('\n');
+  return ctx.reply(
+    `🎵 *${q}* — related results:\n\n${lines}\n\n` +
+    `_Number bhejo → 🎵 *audio* | Number + *v* (jaise *2v*) → 🎬 *video*_`,
+  );
+}
+
 /* --------------------------- TikTok search helpers --------------------------- */
 /** Memory pressure check — yt-dlp child processes are big; when RSS is this
  * high, spawning more will OOM-kill the container (verified live twice:
@@ -239,6 +272,54 @@ async function tiktokSearch(query, limit = 5) {
   return found.slice(0, limit * 4).map((f) => f.url);
 }
 
+/**
+ * REAL TikTok search (region=PK) via the tikwm feed/search mirror — same
+ * results, same order as the TikTok app. One HTTP call, so when the mirror is
+ * up (it is Cloudflare-blocked from Railway sometimes) this both outranks and
+ * outruns the search-engine scraper. Also returns the app's RELATED SEARCH
+ * keywords when the response carries them. */
+async function tikwmSearch(query, limit = 10) {
+  const empty = { urls: [], related: [] };
+  try {
+    const r = await getJSON(
+      `https://tikwm.com/api/feed/search?keywords=${encodeURIComponent(query)}&count=${Math.min(limit, 20)}&region=PK&language=ur`,
+      { 'User-Agent': UA },
+      9000,
+    );
+    if (r?.code !== 0 && !Array.isArray(r?.data?.videos)) return empty;
+    const vids = r?.data?.videos || [];
+    const urls = vids
+      .map((v) => (v && v.video_id && v.author?.unique_id
+        ? `https://www.tiktok.com/@${v.author.unique_id}/video/${v.video_id}`
+        : null))
+      .filter(Boolean);
+    const rel = Array.isArray(r?.data?.relatedKeywords) ? r.data.relatedKeywords.map(String) : [];
+    return { urls, related: rel };
+  } catch { return empty; }
+}
+
+/** RELATED SEARCHES, scraper edition: real TikTok shows a "related" row under
+ *  every search — this rebuilds it from the words that actually recur in the
+ *  results' titles (query words and noise dropped), so the row always exists
+ *  even when tikwm is blocked. */
+const STOPWORDS = new Set(['the', 'and', 'for', 'with', 'this', 'that', 'from', 'your', 'have', 'video', 'videos', 'full', 'new', 'best', 'official', 'tiktok', 'shorts', 'short', 'part', 'episode', 'compilation', 'latest', 'trending', 'viral', 'hai', 'ka', 'ki', 'ke', 'ko', 'me', 'se', 'ka', 'aur', 'wala', 'wali', 'song', 'status']);
+function deriveRelated(query, titles) {
+  const qw = new Set(String(query).toLowerCase().split(/\s+/));
+  const counts = new Map();
+  for (const t of titles) {
+    const words = String(t).toLowerCase()
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length > 2 && !qw.has(w) && !STOPWORDS.has(w));
+    for (let i = 0; i < words.length - 1; i++) {
+      const bg = `${words[i]} ${words[i + 1]}`;
+      counts.set(bg, (counts.get(bg) || 0) + 2);
+    }
+    for (const w of words) counts.set(w, (counts.get(w) || 0) + 1);
+  }
+  return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k]) => k);
+}
+
 /** Resolve a TikTok URL to a playable mp4 (tikwm fast path). */
 async function tiktokResolve(url) {
   try {
@@ -271,6 +352,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   if (!ytdlp.available()) return ctx.reply('❌ The downloader engine (yt-dlp) is not available.');
   const ckey = `tt3|${String(query).trim().toLowerCase()}|${limit}`;
   let picks = ttCache.get(ckey);
+  let related = []; // TikTok-app style related searches (sent with the row)
   if (picks && picks.length) {
     // Repeat query within the TTL -> fully instant (no search, no resolve).
     await ctx.reply(`⚡ *TikTok Search:* ${query}\n_results are already cached — sending instantly…_`);
@@ -285,7 +367,20 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     if (!urls) {
       const tSearch = Date.now();
       urls = [];
-      try { urls = await tiktokSearch(query, limit * 4); } catch { /* ignore */ }
+      // LANE 0 — REAL TikTok search (tikwm, region=PK): jo app pe aata hai
+      // yahan bhi wahi, wahi order me. Mirror up ho to scraper skip ho jata hai
+      // (ek HTTP call vs a dozen search-engine pages).
+      if (!memTight()) {
+        const wm = await tikwmSearch(query, limit * 2);
+        if (wm.urls.length >= limit) {
+          urls = wm.urls;
+          related = wm.related;
+          debug.info('[TTS] tikwm lane won', { urls: urls.length, related: related.length });
+        }
+      }
+      if (!urls.length) {
+        try { urls = await tiktokSearch(query, limit * 4); } catch { /* ignore */ }
+      }
       if (urls.length) srcCache.set(skey, urls);
       debug.info('[TTS] search done', { seconds: Math.round((Date.now() - tSearch) / 1000), urls: urls.length });
     }
@@ -429,6 +524,13 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     await ctx.reply('❌ TikTok blocked the send (server IP block). Try again in a little while — or search with .video.');
     return;
   }
+  // RELATED SEARCHES — real TikTok app ki tarah row ke neeche "related" query
+  // suggestions: `.tts <word>` se turant agla search.
+  const rel = (related.length ? related : deriveRelated(query, picks.map((p) => p.title)))
+    .slice(0, 4).map((s) => `• ${s}`);
+  if (rel.length) {
+    await ctx.reply(`🔗 *Related searches:*\n${rel.join('\n')}\n_Jaise: ${config.PREFIX}tts <word>_`).catch(() => {});
+  }
   try {
     const parent = await ctx.send(ctx.from, { album: { expectedVideoCount: bufs.length } }, { quoted: ctx.m });
     const parentKey = { id: parent?.key?.id, remoteJid: ctx.from, fromMe: true };
@@ -478,9 +580,19 @@ const SURAH_NAMES = [
 const handler = async (ctx) => {
   const { command, reply, arg } = ctx;
 
-  // ---- YouTube: play / song / music / ytaudio / ytmp3 / ytmp4 / ytvideo ----
-  // These now offer an Audio ⇄ Video choice before downloading.
-  if (['play', 'song', 'music', 'ytaudio', 'ytmp3', 'ytmp4', 'ytvideo'].includes(command)) {
+  // ---- YouTube: play / song / music (RELATED-RESULTS PICKER) ----
+  // Premium flow: ek fast search, numbered related results, `2` = audio,
+  // `2v` = video. ytaudio/ytmp3/ytmp4/ytvideo stay DIRECT (user ne pehle hi
+  // audio ya video chun liya hai — sirf download chahiye).
+  if (['play', 'song', 'music'].includes(command)) {
+    if (!arg) return reply(`❌ Song/query do. Example: ${config.PREFIX}${command} Tum Hi Ho`);
+    try { await askSongSearch(ctx, arg); }
+    catch (e) { await reply('❌ ' + (e.message || 'Download fail.')); }
+    return;
+  }
+  // ---- YouTube direct: ytaudio / ytmp3 / ytmp4 / ytvideo ----
+  // These offer an Audio ⇄ Video choice before downloading.
+  if (['ytaudio', 'ytmp3', 'ytmp4', 'ytvideo'].includes(command)) {
     if (!arg) return reply(`❌ Song/query do. Example: ${config.PREFIX}${command} Tum Hi Ho`);
     try { await askDownload(ctx, arg); }
     catch (e) { await reply('❌ ' + (e.message || 'Download fail.')); }
@@ -510,7 +622,7 @@ const handler = async (ctx) => {
       return;
     }
     // Reply INSTANTLY so the bot never feels stuck, then work in the background.
-    await reply(`🎬 *${arg}* — movie is on the way…\n_720p full movie: *20-40 minutes*. Once fetched, the next time it arrives in *seconds*._`);
+    await reply(`🎬 *${arg}* — movie is on the way…\n⚡ _Top 2 sources PARALLEL download hote hain — pehla jo ready ho wohi bhejta hai. Repeat request = *seconds*._`);
     try {
       // downloadMovie: searches the top candidates (a plain "ytsearch1:" often
       // lands on a trailer, not the film), races the direct download against a
