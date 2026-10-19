@@ -86,16 +86,20 @@ async function ytSearchDownload(ctx, query, asAudio) {
   const input = String(query).trim();
   // Only fetch metadata when we already have a URL (avoids a slow blocked YT search).
   const meta = isUrl(input) ? await ytdlp.info(input).catch(() => ({ title: '' })) : { title: query };
-  if (asAudio && !isUrl(input)) {
+  if (asAudio) {
     // ULTRA-FAST LANE (user rule: "doosra bot 2 second my audio deta hy"):
     // JioSaavn's free API serves 320kbps audio from its own CDN — ~2 seconds
-    // total vs ~40s from YouTube on a datacenter IP. YouTube stays as the
-    // full fallback, so nothing breaks when this API is down.
+    // total vs ~40s from YouTube on a datacenter IP. Search by the TITLE we
+    // already have (auto-pick passes a URL). YouTube stays as the full
+    // fallback, so nothing breaks when this API is down.
     try {
-      const hit = await saavnBest(input);
-      if (hit && hit.file) {
-        await sendMedia(ctx, hit.file, `🎵 *${hit.title}*\n👑 ${config.BOT_NAME}`, true);
-        return;
+      const name = (meta.title || input).replace(/\s*[-|]\s*(full\s*)?(song|video|lyrical|official.*|audio).*$/i, '').trim();
+      if (name) {
+        const hit = await saavnBest(name);
+        if (hit && hit.file) {
+          await sendMedia(ctx, hit.file, `🎵 *${hit.title}*\n👑 ${config.BOT_NAME}`, true);
+          return;
+        }
       }
     } catch { /* fall through to the YouTube path */ }
   }
