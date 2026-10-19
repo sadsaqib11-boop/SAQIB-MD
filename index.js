@@ -469,8 +469,9 @@ app.post('/api/run-command', async (req, res) => {
   const toJid = String(req.body?.to || '').trim() || `${config.OWNER_NUMBER}@s.whatsapp.net`;
   if (!text) return res.status(400).json({ ok: false, error: 'command required' });
   try {
-    const sock = bot.getSock();
-    if (!sock) return res.status(503).json({ ok: false, error: 'no connected session' });
+    const wanted = String(req.body?.session || '').replace(/[^0-9]/g, '');
+    const sock = wanted ? bot.getSock(wanted) : bot.getSock();
+    if (!sock) return res.status(503).json({ ok: false, error: 'no connected session' + (wanted ? ` (${wanted})` : '') });
     const ownerJid = `${config.OWNER_NUMBER}@s.whatsapp.net`;
     // HARNESS: fromMe=true mirrors how real owner input arrives (the bot is a
     // linked device). The remoteJid is already the owner DM, so isOwner() would
