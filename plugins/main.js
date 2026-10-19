@@ -183,18 +183,20 @@ function compactMenuText(prefix, live) {
   const cats = [...categories().entries()];
   const total = cats.reduce((n, c) => n + c[1].length, 0);
   const lines = [];
-  lines.push(`🕌 *${config.BOT_NAME}* ⚡ v${config.BOT_VERSION}`);
-  lines.push(`👤 ${live.user} · ${live.rank} · 🟢 *${String(config.MODE).toUpperCase()}*`);
-  lines.push(`📦 *${total} commands* · prefix *${prefix}*`);
+  // HEADER: har cheez apni line par (vertical) — user rule.
+  lines.push(`🕌 *${config.BOT_NAME}* v${config.BOT_VERSION}`);
+  lines.push(`👤 ${live.user}`);
+  lines.push(`👑 ${live.rank}`);
+  lines.push(`🟢 *${String(config.MODE).toUpperCase()}*`);
+  lines.push(`📦 ${total} commands`);
+  lines.push(`⌨️ prefix *${prefix}*`);
   lines.push('──────────');
-  // VERTICAL list, one category per line, emoji-free — clean in any font.
-  cats.forEach(([cat, cmds], i) => {
+  // VERTICAL list, one category per line — no counts, no emojis.
+  cats.forEach(([cat], i) => {
     const name = String(cat).replace(/^[^A-Za-z]+/, '').trim(); // strip emoji
-    lines.push(`${String(i + 1).padStart(2, '0')}. *${name}* — ${cmds.length}`);
+    lines.push(`${String(i + 1).padStart(2, '0')}. *${name}*`);
   });
   lines.push('──────────');
-  lines.push(`💡 ${prefix}menu <category> → us ke commands`);
-  lines.push(`💡 ${prefix}menuall → sab ${total} commands`);
   lines.push(`✨ _${config.BOT_NAME} — by ${config.OWNER_NAME}_`);
   return lines.join('\n');
 }
