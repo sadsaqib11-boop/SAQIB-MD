@@ -415,6 +415,7 @@ const handler = async (ctx) => {
 };
 
 module.exports = {
+  warns,
   commands: [
     'tagall', 'everyone', 'tag', 'hidetag', 'kick', 'promote', 'demote', 'mute', 'unmute', 'link', 'invite',
     'revoke', 'ginfo', 'gcstatus', 'gcstatus2', 'groupstatus', 'gcstatuspost', 'togcstatus', 'updategcname', 'updategcdesc', 'poll', 'del', 'add', 'warn',

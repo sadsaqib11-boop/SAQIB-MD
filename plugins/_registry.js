@@ -7,19 +7,24 @@
 let allPlugins = [];
 let index = new Map();
 let hooks = [];
+let groupHooks = [];
 
 module.exports = {
   set: (list) => {
     allPlugins = list;
     index = new Map();
     hooks = [];
+    groupHooks = [];
     for (const p of list) {
       for (const cmd of p.commands) {
         if (!index.has(cmd)) index.set(cmd, p); // first plugin wins
       }
       if (typeof p.onMessage === 'function') hooks.push(p.onMessage);
+      if (typeof p.onGroupUpdate === 'function') groupHooks.push(p.onGroupUpdate);
     }
   },
+  /** Group participant hooks (join/leave) — called with (sock, update). */
+  groupHooks: () => groupHooks,
   all: () => allPlugins,
   /** Find the plugin that owns a given command (O(1)) */
   find: (command) => index.get(command),
