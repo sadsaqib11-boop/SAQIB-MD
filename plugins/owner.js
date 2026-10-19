@@ -9,6 +9,7 @@
  * .ban / .unban / .banlist -> block + ignore a user's number.
  */
 const config = require('../config');
+const fs = require('fs');
 const { downloadMedia, cleanNumber } = require('../lib/helpers');
 const bans = require('../lib/bans');
 
@@ -174,9 +175,29 @@ const appeals = require('../lib/appeals');
     case 'fullpp': case 'setpp': {
       const img = quoted?.message?.imageMessage || ctx.m.message.imageMessage;
       if (!img) return reply('❌ Reply to a photo, or send a photo with .setpp in the caption.');
-      const buf = await downloadMedia(img, 'image');
-      await sock.updateProfilePicture(sock.user.id, buf);
-      await reply('✅ Profile picture updated.');
+      const raw = await downloadMedia(img, 'image');
+      // FULL PICTURE, NO CROP: WhatsApp center-crops a raw DP. We pad the photo
+      // onto a 640x640 square canvas — a blurred zoom of the same photo fills
+      // the background, the WHOLE photo sits centered on top — so every pixel
+      // survives the DP circle.
+      const { execFile } = require('child_process');
+      const ffmpeg = (args) => new Promise((res, rej) => execFile('ffmpeg', ['-y', ...args], { timeout: 60000 }, (e, so, se) => (e ? rej(new Error((se || e.message).slice(0, 150))) : res())));
+      const out = raw + '_sq.jpg';
+      let padded = false;
+      try {
+        await ffmpeg(['-i', raw, '-filter_complex',
+          '[0:v]scale=640:640:force_original_aspect_ratio=increase,crop=640:640,boxblur=24:6[bg];[0:v]scale=640:640:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2',
+          '-frames:v', '1', '-q:v', '3', out]);
+        padded = fs.existsSync(out);
+      } catch { /* no ffmpeg — fall back to the raw photo */ }
+      try {
+        await sock.updateProfilePicture(sock.user.id, padded ? out : raw);
+        await reply(padded
+          ? '✅ Profile picture updated — *poori picture, no crop* 🖼️'
+          : '✅ Profile picture updated.');
+      } finally {
+        for (const f of [raw, out]) { try { fs.existsSync(f) && fs.unlinkSync(f); } catch { /* ignore */ } }
+      }
       break;
     }
     case 'status': case 'status2': {

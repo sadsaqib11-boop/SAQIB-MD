@@ -662,6 +662,9 @@ module.exports = {
     ...Object.keys(TOGGLES), 'premium', 'readmore', 'vcf', 'say', 'speak', 'voice', 'carbon', 'ss', 'tourl', 'emojimix', 'emix',
     'pp', 'profilepic', 'getdp', 'gpp', 'groupdp', 'getgcdp',
     'setreact', 'myreact', 'reacts',
+    // .botlanguage was handled but never registered — .lang/.language were
+    // frontend-only dummies (audit 2026-10-19). Now they route.
+    'lang', 'language',
   ],
   category: '💎 PREMIUM',
   handler,
