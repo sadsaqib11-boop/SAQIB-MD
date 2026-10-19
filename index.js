@@ -301,6 +301,24 @@ app.get('/api/net', async (req, res) => {
   res.json({ ok: true, region: process.env.RAILWAY_REPLICA_REGION || process.env.RAILWAY_REGION || null, results });
 });
 
+// SPEED diagnostic: how full are the caches that keep a reply instant?
+//   • baileys  — shared device/retry caches (a non-zero key count means a send
+//                no longer pays a USync device query before leaving the box)
+//   • image    — in-memory + durable (/data) image cache so the warm task and
+//                repeated image commands are instant instead of re-generating.
+app.get('/api/cache', (req, res) => {
+  const out = { ok: true };
+  try { out.baileys = require('./lib/bot').cacheStats(); } catch (e) { out.baileys = { error: String(e?.message || e) }; }
+  try {
+    const img = require('./lib/imagegen');
+    const dir = img._diskDir;
+    let diskFiles = 0;
+    try { diskFiles = fs.readdirSync(dir).filter((f) => f.endsWith('.img')).length; } catch { /* none yet */ }
+    out.image = { memory: img._cache.size, disk: diskFiles, dir };
+  } catch (e) { out.image = { error: String(e?.message || e) }; }
+  res.json(out);
+});
+
 // Session-dir diagnostic — shows exactly what is stored on the volume so we
 // can tell whether a number is linked (creds.json + registered) or not.
 app.get('/api/session-dir', (req, res) => {
