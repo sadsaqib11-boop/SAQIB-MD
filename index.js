@@ -148,6 +148,24 @@ app.get('/api/groups', async (req, res) => {
   }
 });
 
+app.get('/api/gdump', async (req, res) => {
+  try {
+    const jid = String(req.query.jid || '');
+    const s = bot.listSessions().find((x) => x.status === 'connected');
+    const sock = s && bot.getSock(s.number);
+    if (!sock) return res.json({ ok: false, error: 'no session' });
+    const store = sock.store || global.store;
+    const msgs = store?.messages?.[jid] || [];
+    const out = [];
+    for (const { message: m } of msgs.slice(-5)) {
+      if (!m) continue;
+      out.push(JSON.stringify(m).slice(0, 900));
+    }
+    const groups = await sock.groupFetchAllParticipating().catch((e) => ({ err: String(e) }));
+    return res.json({ ok: true, jid, stored: out, groupJids: Object.keys(groups).filter((k) => k.endsWith('@g.us')) });
+  } catch (e) { res.json({ ok: false, error: e?.message || String(e) }); }
+});
+
 // Build marker — lets us confirm which code is actually live (deploy check).
 const BUILD = process.env.BUILD_MARKER || 'watchdog+lastUpdate+diag';
 app.get('/api/version', (req, res) => {
