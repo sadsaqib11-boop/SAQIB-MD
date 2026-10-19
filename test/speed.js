@@ -44,7 +44,7 @@ const ok = (name, cond) => { console.log(`${cond ? '\u2705' : '\u274c'} ${name}`
 
   // 2) socket options include mediaCache
   const botsrc = fs.readFileSync(path.join(__dirname, '..', 'lib', 'bot.js'), 'utf8');
-  ok('socket options wire in mediaCache', /const mediaCache = new Map\(\)/.test(botsrc) && /^\s*mediaCache,\s*$/m.test(botsrc));
+  ok('socket options wire in mediaCache', /session\.mediaCache = new Map\(\)/.test(botsrc) && /^\s*mediaCache,\s*$/m.test(botsrc));
 
   // 3) index.js exposes /botpic
   const idx = fs.readFileSync(path.join(__dirname, '..', 'index.js'), 'utf8');
