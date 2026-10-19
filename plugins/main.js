@@ -150,29 +150,29 @@ const allText = (styleId, prefix, live) => styleId === 11
 // (the `.botpic` command) is picked up on the very next menu — no restart.
 let _picCache = { key: null, buf: null };
 function resetBotPic() { _picCache = { key: null, buf: null }; }
-async function sendMenu(ctx, text) {
+// WhatsApp image-caption cap ≈ 1024 UTF-8 BYTES. A text message, by contrast,
+// holds up to ~65536 chars — so the whole `.menuall` list fits in ONE text.
+const CAPTION_CAP = 1000;
+async function sendMenu(ctx, text, opts = {}) {
+  const bytes = Buffer.byteLength(text, 'utf8');
+  // ONE MESSAGE — ALWAYS (user rule, 2026-10-19): a menu must NEVER be split
+  // into an image+caption PLUS a second "rest" message (that was the
+  // ".menuall splits into 2 messages" bug — the 25 KB list overflowed the
+  // 1024-byte caption and the remainder went out as a separate reply).
+  //   • fits the caption cap  -> send WITH the bot picture (image + caption)
+  //   • too long              -> send the WHOLE list as a single text message
+  // Nothing is ever truncated and nothing is ever split.
+  if (opts.asText || bytes > CAPTION_CAP) return ctx.reply(text);
   const pic = path.resolve(config.BOT_PIC);
-  // WhatsApp caption cap ≈ 1024 UTF-8 BYTES. The compact categories menu is
-  // built to fit; this is just a byte-safe LAST-RESORT cut (never mid-line) for
-  // any caller that still overflows. Whole menu in ONE message — no split.
   try {
     if (fs.existsSync(pic)) {
       const st = fs.statSync(pic);
       const key = pic + '|' + st.mtimeMs + '|' + st.size;
       if (_picCache.key !== key) _picCache = { key, buf: readImageBuffer(pic) };
-      let caption = text;
-      while (Buffer.byteLength(caption, 'utf8') > 1000 && caption.includes('\n')) {
-        caption = caption.slice(0, caption.lastIndexOf('\n')).trim();
-      }
-      await ctx.send(ctx.from, { image: _picCache.buf, caption }, { quoted: ctx.m });
-      if (caption.length < text.length) {
-        const rest = text.slice(caption.length).trim();
-        if (rest) await ctx.reply(rest);
-      }
-      return;
+      return await ctx.send(ctx.from, { image: _picCache.buf, caption: text }, { quoted: ctx.m });
     }
   } catch { /* fall back to text */ }
-  await ctx.reply(text);
+  return ctx.reply(text);
 }
 
 /* -------------------------------- handler -------------------------------- */
@@ -222,7 +222,8 @@ const handler = async (ctx) => {
       return sendMenu(ctx, categoryText(cat, style, prefix, liveMenuData(ctx)));
     }
     case 'menuall': {
-      await sendMenu(ctx, allText(style, prefix, liveMenuData(ctx)));
+      // ALWAYS one single text message — the full list never splits (see sendMenu).
+      await sendMenu(ctx, allText(style, prefix, liveMenuData(ctx)), { asText: true });
       break;
     }
     case 'menustyle': {

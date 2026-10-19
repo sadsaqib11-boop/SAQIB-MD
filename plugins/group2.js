@@ -237,8 +237,13 @@ const handler = async (ctx) => {
 
 /** Moderation hook — enforces the group settings on every message. */
 async function onMessage(ctx) {
-  const { text, from, isGroup, isAdmin, isOwner, senderNum, pushname } = ctx;
+  const { text, from, isGroup, isOwner, senderNum, pushname } = ctx;
   if (!isGroup) return;
+  // SPEED: the admin lookup now runs in the BACKGROUND (so plain messages never
+  // wait on group metadata). Await it here — this hook already runs off the
+  // reply path — so the "admins are exempt" rule still sees the real value.
+  if (ctx.isAdminReady) { try { await ctx.isAdminReady; } catch { /* ignore */ } }
+  const isAdmin = ctx.isAdmin;
   const g = from;
 
   // activity tracking
