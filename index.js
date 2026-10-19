@@ -378,6 +378,9 @@ app.post('/api/run-command', async (req, res) => {
   if (!isAdmin(req)) return res.status(401).json({ ok: false, error: 'Unauthorized — owner token required.' });
   const text = String(req.body?.command || '').trim();
   const quoteMedia = String(req.body?.quoteMedia || '').trim();
+  // Optional `to` (group JID or any chat) — defaults to the owner DM. Lets the
+  // live-verification battery run GROUP commands in a real group.
+  const toJid = String(req.body?.to || '').trim() || `${config.OWNER_NUMBER}@s.whatsapp.net`;
   if (!text) return res.status(400).json({ ok: false, error: 'command required' });
   try {
     const sock = bot.getSock();
@@ -387,24 +390,39 @@ app.post('/api/run-command', async (req, res) => {
     // linked device). The remoteJid is already the owner DM, so isOwner() would
     // pass on the number too — but setting fromMe keeps the harness faithful and
     // means a future MODE=private switch can never silently zero out these tests.
-    const m = { key: { remoteJid: ownerJid, fromMe: true, id: 'IRISTEST' + Date.now().toString(36).toUpperCase() }, pushName: 'IrisTest', message: {} };
+    const m = { key: { remoteJid: toJid, fromMe: true, participant: ownerJid, id: 'IRISTEST' + Date.now().toString(36).toUpperCase() }, pushName: 'IrisTest', message: {} };
     if (quoteMedia) {
       const media = await makeTestMedia(quoteMedia, sock);
-      m.message = { extendedTextMessage: { text, contextInfo: { quotedMessage: media.quoted, participant: ownerJid, remoteJid: ownerJid, stanzaId: 'IRISQ' + Date.now().toString(36).toUpperCase() } } };
+      m.message = { extendedTextMessage: { text, contextInfo: { quotedMessage: media.quoted, participant: ownerJid, remoteJid: toJid, stanzaId: 'IRISQ' + Date.now().toString(36).toUpperCase() } } };
     } else {
       m.message = { conversation: text };
     }
     let sent = 0;
+    const sentLog = [];
+    const describe = (c) => {
+      if (!c || typeof c !== 'object') return '[?]';
+      if (typeof c.text === 'string') return c.text;
+      if (typeof c.caption === 'string') return c.caption;
+      if (c.poll) return `[poll] ${c.poll.name} | ${c.poll.values.join(' / ')}`;
+      if (c.audio) return '[audio]';
+      if (c.document) return `[document] ${c.document.fileName || ''}`;
+      if (c.image) return '[image]';
+      if (c.video) return '[video]';
+      if (c.sticker) return '[sticker]';
+      if (c.react) return `[react ${c.react.text}]`;
+      if (c.delete) return '[delete]';
+      return '[other]';
+    };
     const sockProxy = new Proxy(sock, {
       get(t, p) {
-        if (p === 'sendMessage') return async (...a) => { const r = await t.sendMessage(...a); sent++; return r; };
+        if (p === 'sendMessage') return async (jid, content, opts) => { const r = await t.sendMessage(jid, content, opts); sent++; sentLog.push({ jid, text: describe(content).slice(0, 400) }); return r; };
         const v = t[p];
         return typeof v === 'function' ? v.bind(t) : v;
       },
       set(t, p, v) { t[p] = v; return true; },
     });
     await require('./lib/handler').handleMessage(sockProxy, m, { number: config.OWNER_NUMBER, ownerNumber: config.OWNER_NUMBER });
-    res.json({ ok: true, ran: text, quoteMedia: quoteMedia || null, replies: sent });
+    res.json({ ok: true, ran: text, to: toJid, quoteMedia: quoteMedia || null, replies: sent, texts: sentLog.map((s) => s.text) });
   } catch (e) {
     res.status(500).json({ ok: false, error: e?.message || String(e) });
   }
