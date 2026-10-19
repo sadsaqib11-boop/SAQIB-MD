@@ -186,10 +186,13 @@ function compactMenuText(prefix, live) {
   lines.push(`🕌 *${config.BOT_NAME}* ⚡ v${config.BOT_VERSION}`);
   lines.push(`👤 ${live.user} · ${live.rank} · 🟢 *${String(config.MODE).toUpperCase()}*`);
   lines.push(`📦 *${total} commands* · prefix *${prefix}*`);
-  lines.push('');
-  const cells = cats.map(([cat, cmds]) => `${cat} ${cmds.length}`);
-  for (let i = 0; i < cells.length; i += 3) lines.push(cells.slice(i, i + 3).join('  ·  '));
-  lines.push('');
+  lines.push('──────────');
+  // VERTICAL list, one category per line, emoji-free — clean in any font.
+  cats.forEach(([cat, cmds], i) => {
+    const name = String(cat).replace(/^[^A-Za-z]+/, '').trim(); // strip emoji
+    lines.push(`${String(i + 1).padStart(2, '0')}. *${name}* — ${cmds.length}`);
+  });
+  lines.push('──────────');
   lines.push(`💡 ${prefix}menu <category> → us ke commands`);
   lines.push(`💡 ${prefix}menuall → sab ${total} commands`);
   lines.push(`✨ _${config.BOT_NAME} — by ${config.OWNER_NAME}_`);
