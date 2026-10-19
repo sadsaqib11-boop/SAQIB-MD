@@ -24,6 +24,8 @@ RUN node scripts/patch-libsignal.js
 
 ENV NODE_ENV=production
 ENV PORT=3000
+# Persistent download cache — /tmp is wiped on every deploy, the /data volume is not.
+ENV CACHE_DIR=/data/saqib-cache
 EXPOSE 3000
 
 CMD ["node", "index.js"]
