@@ -197,6 +197,45 @@ app.get('/api/group-info', async (req, res) => {
 });
 
 
+// Diagnostic: RAW group metadata probe. Dumps the exact binary node the server
+// returns for a group jid, for each session, plus whether the group is present
+// in groupFetchAllParticipating(). Read-only.
+app.get('/api/gmeta', async (req, res) => {
+  const jid = String(req.query.jid || '').trim();
+  if (!jid) return res.status(400).json({ ok: false, error: 'jid required' });
+  const only = String(req.query.session || '').replace(/[^0-9]/g, '');
+  const to = (p, ms) => Promise.race([p, new Promise((_, rj) => { const t = setTimeout(() => rj(new Error('timeout')), ms); if (t.unref) t.unref(); })]);
+  const out = [];
+  for (const s of bot.listSessions()) {
+    if (s.status !== 'connected') continue;
+    if (only && s.number !== only) continue;
+    const sock = bot.getSock(s.number);
+    if (!sock) continue;
+    const rec = { session: s.number, me: sock.user?.id, meLid: sock.user?.lid };
+    // Is the group in the participating list?
+    try {
+      const all = await to(sock.groupFetchAllParticipating(), 10000);
+      rec.participating = Object.keys(all || {}).filter((k) => k.includes(jid.split('@')[0]));
+      rec.participatingCount = Object.keys(all || {}).length;
+    } catch (e) { rec.participatingError = e?.message || String(e); }
+    // Raw groupQuery (@g.us form)
+    try {
+      const raw = await to(sock.groupQuery(jid, 'get', [{ tag: 'query', attrs: { request: 'interactive' } }]), 8000);
+      rec.rawGus = JSON.stringify(raw).slice(0, 1500);
+    } catch (e) { rec.rawGusError = e?.message || String(e); }
+    // Raw groupQuery (@lid form)
+    const m = jid.match(/^(\d+)(?:-\d+)?@g\.us$/);
+    if (m) {
+      try {
+        const raw = await to(sock.groupQuery(m[1] + '@lid', 'get', [{ tag: 'query', attrs: { request: 'interactive' } }]), 8000);
+        rec.rawLid = JSON.stringify(raw).slice(0, 1500);
+      } catch (e) { rec.rawLidError = e?.message || String(e); }
+    }
+    out.push(rec);
+  }
+  res.json({ ok: true, jid, sessions: out });
+});
+
 // Build marker — lets us confirm which code is actually live (deploy check).
 const BUILD = process.env.BUILD_MARKER || 'watchdog+lastUpdate+diag';
 app.get('/api/version', (req, res) => {
