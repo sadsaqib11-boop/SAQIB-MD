@@ -268,6 +268,39 @@ app.get('/api/version', (req, res) => {
   res.json({ ok: true, bot: config.BOT_NAME, version: config.BOT_VERSION, build: BUILD, node: process.version, pid: process.pid, uptime: bot.getStatus().uptime });
 });
 
+// NETWORK diagnostic — measures THIS region's latency to WhatsApp's edge
+// (web.whatsapp.com / g.whatsapp.net). The bot connects its WebSocket there, so
+// this is the single best predictor of reply speed, and it tells us which
+// Railway region to deploy in. Read-only, no secrets.
+app.get('/api/net', async (req, res) => {
+  const net = require('net');
+  const dns = require('dns').promises;
+  const tcp = (ip, port = 443) => new Promise((resolve) => {
+    const t0 = Date.now();
+    const s = net.connect({ host: ip, port });
+    const done = (err) => { try { s.destroy(); } catch { /* ignore */ } resolve({ ms: Date.now() - t0, err: err ? String(err.code || err.message) : null }); };
+    s.setTimeout(5000);
+    s.on('connect', () => done(null));
+    s.on('error', (e) => done(e));
+    s.on('timeout', () => done(new Error('timeout')));
+  });
+  const targets = ['web.whatsapp.com', 'g.whatsapp.net', 'mmg.whatsapp.net'];
+  const results = [];
+  for (const h of targets) {
+    let ip = null, dnsMs = null;
+    const d0 = Date.now();
+    try { const a = await dns.lookup(h); ip = a.address; dnsMs = Date.now() - d0; } catch { /* ignore */ }
+    let r = { ms: null, err: 'no-ip' };
+    if (ip) {
+      const runs = [];
+      for (let i = 0; i < 3; i++) { const x = await tcp(ip); if (x.ms != null) runs.push(x.ms); }
+      r = { ms: runs.length ? Math.min(...runs) : null, err: runs.length ? null : 'unreachable' };
+    }
+    results.push({ host: h, ip, dnsMs, connectMs: r.ms, err: r.err });
+  }
+  res.json({ ok: true, region: process.env.RAILWAY_REPLICA_REGION || process.env.RAILWAY_REGION || null, results });
+});
+
 // Session-dir diagnostic — shows exactly what is stored on the volume so we
 // can tell whether a number is linked (creds.json + registered) or not.
 app.get('/api/session-dir', (req, res) => {
