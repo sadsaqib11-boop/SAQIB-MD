@@ -714,26 +714,22 @@ const handler = async (ctx) => {
     return;
   }
 
-  // ---- movie: FAST search -> 720p download LINK (server-streamed) ----
-  // The user's rule: `.movie <name>` must answer in 1-3 seconds with a 720p
-  // download link (the user downloads it themselves — full size, any GB). The
-  // link points at THIS bot's own /dl/<id> endpoint, which resolves the YouTube
-  // stream on the SERVER and pipes it to the phone (a raw YouTube link is
-  // IP-locked and returns 403 on a phone). `.movie send <name>` downloads the
-  // file and sends it through WhatsApp instead (the old, slower path).
+  // ---- movie: DOWNLOAD & SEND AS DOCUMENT (user's rule: movie file hi jaye) ----
+  // `.movie <name>`        -> download + document send (size ki koi hard limit
+  //                           nahi — WhatsApp reject kare to link fallback).
+  // `.movie link <name>`   -> instant 720p download link (~2s), purana fast path.
   if (command === 'movie') {
     if (!arg) return reply(`❌ Movie naam do. Example: ${config.PREFIX}movie Interstellar`);
 
-    // `.movie send <name>` → actually download the film and send it as a file.
-    let wantSend = false;
+    let wantLink = false;
     let query = String(arg).trim();
-    if (/^send\b/i.test(query)) {
-      wantSend = true;
-      query = query.replace(/^send\b/i, '').trim();
-      if (!query) return reply(`❌ Naam do. Example: ${config.PREFIX}movie send Interstellar`);
+    if (/^(link|url)\b/i.test(query)) {
+      wantLink = true;
+      query = query.replace(/^(link|url)\b/i, '').trim();
+      if (!query) return reply(`❌ Naam do. Example: ${config.PREFIX}movie link Interstellar`);
     }
 
-    if (wantSend) {
+    if (!wantLink) {
       if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
       const cached = dlcache.get('movie', `${query}@720`);
       if (cached) {
@@ -741,7 +737,7 @@ const handler = async (ctx) => {
         await sendMovieDoc(ctx, cached, query, false);
         return;
       }
-      await reply(`🎬 *${query}* — downloading the full movie to send you…\n⏳ _This can take a while for big films. Want it instantly instead? Use .movie ${query}._`);
+      await reply(`🎬 *${query}* — downloading the full movie to send you…\n⏳ _Big film = thoda wait. Sirf link chahiye? → ${config.PREFIX}movie link ${query}_`);
       try {
         const file = await Promise.race([
           ytdlp.downloadMovie(query, { maxHeight: 720 }),
@@ -754,7 +750,8 @@ const handler = async (ctx) => {
       return;
     }
 
-    // FAST PATH: search only, return a 720p download link in ~1s.
+    // LINK PATH (only when the user types .movie link <name>): search only,
+    // return a 720p download link in ~1s.
     if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
     try {
       let videoId = '';
@@ -798,7 +795,7 @@ const handler = async (ctx) => {
         `🎬 *${title}*\n\n` +
         `📥 *720p download link:*\n${link}\n\n` +
         `_Tap to download — full size (any GB), 720p. The link streams from our own server so it works on your phone._\n` +
-        `_File bot se bhejwani ho? → ${config.PREFIX}movie send ${query}_`,
+        `_File bot se bhejwani ho? → ${config.PREFIX}movie ${query}_`,
       );
     } catch (e) {
       await reply(`❌ *${query}* not found (${String(e.message || e).slice(0, 60)}) — check the name or send a direct link.`);
@@ -1074,12 +1071,10 @@ async function sendMovieDoc(ctx, file, title, audio) {
     const size = fs.statSync(file).size;
     const mb = (size / 1048576).toFixed(1);
     // STREAM the file instead of reading it all into RAM: a 2-hour 720p film can
-    // be 1.5-2.5 GB, which would OOM a small container if buffered. WhatsApp's
-    // document cap is ~2 GB, so we also guard against oversized files.
-    if (size > MAX_DOC_BYTES) {
-      await ctx.reply('❌ The movie is ' + mb + ' MB — over the 2GB WhatsApp limit, cannot send it.');
-      return;
-    }
+    // be 1.5-2.5 GB, which would OOM a small container if buffered. NO hard
+    // 2GB rejection — WhatsApp server often accepts bigger documents, so we
+    // TRY the send; if WhatsApp itself rejects, the catch below tells the user.
+    if (size > MAX_DOC_BYTES) console.log(`[MOVIE] oversized attempt: ${mb} MB`);
     const safeTitle = String(title || 'movie').replace(/[^\w.-]+/g, '_');
     // Baileys getStream needs { url: <path> } for a file — a raw ReadStream has
     // neither 'url' nor 'stream' key, so prepare crashed with
