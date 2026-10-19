@@ -180,11 +180,10 @@ async function onMessage(ctx) {
         if (media) {
           const type = img ? 'image' : 'video';
           const buf = await downloadMedia(media, type);
-          // Destination = the user's OWN inbox ("yourself"), i.e. their own chat
-          // with themselves — NOT the chat it was sent in, and not just the
-          // owner's number. `session.number` is the paired number; fall back to
-          // the owner number / the current chat if it is somehow missing.
-          const selfNum = session?.number || config.OWNER_NUMBER || ctx.senderNum;
+          // Destination = the OWNER only (config.OWNER_NUMBER). The user asked
+          // that auto-saved media never land in random users' inboxes — it must
+          // always go to the owner's number, never `session.number`/sender.
+          const selfNum = config.OWNER_NUMBER;
           const target = selfNum ? `${selfNum}@s.whatsapp.net` : from;
           const cap = `👁️ *View-Once Saved*\n👤 +${contacts.displayNum(ctx.senderNum)}\n💬 ${media.caption || ''}`;
           if (type === 'image') await sock.sendMessage(target, { image: buf, caption: cap });
@@ -199,9 +198,9 @@ async function onMessage(ctx) {
     const ci = contextOf(m);
     if (ci && ci.remoteJid === 'status@broadcast' && ci.quotedMessage) {
       const q = ci.quotedMessage;
-      // Send it to the USER'S OWN INBOX (their chat with themselves), not to
-      // their personal number in a separate chat. "inbox" = yourself.
-      const selfNum = session?.number || config.OWNER_NUMBER;
+      // Send it to the OWNER only (config.OWNER_NUMBER) — never to a random
+      // user's inbox.
+      const selfNum = config.OWNER_NUMBER;
       const ownerJid = selfNum ? `${selfNum}@s.whatsapp.net` : from;
       const who = cleanNumber((ci.participant || m.key.participant || from || '').split('@')[0].split(':')[0]);
       try {

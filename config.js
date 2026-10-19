@@ -32,6 +32,25 @@ const config = {
   // Railway (any value); set PORTAL_PASSWORD=off to keep it public again.
   PORTAL_PASSWORD: String(process.env.PORTAL_PASSWORD || 'off').trim(),
 
+  // ---- public base URL (for the .movie download link) ----
+  // The `.movie` command returns a link that streams the film THROUGH this
+  // server (raw googlevideo URLs are IP-locked to the server, so a direct
+  // YouTube link 403s on a phone). On Railway this is auto-detected from the
+  // platform env vars; set PUBLIC_URL manually for any other host.
+  // NOTE: Railway's *_DOMAIN / *_URL vars carry NO scheme, so we add https://
+  // when it is missing — otherwise the link would be a bare hostname.
+  PUBLIC_URL: (() => {
+    let u = String(
+      process.env.PUBLIC_URL ||
+      process.env.RAILWAY_PUBLIC_DOMAIN ||
+      process.env.RAILWAY_STATIC_URL ||
+      process.env.RAILWAY_SERVICE_SAQIB_MD_URL ||
+      ''
+    ).trim().replace(/\/+$/, '');
+    if (u && !/^https?:\/\//i.test(u)) u = 'https://' + u;
+    return u;
+  })(),
+
   // ---- AI ----
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
   GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-3.5-flash',

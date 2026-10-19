@@ -66,6 +66,56 @@ app.get('/health', (req, res) => {
   res.json({ ok: true, bot: config.BOT_NAME, version: config.BOT_VERSION, status: s.status, connected: s.connected, uptime: s.uptime, sessions: s.connectedCount });
 });
 
+// ---------------------------------------------------------------------------
+// .movie DOWNLOAD LINK  —  GET /dl/:id
+// ---------------------------------------------------------------------------
+// The `.movie` command only SEARCHES (fast) and hands back this link. Clicking
+// it streams the full 720p film THROUGH this server: yt-dlp resolves the real
+// googlevideo URLs here (satisfying YouTube's datacenter-IP lock, which is why
+// a raw YouTube link 403s on a phone) and ffmpeg muxes them into ONE
+// fragmented MP4 that flows straight to the user. Nothing is buffered on disk,
+// so even a 3 GB film needs no disk and starts in a couple of seconds.
+// `?q=` only sets the download filename.
+const { spawn } = require('child_process');
+const _dlActive = { n: 0 };
+app.get('/dl/:id', async (req, res) => {
+  const id = String(req.params.id || '').replace(/[^A-Za-z0-9_-]/g, '');
+  if (!id) return res.status(400).send('bad id');
+  const name = (String(req.query.q || 'movie').replace(/[^\w.\- ]+/g, '').trim().slice(0, 60) || 'movie') + '.mp4';
+  // Concurrency guard: cap simultaneous streams so a burst can't OOM/CPU-starve
+  // the container (each stream is one ffmpeg + one yt-dlp process).
+  if (_dlActive.n >= 6) return res.status(503).send('Server busy \u2014 please try again in a moment.');
+  _dlActive.n++;
+  let ff = null;
+  let done = false;
+  const cleanup = () => {
+    if (done) return; done = true;
+    if (ff) { try { ff.kill('SIGKILL'); } catch { /* ignore */ } ff = null; }
+    _dlActive.n = Math.max(0, _dlActive.n - 1);
+  };
+  try {
+    const urls = await ytdlp.getStreamUrls(`https://www.youtube.com/watch?v=${id}`, 720);
+    if (!urls.length) { cleanup(); return res.status(404).send('No stream found for this video.'); }
+    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Content-Disposition', `attachment; filename="${name}"`);
+    res.setHeader('Cache-Control', 'no-store');
+    const args = ['-hide_banner', '-loglevel', 'error'];
+    for (const u of urls) args.push('-i', u);
+    // -c copy = NO re-encode (fast, full quality). Fragmented MP4 so it can be
+    // downloaded progressively without knowing the total size up front.
+    args.push('-c', 'copy', '-movflags', 'frag_keyframe+empty_moov+default_base_moof', '-f', 'mp4', 'pipe:1');
+    ff = spawn('ffmpeg', args, { stdio: ['ignore', 'pipe', 'ignore'] });
+    ff.stdout.pipe(res);
+    ff.on('error', () => { try { res.end(); } catch { /* ignore */ } cleanup(); });
+    ff.on('close', () => { try { res.end(); } catch { /* ignore */ } cleanup(); });
+    req.on('close', cleanup);
+  } catch (e) {
+    cleanup();
+    if (!res.headersSent) res.status(500).send('Stream failed: ' + (e?.message || e));
+    else { try { res.end(); } catch { /* ignore */ } }
+  }
+});
+
 // Groups diagnostic — for every CONNECTED session, list every group the
 // account is in: member count, announce-only flag, and whether the BOT is an
 // admin there. This is how we prove WHY a "1k+ member group" looks dead: an

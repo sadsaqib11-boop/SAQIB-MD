@@ -49,7 +49,10 @@ async function sendMedia(ctx, filePath, caption, asAudio) {
   try {
     if (asAudio) {
       const seconds = await probeDuration(filePath);
-      await ctx.send(ctx.from, { audio: buf, mimetype: 'audio/mpeg', ptt: false, seconds }, { quoted: ctx.m });
+      // Native m4a (AAC) must go out as audio/mp4 — sending it as audio/mpeg
+      // makes WhatsApp re-wrap it and can break playback. mp3 stays audio/mpeg.
+      const mime = /\.m4a$/i.test(filePath) ? 'audio/mp4' : 'audio/mpeg';
+      await ctx.send(ctx.from, { audio: buf, mimetype: mime, ptt: false, seconds }, { quoted: ctx.m });
       return;
     }
     // BIG FILES: WhatsApp's audio/video cap is ~64MB. She asked for NO limit —
@@ -79,8 +82,11 @@ async function ytSearchDownload(ctx, query, asAudio) {
   const meta = isUrl(input) ? await ytdlp.info(input).catch(() => ({ title: '' })) : { title: query };
   await ctx.reply(`⬇️ *${meta.title || query}*\n_${asAudio ? '🎵 Audio' : '🎬 Video'} download started…\n⏱️ small files take 1-3 min, big videos 10-30 min. Once fetched, repeats are *instant*._`);
   if (asAudio) {
-    // SIX lanes race: YouTube, SoundCloud, Dailymotion, Invidious mirror,
-    // JioSaavn, and TikTok (this closure uses the same scraper as .tts).
+    // FAST NATIVE PATH: grab the m4a/AAC stream directly — NO mp3 re-encode
+    // (that ffmpeg pass added several seconds per song for no quality gain).
+    // downloadAudioNativeSmart also re-ranks a plain query so the RIGHT track
+    // wins. If YouTube refuses (datacenter-IP block) it falls back through the
+    // TikTok lane and then the full multi-lane smart path.
     const audioViaTiktok = async () => {
       const urls = await tiktokSearch(String(input).trim(), 3);
       for (const u of urls) {
@@ -88,7 +94,7 @@ async function ytSearchDownload(ctx, query, asAudio) {
       }
       throw new Error('tiktok lane came up empty');
     };
-    const file = await ytdlp.downloadAudioSmart(input, [audioViaTiktok]);
+    const file = await ytdlp.downloadAudioNativeSmart(input, [audioViaTiktok]);
     await sendMedia(ctx, file, `🎵 *${meta.title || query}*\n👑 ${config.BOT_NAME}`, true);
     return;
   }
@@ -158,7 +164,9 @@ async function askSongSearch(ctx, query) {
   const ckey = `songq|${q.toLowerCase()}`;
   let list = srcCache.get(ckey);
   if (!list) {
-    try { list = (await ytdlp.search(q, 6)).slice(0, 6); } catch { /* ignore */ }
+    // searchRanked: YouTube's own order lets covers/remixes outrank the real
+    // track — re-rank by relevance so the correct song is #1 in the list.
+    try { list = (await ytdlp.searchRanked(q, 6)).slice(0, 6); } catch { /* ignore */ }
     if (list.length) srcCache.set(ckey, list);
   }
   if (!list || !list.length) return askDownload(ctx, q);
@@ -627,35 +635,90 @@ const handler = async (ctx) => {
     return;
   }
 
-  // ---- movie: dedicated "full movie" search (720p, DOCUMENT, never audio) ----
-  // Two hard rules from the user: (1) the film must arrive as a DOCUMENT in
-  // 720p (not a compressed playable video, not an MP3), and (2) it must NEVER
-  // silently fall back to audio. We therefore search the top candidates, try
-  // each in 720p, and refuse any audio result.
+  // ---- movie: FAST search -> 720p download LINK (server-streamed) ----
+  // The user's rule: `.movie <name>` must answer in 1-3 seconds with a 720p
+  // download link (the user downloads it themselves — full size, any GB). The
+  // link points at THIS bot's own /dl/<id> endpoint, which resolves the YouTube
+  // stream on the SERVER and pipes it to the phone (a raw YouTube link is
+  // IP-locked and returns 403 on a phone). `.movie send <name>` downloads the
+  // file and sends it through WhatsApp instead (the old, slower path).
   if (command === 'movie') {
     if (!arg) return reply(`❌ Movie naam do. Example: ${config.PREFIX}movie Interstellar`);
-    // Instant path: already downloaded before? Resend from the disk cache.
-    const cached = dlcache.get('movie', `${arg}@720`);
-    if (cached) {
-      await reply(`⚡ *${arg}* — already downloaded, sending instantly…`);
-      await sendMovieDoc(ctx, cached, arg, false);
+
+    // `.movie send <name>` → actually download the film and send it as a file.
+    let wantSend = false;
+    let query = String(arg).trim();
+    if (/^send\b/i.test(query)) {
+      wantSend = true;
+      query = query.replace(/^send\b/i, '').trim();
+      if (!query) return reply(`❌ Naam do. Example: ${config.PREFIX}movie send Interstellar`);
+    }
+
+    if (wantSend) {
+      if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
+      const cached = dlcache.get('movie', `${query}@720`);
+      if (cached) {
+        await reply(`⚡ *${query}* — already downloaded, sending instantly…`);
+        await sendMovieDoc(ctx, cached, query, false);
+        return;
+      }
+      await reply(`🎬 *${query}* — downloading the full movie to send you…\n⏳ _This can take a while for big films. Want it instantly instead? Use .movie ${query}._`);
+      try {
+        const file = await Promise.race([
+          ytdlp.downloadMovie(query, { maxHeight: 720 }),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (12min)')), 720000)),
+        ]);
+        await sendMovieDoc(ctx, file, query, false);
+      } catch (e) {
+        await reply(`❌ *${query}* not found (${String(e.message || e).slice(0, 60)}) — check the name or send a direct link.`);
+      }
       return;
     }
-    // Reply INSTANTLY so the bot never feels stuck, then work in the background.
-    await reply(`🎬 *${arg}* — movie is on the way…\n⚡ _Top 2 sources PARALLEL download hote hain — pehla jo ready ho wohi bhejta hai. Repeat request = *seconds*._`);
+
+    // FAST PATH: search only, return a 720p download link in ~1s.
+    if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
     try {
-      // downloadMovie: searches the top candidates (a plain "ytsearch1:" often
-      // lands on a trailer, not the film), races the direct download against a
-      // public mirror for the best one, and caches the file so a repeat `.movie`
-      // of the same title is instant. It NEVER returns audio. Hard timeout:
-      // the flow can never go silent past 12 minutes.
-      const file = await Promise.race([
-        ytdlp.downloadMovie(arg, { maxHeight: 720 }),
-        new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (12min)')), 720000)),
-      ]);
-      await sendMovieDoc(ctx, file, arg, false);
+      let videoId = '';
+      let title = query;
+      if (isUrl(query)) {
+        const m = query.match(/(?:v=|youtu\.be\/|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/);
+        videoId = m ? m[1] : '';
+        const meta = await ytdlp.info(query).catch(() => null);
+        if (meta && meta.title) title = meta.title;
+      } else {
+        // Ranked search: the real film beats trailers/recaps/covers.
+        const list = await ytdlp.searchRanked(`${query} full movie`, 5);
+        if (!list.length) return reply(`❌ *${query}* not found — check the name or send a direct link.`);
+        const pick = list[0];
+        const m = String(pick.url).match(/(?:v=|youtu\.be\/|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/);
+        videoId = m ? m[1] : '';
+        title = pick.title || query;
+      }
+      if (!videoId) return reply(`❌ Could not find a video for *${query}*. Try a direct link.`);
+
+      const base = String(config.PUBLIC_URL || '').replace(/\/+$/, '');
+      if (!base) {
+        // No public URL configured → fall back to downloading and sending.
+        await reply(`🎬 *${title}* — server link not configured, downloading the file instead…`);
+        const cached = dlcache.get('movie', `${query}@720`);
+        if (cached) { await sendMovieDoc(ctx, cached, query, false); return; }
+        const file = await Promise.race([
+          ytdlp.downloadMovie(query, { maxHeight: 720 }),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (12min)')), 720000)),
+        ]);
+        await sendMovieDoc(ctx, file, title, false);
+        return;
+      }
+
+      const link = `${base}/dl/${videoId}?q=${encodeURIComponent(title.slice(0, 50))}`;
+      await reply(
+        `🎬 *${title}*\n\n` +
+        `📥 *720p download link:*\n${link}\n\n` +
+        `_Tap to download — full size (any GB), 720p. The link streams from our own server so it works on your phone._\n` +
+        `_File bot se bhejwani ho? → ${config.PREFIX}movie send ${query}_`,
+      );
     } catch (e) {
-      await reply(`❌ *${arg}* not found (${String(e.message || e).slice(0, 60)}) — check the name, send a direct link, or try .video.`);
+      await reply(`❌ *${query}* not found (${String(e.message || e).slice(0, 60)}) — check the name or send a direct link.`);
     }
     return;
   }

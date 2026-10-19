@@ -132,8 +132,11 @@ const handler = async (ctx) => {
   const { sock, command, reply, from, arg, quoted } = ctx;
 
   // commands that require group admin
+  // NOTE: `.poll`, `.warn` and `.resetwarn` were WRONGLY gated here — they only
+  // post a poll / track warnings in memory and need NO admin rights, so any
+  // member can use them. Only commands that truly mutate the group stay listed.
   const needAdmin = ['kick', 'promote', 'demote', 'mute', 'unmute', 'tagall', 'everyone', 'add', 'revoke',
-    'updategcname', 'updategcdesc', 'link', 'invite', 'del', 'hidetag', 'poll', 'warn', 'resetwarn',
+    'updategcname', 'updategcdesc', 'link', 'invite', 'del', 'hidetag',
     'acceptall', 'rejectall', 'requests', 'accept', 'reject'];
   if (needAdmin.includes(command)) {
     // Owner always passes; everyone else is matched by normalised number so a

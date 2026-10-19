@@ -27,9 +27,14 @@ const handler = async (ctx) => {
 
   switch (command) {
     case 'mode': {
-      if (!['public', 'private'].includes(arg)) return reply(`ℹ️ Current: *${config.MODE}*\n❓ ${config.PREFIX}mode public  or  ${config.PREFIX}mode private`);
-      config.MODE = arg; settings.save();
-      await reply(`✅ The bot is now in *${arg.toUpperCase()}* mode.${arg === 'private' ? '\n(Only the owner can run commands)' : '\n(Everyone can use commands)'}`);
+      // OWNER-ONLY + case-insensitive. `.mode Public`, `.mode PRIVATE` all work.
+      // The chosen value is persisted, and (see lib/settings.js) the persisted
+      // MODE now WINS over env, so it survives a restart/redeploy.
+      if (!ctx.isOwner) return reply('🔒 Only the *owner* can change the bot mode.');
+      const val = String(arg || '').trim().toLowerCase();
+      if (!['public', 'private'].includes(val)) return reply(`ℹ️ Current: *${config.MODE}*\n❓ ${config.PREFIX}mode public  or  ${config.PREFIX}mode private`);
+      config.MODE = val; settings.save();
+      await reply(`✅ The bot is now in *${val.toUpperCase()}* mode.${val === 'private' ? '\n(Only the owner can run commands)' : '\n(Everyone can use commands)'}`);
       break;
     }
     case 'prefix': case 'setprefix': {
