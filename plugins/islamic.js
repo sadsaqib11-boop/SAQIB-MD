@@ -39,8 +39,10 @@ async function ayah(ref) {
   return { ar: ar.text, en: en.text, ur: ur.text, ref: `${ar.surah.englishName} ${ar.numberInSurah}:${ar.surah.number}` };
 }
 
-const KAABA = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Kaaba_Masjid_Haraam_Makkah.jpg/640px-Kaaba_Masjid_Haraam_Makkah.jpg';
-const MADINAH = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Al-Masjid_an-Nabawi.jpg/640px-Al-Masjid_an-Nabawi.jpg';
+// FIX: wikimedia THUMBNAIL urls (/thumb/.../640px-...) now return HTTP 400 —
+// upload.wikimedia.org only serves FULL-SIZE originals reliably, so use those.
+const KAABA = 'https://upload.wikimedia.org/wikipedia/commons/6/63/Kaaba%2C_Makkah3.jpg';
+const MADINAH = 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Al-Masjid_an_Nabawi.jpg';
 
 const AZKAR = [
   ['SubhanAllah', 'سُبْحَانَ اللّٰه', 'Allah pak hai — 33x'],

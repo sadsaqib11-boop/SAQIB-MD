@@ -41,8 +41,11 @@ function convertUnit(amount, from, to) {
 async function nekoImg(cat) {
   try {
     const r = await getJSON(`https://nekos.best/api/v2/${cat}`);
-    return r?.results?.[0]?.url || null;
-  } catch { return null; }
+    const u = r?.results?.[0]?.url;
+    if (u) return u;
+  } catch { /* blocked from datacenter IPs — fall through */ }
+  // Fallback: pic.re serves a random anime image directly, works from Railway.
+  return 'https://pic.re/image';
 }
 
 const handler = async (ctx) => {
