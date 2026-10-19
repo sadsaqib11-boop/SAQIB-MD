@@ -165,8 +165,13 @@ async function sendMenu(ctx, text) {
       if (text.length <= 1024) {
         await ctx.send(ctx.from, { image: _picCache.buf, caption: text }, { quoted: ctx.m });
       } else {
-        await ctx.send(ctx.from, { image: _picCache.buf, caption: `📋 *${config.BOT_NAME} — MENU*` }, { quoted: ctx.m });
-        await ctx.reply(text);
+        // Long menu: pic ke caption mein menu ka PEHLA hissa (line boundary par
+        // cut), baaki agle message mein. The pic is never sent bare — user rule:
+        // "bot pic alag se na aaye, menu ke sath aaye".
+        let cut = text.lastIndexOf('\n', 950);
+        if (cut < 400) cut = 950;
+        await ctx.send(ctx.from, { image: _picCache.buf, caption: text.slice(0, cut) + '\n…' }, { quoted: ctx.m });
+        await ctx.reply(text.slice(cut).trim());
       }
       return;
     }

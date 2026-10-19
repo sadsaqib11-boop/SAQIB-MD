@@ -179,25 +179,25 @@ async function askSongSearch(ctx, query) {
   interactions.set(ctx.from, ctx.sender, 'choice', {
     options: list.map((r) => ({
       run: async (c) => {
-        const raw = String(c.text || '').trim().toLowerCase();
-        const tail = raw.replace(/^[0-9]+/, ' ');
-        const wantsVideo = /(^|\s)(v|video|mp4)(\s|$)/.test(tail) || /^[0-9]+v/.test(raw);
-        try { await ytSearchDownload(c, r.url, !wantsVideo); }
-        catch (e) { await c.reply('\u274c ' + (e.message || 'Download fail.')); }
+        // STEP 2: song chosen — now a SHORT audio/video menu (1 = Audio,
+        // 2 = Video), exactly the "pehle jaisa" flow Saqib wants.
+        interactions.set(c.from, c.sender, 'choice', {
+          options: [
+            { run: async (c2) => { try { await ytSearchDownload(c2, r.url, true); } catch (e) { await c2.reply('\u274c ' + (e.message || 'Download fail.')); } } },
+            { run: async (c2) => { try { await ytSearchDownload(c2, r.url, false); } catch (e) { await c2.reply('\u274c ' + (e.message || 'Download fail.')); } } },
+          ],
+        });
+        await c.reply('🎵 Reply *1* = Audio\n🎬 Reply *2* = Video');
       },
     })),
   });
-  const lines = list.map((r, i) => {
-    const meta = [
-      r.channel ? `\ud83d\udc64 ${String(r.channel).slice(0, 20)}` : '',
-      fmtDur(r.duration),
-      r.views ? `\u25b6\ufe0f ${fmtViews(r.views)}` : '',
-    ].filter(Boolean).join(' \u00b7 ');
-    return `${i + 1}\ufe0f\u20e3 *${String(r.title).slice(0, 52)}*${meta ? `\n      _${meta}_` : ''}`;
-  }).join('\n');
+  // SHORT text: ek line per result (title + duration only) — no channel/views
+  // clutter. The full meta was making the picker a wall of text.
+  const lines = list.map((r, i) =>
+    `${i + 1}\ufe0f\u20e3 *${String(r.title).slice(0, 45)}* \u00b7 ${fmtDur(r.duration)}`,
+  ).join('\n');
   const caption =
-    `\ud83c\udfa7 *${q}* \u2014 related results:\n\n${lines}\n\n` +
-    `_Number bhejo \u2192 \ud83c\udfb5 *audio* | Number + *v* (jaise *2v*) \u2192 \ud83c\udfac *video*_`;
+    `\ud83c\udfa7 *${q}*\n\n${lines}\n\n_Number reply karo_`;
   // PREMIUM: show the top result's thumbnail with the list as the caption.
   // The thumbnail is fetched HERE with a short timeout so it can never stall
   // the reply; if it fails, we fall back to a plain text list.
