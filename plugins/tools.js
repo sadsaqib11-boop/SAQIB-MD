@@ -78,8 +78,17 @@ const handler = async (ctx) => {
       break;
     }
     case 'translate': case 'tr': {
+      // Accept BOTH ".translate Hello | ur" and the natural
+      // ".translate Hello ur" (last word = target when it's a 2-letter code).
       const parts = arg.split('|').map((s) => s.trim());
-      const [text, lang] = parts.length > 1 ? [parts[0], parts[1]] : [arg, 'ur'];
+      let text, lang;
+      if (parts.length > 1) { [text, lang] = [parts[0], parts[1]]; }
+      else {
+        const words = arg.trim().split(/\s+/).filter(Boolean);
+        const last = words[words.length - 1] || '';
+        if (/^[a-z]{2}$/i.test(last) && words.length > 1) { lang = last.toLowerCase(); text = words.slice(0, -1).join(' '); }
+        else { text = arg; lang = 'ur'; }
+      }
       if (!text) return reply(`❌ Format: ${config.PREFIX}translate Hello | ur`);
       try {
         const r = await getJSON(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${encodeURIComponent(lang)}`);
