@@ -231,13 +231,11 @@ async function onMessage(ctx) {
         const type = src.imageMessage ? 'image' : 'video';
         try {
           const buf = await downloadMedia(media, type);
-          const cap = `🔓 *View-once restored*\n👤 +${contacts.displayNum(from)}\n👑 ${config.BOT_NAME}`;
-          // USER RULE: the bot never auto-messages a user's inbox — restored
-          // media goes to the OWNER's inbox only.
-          const selfNum = session?.number || config.OWNER_NUMBER;
-          const target = selfNum ? `${selfNum}@s.whatsapp.net` : from;
-          if (type === 'image') await sock.sendMessage(target, { image: buf, caption: cap });
-          else await sock.sendMessage(target, { video: buf, caption: cap });
+          const cap = `🔓 *View-once restored*\n👑 ${config.BOT_NAME}`;
+          // USERS' NEED: the restore reply goes back into the same chat (this
+          // is the feature, not spam) — quoted on the original message.
+          if (type === 'image') await sock.sendMessage(from, { image: buf, caption: cap }, { quoted: m });
+          else await sock.sendMessage(from, { video: buf, caption: cap }, { quoted: m });
         } catch { /* ignore */ }
         return; // handled — skip auto-react for this emoji
       }
