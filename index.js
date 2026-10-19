@@ -174,6 +174,39 @@ app.get('/api/gsend-test', async (req, res) => {
   } catch (e) { res.json({ ok: false, error: e?.message || String(e) }); }
 });
 
+// Diagnostic: live metadata for ONE group jid. Tells us EXACTLY why a reply may
+// be rejected (am I a member? am I admin? is it announce-only?) for every
+// session. Read-only; no auth needed (no secrets, same as /api/groups).
+app.get('/api/group-info', async (req, res) => {
+  const jid = String(req.query.jid || '').trim();
+  if (!jid) return res.status(400).json({ ok: false, error: 'jid required' });
+  const out = [];
+  for (const s of bot.listSessions()) {
+    if (s.status !== 'connected') continue;
+    const sock = bot.getSock(s.number);
+    if (!sock) continue;
+    try {
+      const meta = await sock.groupMetadata(jid);
+      const norm = (j) => String(j || '').split('@')[0].split(':')[0].replace(/[^0-9]/g, '');
+      const meIds = new Set([sock.user?.id, sock.user?.lid, sock.user?.phoneNumber].map(norm).filter(Boolean));
+      const me = (meta.participants || []).find((p) => {
+        const ids = [p.id, p.lid, p.phoneNumber, p.jid].map(norm).filter(Boolean);
+        return ids.some((id) => meIds.has(id));
+      });
+      out.push({
+        session: s.number, subject: meta.subject || '', size: (meta.participants || []).length,
+        announce: !!meta.announce, isMember: !!me,
+        isAdmin: !!(me && (me.admin === 'admin' || me.admin === 'superadmin')),
+        meEntry: me ? { id: me.id, lid: me.lid, admin: me.admin } : null,
+        meIds: [...meIds],
+      });
+    } catch (e) {
+      out.push({ session: s.number, error: e?.message || String(e) });
+    }
+  }
+  res.json({ ok: true, jid, sessions: out });
+});
+
 // Build marker — lets us confirm which code is actually live (deploy check).
 const BUILD = process.env.BUILD_MARKER || 'watchdog+lastUpdate+diag';
 app.get('/api/version', (req, res) => {
