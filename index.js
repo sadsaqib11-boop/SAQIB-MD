@@ -168,12 +168,13 @@ app.get('/api/group-info', async (req, res) => {
     const sock = bot.getSock(s.number);
     if (!sock) continue;
     try {
+      const to = (p, ms) => Promise.race([p, new Promise((_, rj) => { const t = setTimeout(() => rj(new Error('timeout')), ms); if (t.unref) t.unref(); })]);
       let meta;
-      try { meta = await sock.groupMetadata(jid); }
+      try { meta = await to(sock.groupMetadata(jid), 8000); }
       catch (e) {
         const m2 = String(jid).match(/^(\d+)(?:-\d+)?@g\.us$/);
         if (!m2) throw e;
-        meta = await sock.groupMetadata(m2[1] + '@lid');
+        meta = await to(sock.groupMetadata(m2[1] + '@lid'), 8000);
       }
       const norm = (j) => String(j || '').split('@')[0].split(':')[0].replace(/[^0-9]/g, '');
       const meIds = new Set([sock.user?.id, sock.user?.lid, sock.user?.phoneNumber].map(norm).filter(Boolean));
