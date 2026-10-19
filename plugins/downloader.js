@@ -998,8 +998,11 @@ async function sendMovieDoc(ctx, file, title, audio) {
       return;
     }
     const safeTitle = String(title || 'movie').replace(/[^\w.-]+/g, '_');
+    // Baileys getStream needs { url: <path> } for a file — a raw ReadStream has
+    // neither 'url' nor 'stream' key, so prepare crashed with
+    // "Cannot read properties of undefined (reading 'toString')".
     await ctx.send(ctx.from, {
-      document: fs.createReadStream(file),
+      document: { url: file },
       mimetype: audio ? 'audio/mpeg' : 'video/mp4',
       fileName: `${safeTitle}.${audio ? 'mp3' : 'mp4'}`,
       caption: `🎬 *${title}*\n📏 ${mb} MB\n📄 Full movie (document)\n👑 ${config.BOT_NAME}`,
