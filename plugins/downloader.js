@@ -147,12 +147,21 @@ async function askDownload(ctx, query) {
  * reply, one download. Falls back to the old audio/video prompt when the
  * search comes up empty or the input is a direct link.
  */
+/** Small pretty formatters for the premium lists. */
+const fmtViews = (n) => (n >= 1e9 ? (n / 1e9).toFixed(1) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'K' : String(n || ''));
+const fmtDur = (s) => (s ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}` : '');
+
 async function askSongSearch(ctx, query) {
   const q = String(query).trim();
   if (isUrl(q)) return askDownload(ctx, q);
-  let list = [];
-  try { list = (await ytdlp.search(q, 6)).slice(0, 6); } catch { /* ignore */ }
-  if (!list.length) return askDownload(ctx, q);
+  // Search CACHE (1h): repeat `.song` of the same query = INSTANT list.
+  const ckey = `songq|${q.toLowerCase()}`;
+  let list = srcCache.get(ckey);
+  if (!list) {
+    try { list = (await ytdlp.search(q, 6)).slice(0, 6); } catch { /* ignore */ }
+    if (list.length) srcCache.set(ckey, list);
+  }
+  if (!list || !list.length) return askDownload(ctx, q);
   interactions.set(ctx.from, ctx.sender, 'choice', {
     options: list.map((r) => ({
       run: async (c) => {
@@ -164,9 +173,12 @@ async function askSongSearch(ctx, query) {
       },
     })),
   });
-  const lines = list.map((r, i) => `${i + 1}️⃣ ${r.title.slice(0, 70)}`).join('\n');
+  const lines = list.map((r, i) => {
+    const meta = [fmtDur(r.duration), r.views ? `▶️ ${fmtViews(r.views)}` : ''].filter(Boolean).join(' · ');
+    return `${i + 1}️⃣ *${r.title.slice(0, 60)}*${meta ? `\n      _${meta}_` : ''}`;
+  }).join('\n');
   return ctx.reply(
-    `🎵 *${q}* — related results:\n\n${lines}\n\n` +
+    `🎧 *${q}* — related results:\n\n${lines}\n\n` +
     `_Number bhejo → 🎵 *audio* | Number + *v* (jaise *2v*) → 🎬 *video*_`,
   );
 }
@@ -324,7 +336,15 @@ function deriveRelated(query, titles) {
 async function tiktokResolve(url) {
   try {
     const r = await getJSON(`https://tikwm.com/api/?url=${encodeURIComponent(url)}`, {}, 15000);
-    if (r?.data?.play) return { video: r.data.play, title: r.data.title || '', music: r.data.music || '' };
+    if (r?.data?.play) {
+      return {
+        video: r.data.play,
+        title: r.data.title || '',
+        music: r.data.music || '',
+        plays: Number(r.data.play_count) || 0,
+        duration: Number(r.data.duration) || 0,
+      };
+    }
   } catch { /* ignore */ }
   return null;
 }
@@ -391,7 +411,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
     // from. Both travel with every pick now.
     const tResolve = Date.now();
     const resolved = (await Promise.all(urls.map(async (u) => {
-      try { const f = await tiktokResolve(u); if (f?.video) return { src: u, url: f.video, title: f.title || '' }; } catch { /* ignore */ }
+      try { const f = await tiktokResolve(u); if (f?.video) return { src: u, url: f.video, title: f.title || '', plays: f.plays || 0 }; } catch { /* ignore */ }
       // Resolver refused — still a candidate, yt-dlp lane will fetch it.
       return { src: u, url: '', title: '' };
     }))).filter((v) => v.src);
@@ -502,7 +522,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
   const bufs = [];
   for (let i = 0; i < results.length && bufs.length < limit; i++) {
     if (results[i].status === 'fulfilled') {
-      bufs.push({ buf: results[i].value, title: (picks[i].title || '').slice(0, 120) });
+      bufs.push({ buf: results[i].value, title: (picks[i].title || '').slice(0, 120), plays: picks[i].plays || 0 });
     } // dead clip — skip
   }
   if (bufs.length < limit) {
@@ -539,7 +559,7 @@ async function sendTiktokVideos(ctx, query, limit = 5) {
       await ctx.send(ctx.from, {
         video: v.buf,
         caption: i === 0
-          ? `🎬 *TikTok* — ${query} (${bufs.length} videos)\n📝 ${v.title}\n👑 ${config.BOT_NAME}`
+          ? `🎬 *TikTok* — ${query} (${bufs.length} videos)\n📝 ${v.title}${v.plays ? `\n▶️ ${fmtViews(v.plays)} plays` : ''}\n👑 ${config.BOT_NAME}`
           : undefined,
         albumParentKey: parentKey,
       }, { quoted: ctx.m });
