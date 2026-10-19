@@ -22,6 +22,7 @@ const { getJSON, getText, sleep } = require('../lib/helpers');
 const interactions = require('../lib/interactions');
 const ytdlp = require('../lib/ytdlp');
 const dlcache = require('../lib/dlcache');
+const { saavnBest } = require('../lib/saavn');
 const { ttCache, srcCache, ttBufCache, TT_BUF_CACHE_MAX_BYTES } = require('../lib/cache');
 const debug = require('../lib/debug');
 
@@ -85,6 +86,19 @@ async function ytSearchDownload(ctx, query, asAudio) {
   const input = String(query).trim();
   // Only fetch metadata when we already have a URL (avoids a slow blocked YT search).
   const meta = isUrl(input) ? await ytdlp.info(input).catch(() => ({ title: '' })) : { title: query };
+  if (asAudio && !isUrl(input)) {
+    // ULTRA-FAST LANE (user rule: "doosra bot 2 second my audio deta hy"):
+    // JioSaavn's free API serves 320kbps audio from its own CDN — ~2 seconds
+    // total vs ~40s from YouTube on a datacenter IP. YouTube stays as the
+    // full fallback, so nothing breaks when this API is down.
+    try {
+      const hit = await saavnBest(input);
+      if (hit && hit.file) {
+        await sendMedia(ctx, hit.file, `🎵 *${hit.title}*\n👑 ${config.BOT_NAME}`, true);
+        return;
+      }
+    } catch { /* fall through to the YouTube path */ }
+  }
   await ctx.reply(`⬇️ *${meta.title || query}*\n_${asAudio ? '🎵 Audio' : '🎬 Video'} download started…\n⏱️ small files take 1-3 min, big videos 10-30 min. Once fetched, repeats are *instant*._`);
   if (asAudio) {
     // FAST NATIVE PATH: grab the m4a/AAC stream directly — NO mp3 re-encode
