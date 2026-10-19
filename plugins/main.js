@@ -152,27 +152,36 @@ let _picCache = { key: null, buf: null };
 function resetBotPic() { _picCache = { key: null, buf: null }; }
 async function sendMenu(ctx, text) {
   const pic = path.resolve(config.BOT_PIC);
+  // WhatsApp's caption limit is 1024 UTF-8 BYTES (not chars). Stylized menu
+  // text (𝚂𝙰𝚀𝙸𝙱, │ ├ ─, emoji) costs 3-4 bytes/char, so a 670-char menu is
+  // ~1900 bytes — WhatsApp itself TRUNCATES an over-limit caption mid-list and
+  // the rest leaks into a second message. COMPACT first: drop heavy box
+  // decorations + live-status lines so the WHOLE menu fits one caption.
+  const compact = (s) => s
+    .split('\n')
+    .filter((l) => !/⌬?\s*(USER|RANK|RAM|UPTIME|TIME)\s*:/.test(l)) // live-status noise
+    .filter((l) => !/TIP|menuall/.test(l))                          // tip block
+    .join('\n')
+    .replace(/[│├└┌◇⌬「」─•]/g, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n{2,}/g, '\n')
+    .trim();
   try {
     if (fs.existsSync(pic)) {
       const st = fs.statSync(pic);
       const key = pic + '|' + st.mtimeMs + '|' + st.size;
       if (_picCache.key !== key) _picCache = { key, buf: readImageBuffer(pic) };
-      // WhatsApp caps image captions at 1024 chars. Short menu -> picture WITH
-      // the menu as its caption (one message). Long menu -> picture with a short
-      // header FIRST, then the full menu as a second message. Either way the
-      // picture ALWAYS shows (the old code silently dropped it for long menus,
-      // which is why the menu sometimes came as text only).
-      if (text.length <= 1024) {
-        await ctx.send(ctx.from, { image: _picCache.buf, caption: text }, { quoted: ctx.m });
-      } else {
-        // Long menu: pic ke caption mein menu ka PEHLA hissa (line boundary par
-        // cut), baaki agle message mein. The pic is never sent bare — user rule:
-        // "bot pic alag se na aaye, menu ke sath aaye".
-        let cut = text.lastIndexOf('\n', 950);
-        if (cut < 400) cut = 950;
-        await ctx.send(ctx.from, { image: _picCache.buf, caption: text.slice(0, cut) + '\n…' }, { quoted: ctx.m });
-        await ctx.reply(text.slice(cut).trim());
+      let caption = text;
+      if (Buffer.byteLength(caption, 'utf8') > 1000) {
+        caption = compact(text);
+        // Last-resort byte-safe cut (never mid-line) if still over.
+        if (Buffer.byteLength(caption, 'utf8') > 1000) {
+          while (Buffer.byteLength(caption, 'utf8') > 1000 && caption.includes('\n')) {
+            caption = caption.slice(0, caption.lastIndexOf('\n')).trim();
+          }
+        }
       }
+      await ctx.send(ctx.from, { image: _picCache.buf, caption }, { quoted: ctx.m });
       return;
     }
   } catch { /* fall back to text */ }
