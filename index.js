@@ -438,14 +438,16 @@ app.post('/api/run-command', async (req, res) => {
     const sentLog = [];
     const describe = (c) => {
       if (!c || typeof c !== 'object') return '[?]';
-      if (typeof c.text === 'string') return c.text;
-      if (typeof c.caption === 'string') return c.caption;
-      if (c.poll) return `[poll] ${c.poll.name} | ${c.poll.values.join(' / ')}`;
+      const cap = typeof c.caption === 'string' ? c.caption : '';
+      // Media types are tagged so a test can assert the BOT PICTURE actually
+      // went out with `.menu` (was previously indistinguishable from text).
+      if (c.image) return '[image] ' + cap;
+      if (c.video) return '[video] ' + cap;
+      if (c.document) return `[document] ${c.document.fileName || cap}`;
       if (c.audio) return '[audio]';
-      if (c.document) return `[document] ${c.document.fileName || ''}`;
-      if (c.image) return '[image]';
-      if (c.video) return '[video]';
       if (c.sticker) return '[sticker]';
+      if (typeof c.text === 'string') return c.text;
+      if (c.poll) return `[poll] ${c.poll.name} | ${c.poll.values.join(' / ')}`;
       if (c.react) return `[react ${c.react.text}]`;
       if (c.delete) return '[delete]';
       return '[other]';

@@ -6,6 +6,9 @@
  *    are registered (share/redeem/toprefer/...).
  * 2) Exercises lib/referrals.js end-to-end against a throwaway session dir:
  *    code creation, one-credit-per-joiner, auto-premium at goal, leaderboard.
+ * 3) Asserts the MENU always attaches the bot picture (the reported bug: the
+ *    categories menu is >1024 chars, so it used to fall back to text-only).
+ * 4) Asserts the landing page + index.js routes.
  */
 const os = require('os');
 const path = require('path');
@@ -80,7 +83,6 @@ ok('setPremium toggles', ref.setPremium('923222222222', true) === true && ref.is
 console.log('\n[3] Persistence');
 const saved = JSON.parse(fs.readFileSync(ref.FILE, 'utf8'));
 ok('file written next to session dir', fs.existsSync(ref.FILE));
-// users = referrers only (A, E, + manual setPremium target); redeemed = joiners B,C,D
 ok('persisted referrers + joins', Object.keys(saved.users).length >= 3 && Object.keys(saved.redeemed).length >= 3);
 ok('persisted seen map', Object.keys(saved.seen || {}).length >= 1);
 
@@ -92,17 +94,44 @@ ok('landing links to /portal', landing.includes('/portal'));
 ok('landing builds wa.me link', landing.includes('wa.me'));
 ok('landing has QR', landing.includes('qrserver') || landing.includes('qr'));
 
-console.log('\n[5] index.js routes');
-const idx = fs.readFileSync(path.join(__dirname, '..', 'index.js'), 'utf8');
-ok("serves landing at '/'", /app\.get\('\/',[^\n]*landing\.html/.test(idx));
-ok("serves portal at '/portal'", idx.includes("app.get('/portal'"));
-ok('exposes /api/public', idx.includes("app.get('/api/public'"));
-ok('boots referrals store', idx.includes("require('./lib/referrals').load()"));
+const mainPlugin = plugins.find((p) => p.file === 'main.js');
+async function runMenu(command, arg) {
+  const cap = [];
+  const ctx = {
+    command, arg: arg || '', args: arg ? arg.split(' ') : [], text: '.' + command,
+    from: '923106762478@s.whatsapp.net', isGroup: false,
+    sender: '923106762478@s.whatsapp.net', senderNum: '923106762478',
+    pushname: 'V', prefix: '.', isOwner: true, m: { key: {} }, quoted: null,
+    reply: () => { cap.push({ kind: 'text' }); return Promise.resolve(); },
+    send: (j, c) => { cap.push({ kind: 'send', image: !!c.image, buf: Buffer.isBuffer(c.image) }); return Promise.resolve(); },
+    sendSticker: () => Promise.resolve(), react: () => Promise.resolve(),
+  };
+  await mainPlugin.handler(ctx);
+  return cap;
+}
 
-// cleanup
-try { fs.rmSync(TMP, { recursive: true, force: true }); } catch {}
+(async () => {
+  console.log('\n[5] Menu photo (bot picture must ALWAYS be sent)');
+  const cats = await runMenu('menu');
+  ok('.menu sends the bot PICTURE (was text-only bug)', cats.some((c) => c.kind === 'send' && c.image && c.buf));
+  const cat = await runMenu('menu', 'download');
+  ok('.menu <category> sends the picture', cat.some((c) => c.kind === 'send' && c.image));
+  const all = await runMenu('menuall');
+  ok('.menuall sends the picture', all.some((c) => c.kind === 'send' && c.image));
+  ok('menu picture file is the bundled bot.jpg', fs.existsSync(path.join(__dirname, '..', 'assets', 'bot.jpg')));
 
-console.log('\n========================================');
-console.log(`  RESULT: ${pass} passed, ${fail} failed`);
-console.log('========================================\n');
-process.exit(fail ? 1 : 0);
+  console.log('\n[6] index.js routes');
+  const idx = fs.readFileSync(path.join(__dirname, '..', 'index.js'), 'utf8');
+  ok("serves landing at '/'", /app\.get\('\/',[^\n]*landing\.html/.test(idx));
+  ok("serves portal at '/portal'", idx.includes("app.get('/portal'"));
+  ok('exposes /api/public', idx.includes("app.get('/api/public'"));
+  ok('boots referrals store', idx.includes("require('./lib/referrals').load()"));
+
+  // cleanup
+  try { fs.rmSync(TMP, { recursive: true, force: true }); } catch {}
+
+  console.log('\n========================================');
+  console.log(`  RESULT: ${pass} passed, ${fail} failed`);
+  console.log('========================================\n');
+  process.exit(fail ? 1 : 0);
+})();

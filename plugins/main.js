@@ -153,11 +153,21 @@ function resetBotPic() { _picCache = { key: null, buf: null }; }
 async function sendMenu(ctx, text) {
   const pic = path.resolve(config.BOT_PIC);
   try {
-    if (text.length <= 1024 && fs.existsSync(pic)) {
+    if (fs.existsSync(pic)) {
       const st = fs.statSync(pic);
       const key = pic + '|' + st.mtimeMs + '|' + st.size;
       if (_picCache.key !== key) _picCache = { key, buf: readImageBuffer(pic) };
-      await ctx.send(ctx.from, { image: _picCache.buf, caption: text }, { quoted: ctx.m });
+      // WhatsApp caps image captions at 1024 chars. Short menu -> picture WITH
+      // the menu as its caption (one message). Long menu -> picture with a short
+      // header FIRST, then the full menu as a second message. Either way the
+      // picture ALWAYS shows (the old code silently dropped it for long menus,
+      // which is why the menu sometimes came as text only).
+      if (text.length <= 1024) {
+        await ctx.send(ctx.from, { image: _picCache.buf, caption: text }, { quoted: ctx.m });
+      } else {
+        await ctx.send(ctx.from, { image: _picCache.buf, caption: `📋 *${config.BOT_NAME} — MENU*` }, { quoted: ctx.m });
+        await ctx.reply(text);
+      }
       return;
     }
   } catch { /* fall back to text */ }
@@ -183,7 +193,7 @@ const handler = async (ctx) => {
       return sendMenu(ctx, categoryText(cat, style, prefix, liveMenuData(ctx)));
     }
     case 'menuall': {
-      await reply(allText(style, prefix, liveMenuData(ctx)));
+      await sendMenu(ctx, allText(style, prefix, liveMenuData(ctx)));
       break;
     }
     case 'menustyle': {
