@@ -280,10 +280,19 @@ const contacts = require('../lib/contacts');
       const v = parseOnOff(parts[1]);
       // `.antidelete inbox` -> destination = YOUR OWN inbox  (ANTIDELETE_TO_CHAT = false)
       // `.antidelete chat`  -> destination = where it was deleted (ANTIDELETE_TO_CHAT = true)
-      // Bare (no on/off) means "use this destination" — so it sets, not toggles.
-      config.ANTIDELETE_TO_CHAT = v === null ? (scope === 'chat') : v;
-      // Choosing a destination implies turning the feature on.
-      if (v === null || v === true) config.ANTIDELETE = true;
+      // `on` (or bare) selects this destination and enables the feature.
+      // `off` disables anti-delete without changing the saved destination.
+      // `on` must not be treated as the TO_CHAT value, or `.antidelete inbox on`
+      // would route to the chat.
+      if (v === false) {
+        config.ANTIDELETE = false;
+        config.ANTIDELETE_INBOX = false;
+        settings.save();
+        await reply(antideleteStatus());
+        return;
+      }
+      config.ANTIDELETE_TO_CHAT = scope === 'chat';
+      config.ANTIDELETE = true;
       settings.save();
       await reply(
         `✅ Anti-delete will now arrive in *${config.ANTIDELETE_TO_CHAT ? 'the CHAT' : 'YOURSELF (inbox)'}*.\n` +
