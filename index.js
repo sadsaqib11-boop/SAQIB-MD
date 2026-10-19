@@ -13,6 +13,7 @@ require('./lib/prefixes').load();
 require('./lib/menustyles').load();
 require('./lib/reacts').load();
 require('./lib/bans').load();
+require('./lib/referrals').load();
 const registry = require('./plugins/_registry');
 const bot = require('./lib/bot');
 
@@ -59,7 +60,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+// index:false so "/" is handled by the explicit routes below (landing page),
+// not auto-served public/index.html (which is the pairing portal at /portal).
+app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
 app.get('/health', (req, res) => {
   const s = bot.getStatus();
@@ -179,6 +182,31 @@ app.get('/api/session-dir', (req, res) => {
 
 app.get('/api/status', (req, res) => {
   res.json({ ok: true, ...bot.getStatus() });
+});
+
+// ---- PUBLIC landing-page data (no auth) ------------------------------------
+// Only NON-sensitive, growth-facing info: the bot's own add number, prefix,
+// live session count and the referral goal. Never exposes linked numbers.
+const referrals = require('./lib/referrals');
+app.get('/api/public', (req, res) => {
+  let number = '';
+  try {
+    const st = bot.getStatus();
+    const list = Array.isArray(st.sessions) ? st.sessions : [];
+    const primary = list.find((s) => s.status === 'connected') || list[0] || null;
+    number = (primary && primary.number) || '';
+  } catch { /* ignore */ }
+  if (!number) number = String(config.OWNER_NUMBER || '');
+  res.json({
+    ok: true,
+    bot: config.BOT_NAME,
+    prefix: config.PREFIX,
+    owner: config.OWNER_NAME,
+    number,
+    connected: (() => { try { return bot.getStatus().connectedCount || 0; } catch { return 0; } })(),
+    total: (() => { try { return bot.getStatus().sessionCount || 0; } catch { return 0; } })(),
+    referralGoal: referrals.GOAL,
+  });
 });
 
 // ---- Owner-only guard ------------------------------------------------------
@@ -455,7 +483,10 @@ app.get('/api/selftest', async (req, res) => {
   res.json({ ok: results.every((r) => r.ok), results });
 });
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+// Public landing page (marketing / growth) at "/", pairing portal at "/portal".
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));
+app.get('/portal', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/pair', (req, res) => res.redirect('/portal'));
 
 app.listen(config.PORT, () => {
   console.log(`${config.BOT_NAME} web portal: http://localhost:${config.PORT}`);
