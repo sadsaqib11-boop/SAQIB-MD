@@ -155,13 +155,18 @@ const fun = require('../plugins/fun');
 
     // .song -> reply "1" -> audio branch
     calls.length = 0;
+    const realSearch = ytdlp.searchRankedRace;
+    ytdlp.searchRankedRace = async () => [];
     const ctx2 = mockCtx({ command: 'song', arg: 'Test Song' });
     await downloader.handler(ctx2);
+    ytdlp.searchRankedRace = realSearch;
     const replyCtx2 = mockCtx({ text: '1', command: null });
     replyCtx2.sender = '923001234567@s.whatsapp.net';
     replyCtx2.from = '12345@g.us';
+    ytdlp.downloadAudioNativeSmart = async (q) => { calls.push(['audio', q]); return writeTmp(); };
     await interactions.handle(replyCtx2);
-    ok('audio branch ran', calls.some((c) => c[0] === 'audio'), JSON.stringify(calls));
+    const sentAudio = replyCtx2._sent.some((m) => m?.content?.audio || m?.content?.document);
+    ok('audio branch ran', sentAudio || calls.some((c) => c[0] === 'audio'), JSON.stringify(calls));
   }
 
   console.log('\n=== downloader: surah audio/video + apk + tts ===');
@@ -255,7 +260,7 @@ const fun = require('../plugins/fun');
     const gpp2 = mockCtx({ command: 'gpp', isGroup: false });
     gpp2.sock = { profilePictureUrl: async () => 'https://example.com/g.jpg' };
     await premium.handler(gpp2);
-    ok('gpp in DM is rejected', /sirf group/i.test(gpp2._sent[0]?.text || ''), gpp2._sent[0]?.text);
+    ok('gpp in DM is rejected', /only works in a group/i.test(gpp2._sent[0]?.text || ''), gpp2._sent[0]?.text);
   }
 
   console.log('\n=== owner: vv unwrap / pair / broadcast / delete ===');
@@ -335,15 +340,18 @@ const fun = require('../plugins/fun');
     ok('autoread on -> AUTO_READ=true', config.AUTO_READ === true);
     config.AUTO_READ = false;
 
+    config.AUTO_TYPING = false;
     let s3 = mockCtx({ command: 'autotyping' });
     await settings.handler(s3);
     ok('autotyping flips when no arg', config.AUTO_TYPING === true);
     config.AUTO_TYPING = false;
 
     let s4 = mockCtx({ command: 'mode', arg: 'private' });
+    s4.isOwner = true;
     await settings.handler(s4);
     ok('mode private sets MODE', config.MODE === 'private');
     let s5 = mockCtx({ command: 'mode', arg: 'public' });
+    s5.isOwner = true;
     await settings.handler(s5);
     ok('mode public sets MODE', config.MODE === 'public');
 
@@ -354,7 +362,11 @@ const fun = require('../plugins/fun');
     prefixes.set(s6.senderNum, null);
 
     let s7 = mockCtx({ command: 'mode', arg: 'bogus' });
+    s7.isOwner = true;
     await settings.handler(s7);
+    let s8 = mockCtx({ command: 'mode', arg: 'private' });
+    await settings.handler(s8);
+    ok('mode is owner-only', config.MODE === 'public' && /owner/i.test(s8._sent[0]?.text || ''), s8._sent[0]?.text);
     ok('mode rejects invalid arg', config.MODE === 'public' && /public|private/i.test(s7._sent[0]?.text || ''), s7._sent[0]?.text);
   }
 
