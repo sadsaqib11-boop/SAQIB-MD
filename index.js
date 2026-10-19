@@ -494,8 +494,10 @@ app.get('/api/selftest', async (req, res) => {
   res.json({ ok: results.every((r) => r.ok), results });
 });
 
-// Public landing page (marketing / growth) at "/", pairing portal at "/portal".
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));
+// ROOT = the ORIGINAL page (public/index.html), user rule: "website pehle
+// jaisa karo". The growth landing page stays reachable at /landing.
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/landing', (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));
 app.get('/portal', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/pair', (req, res) => res.redirect('/portal'));
 
