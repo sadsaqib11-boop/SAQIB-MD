@@ -54,11 +54,19 @@ const PROMPTS = {
   // redeploy finishes warming almost instantly.
   const todo = names.filter((n) => !img.isCached(promptOf(n), opts));
   console.log(`[warm] ${names.length} myth images \u2014 ${names.length - todo.length} already cached, warming ${todo.length}`);
+  let fails = 0;
   for (const n of todo) {
     try {
       await img.generateImage(promptOf(n), opts);
       console.log('[warm] ok', n);
-    } catch { /* skip */ }
+      fails = 0;
+    } catch (e) {
+      // The free image tier rate-limits (402) in bursts. Don't grind through all
+      // 25 (~30 min of failing calls); bail out after a few consecutive failures.
+      fails++;
+      console.log('[warm] skip', n, '\u2014', (e && e.message) || e);
+      if (fails >= 4) { console.log('[warm] image service unavailable \u2014 stopping warm-up'); break; }
+    }
     await new Promise((r) => setTimeout(r, 3000));
   }
   console.log('[warm] done');
