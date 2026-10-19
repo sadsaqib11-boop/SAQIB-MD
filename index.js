@@ -468,6 +468,23 @@ app.post('/api/run-command', async (req, res) => {
 });
 
 // In-process self-test: runs the real command engine (no WhatsApp needed).
+// TEMP DIAGNOSTIC: find WhatsApp's real caption byte cap. Sends an image with
+// an N-byte ASCII caption to the owner; the harness then reports how many
+// bytes actually landed. Remove after measuring.
+app.get('/api/caption-test', async (req, res) => {
+  const bytes = Math.min(parseInt(req.query.bytes || '600', 10) || 600, 4000);
+  const owner = config.OWNER_NUMBER + '@s.whatsapp.net';
+  const caption = 'C'.repeat(bytes);
+  try {
+    const sock = bot.getSock();
+    const pic = path.resolve(config.BOT_PIC);
+    await sock.sendMessage(owner, { image: fs.readFileSync(pic), caption });
+    res.json({ ok: true, sent: bytes });
+  } catch (e) {
+    res.json({ ok: false, error: String(e && e.message || e).slice(0, 120), sent: bytes });
+  }
+});
+
 app.get('/api/selftest', async (req, res) => {
   const results = [];
   const tests = ['.menu', '.ping', '.alive', '.help'];
