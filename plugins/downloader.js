@@ -706,91 +706,87 @@ const handler = async (ctx) => {
     return;
   }
 
-  // ---- movie: DOWNLOAD & SEND AS DOCUMENT (user's rule: movie file hi jaye) ----
-  // `.movie <name>`        -> download + document send (size ki koi hard limit
-  //                           nahi — WhatsApp reject kare to link fallback).
-  // `.movie link <name>`   -> instant 720p download link (~2s), purana fast path.
+  // ---- movie: INSTANT 720p LINK + background full file (fastest path) ----
+  // `.movie <name>`        -> instant 720p download link (~1s) + the full file
+  //                           is fetched in the BACKGROUND and sent as a document.
+  // `.movie link <name>`   -> link only (fastest; no download).
+  // `.movie file <name>`   -> document only (the old, slow default).
   if (command === 'movie') {
     if (!arg) return reply(`❌ Movie naam do. Example: ${config.PREFIX}movie Interstellar`);
 
-    let wantLink = false;
+    // MODES (default = INSTANT). `.movie <name>` now returns the 720p download
+    // LINK in ~1s AND quietly fetches the full file in the background, so the
+    // user gets something IMMEDIATELY (the link streams the whole film) and the
+    // document follows. `.movie link <name>` = link only (fastest),
+    // `.movie file <name>` = document only (the old, slow default).
+    let mode = 'both';
     let query = String(arg).trim();
-    if (/^(link|url)\b/i.test(query)) {
-      wantLink = true;
-      query = query.replace(/^(link|url)\b/i, '').trim();
-      if (!query) return reply(`❌ Naam do. Example: ${config.PREFIX}movie link Interstellar`);
-    }
+    if (/^(link|url)\b/i.test(query)) { mode = 'link'; query = query.replace(/^(link|url)\b/i, '').trim(); }
+    else if (/^(file|doc|document|download)\b/i.test(query)) { mode = 'file'; query = query.replace(/^(file|doc|document|download)\b/i, '').trim(); }
+    if (!query) return reply(`❌ Naam do. Example: ${config.PREFIX}movie Interstellar`);
+    if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
 
-    if (!wantLink) {
-      if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
-      const cached = dlcache.get('movie', `${query}@1080`);
-      if (cached) {
-        await reply(`⚡ *${query}* — already downloaded, sending instantly…`);
-        await sendMovieDoc(ctx, cached, query, false);
-        return;
+    // ---- fast target resolution (HTTP-raced search, cached 6h) ----
+    const resolveTarget = async () => {
+      if (isUrl(query)) {
+        const videoId = extractVideoId(query);
+        const meta = await ytdlp.info(query).catch(() => null);
+        return { videoId, title: (meta && meta.title) || query };
       }
-      await reply(`🎬 *${query}* — downloading the full movie to send you…\n⏳ _Big film = thoda wait. Sirf link chahiye? → ${config.PREFIX}movie link ${query}_`);
+      const mkey = `movieq|${query.toLowerCase()}`;
+      let list = srcCache.get(mkey);
+      if (!list) {
+        list = await ytdlp.searchRankedRace(`${query} full movie`, 6);
+        if (list && list.length) srcCache.set(mkey, list);
+      }
+      if (!list || !list.length) return null;
+      const pick = list[0];
+      return { videoId: extractVideoId(pick.url), title: pick.title || query };
+    };
+
+    const base = String(config.PUBLIC_URL || '').replace(/\/+$/, '');
+    const wantLink = (mode === 'link' || mode === 'both') && !!base;
+    const wantFile = (mode === 'file' || mode === 'both') || !base;
+
+    // ---- 1) INSTANT LINK (single message, ~1s) ----
+    if (wantLink) {
       try {
-        const file = await Promise.race([
-          ytdlp.downloadMovie(query, { maxHeight: 1080 }),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (30min)')), 1800000)),
-        ]);
-        await sendMovieDoc(ctx, file, query, false);
+        const t = await resolveTarget();
+        if (!t || !t.videoId) {
+          await reply(`❌ *${query}* not found — check the name or send a direct link.`);
+          return;
+        }
+        const link = `${base}/dl/${t.videoId}?q=${encodeURIComponent(t.title.slice(0, 50))}`;
+        await reply(
+          `🎬 *${t.title}*\n\n` +
+          `📥 *720p download link:*\n${link}\n\n` +
+          `_Tap to download — full size (any GB), 720p. Streams from our own server._` +
+          (wantFile ? `\n_⏬ Full file bhi background me bhej raha hoon…_` : ''),
+        );
       } catch (e) {
         await reply(`❌ *${query}* not found (${String(e.message || e).slice(0, 60)}) — check the name or send a direct link.`);
-      }
-      return;
-    }
-
-    // LINK PATH (only when the user types .movie link <name>): search only,
-    // return a 720p download link in ~1s.
-    if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
-    try {
-      let videoId = '';
-      let title = query;
-      if (isUrl(query)) {
-        videoId = extractVideoId(query);
-        const meta = await ytdlp.info(query).catch(() => null);
-        if (meta && meta.title) title = meta.title;
-      } else {
-        // Ranked search (HTTP races yt-dlp, ~0.5s): the real film beats
-        // trailers/recaps/covers. Cached so a repeat is instant.
-        const mkey = `movieq|${query.toLowerCase()}`;
-        let list = srcCache.get(mkey);
-        if (!list) {
-          list = await ytdlp.searchRankedRace(`${query} full movie`, 6);
-          if (list && list.length) srcCache.set(mkey, list);
-        }
-        if (!list || !list.length) return reply(`\u274c *${query}* not found \u2014 check the name or send a direct link.`);
-        const pick = list[0];
-        videoId = extractVideoId(pick.url);
-        title = pick.title || query;
-      }
-      if (!videoId) return reply(`❌ Could not find a video for *${query}*. Try a direct link.`);
-
-      const base = String(config.PUBLIC_URL || '').replace(/\/+$/, '');
-      if (!base) {
-        // No public URL configured → fall back to downloading and sending.
-        await reply(`🎬 *${title}* — server link not configured, downloading the file instead…`);
-        const cached = dlcache.get('movie', `${query}@1080`);
-        if (cached) { await sendMovieDoc(ctx, cached, query, false); return; }
-        const file = await Promise.race([
-          ytdlp.downloadMovie(query, { maxHeight: 1080 }),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (30min)')), 1800000)),
-        ]);
-        await sendMovieDoc(ctx, file, title, false);
         return;
       }
+    }
 
-      const link = `${base}/dl/${videoId}?q=${encodeURIComponent(title.slice(0, 50))}`;
-      await reply(
-        `🎬 *${title}*\n\n` +
-        `📥 *720p download link:*\n${link}\n\n` +
-        `_Tap to download — full size (any GB), 720p. The link streams from our own server so it works on your phone._\n` +
-        `_File bot se bhejwani ho? → ${config.PREFIX}movie ${query}_`,
-      );
-    } catch (e) {
-      await reply(`❌ *${query}* not found (${String(e.message || e).slice(0, 60)}) — check the name or send a direct link.`);
+    // ---- 2) FULL FILE (background when the link was already sent) ----
+    if (wantFile) {
+      const fetchFile = async () => {
+        const cached = dlcache.get('movie', `${query}@1080`);
+        if (cached) { await sendMovieDoc(ctx, cached, query, false); return; }
+        if (!wantLink) await reply(`🎬 *${query}* — downloading the full movie to send you…\n⏳ _Big film = thoda wait._`);
+        try {
+          const file = await Promise.race([
+            ytdlp.downloadMovie(query, { maxHeight: 1080 }),
+            new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (30min)')), 1800000)),
+          ]);
+          await sendMovieDoc(ctx, file, query, false);
+        } catch (e) {
+          await reply(`❌ *${query}* file fail (${String(e.message || e).slice(0, 60)}) — try ${config.PREFIX}movie link ${query}`);
+        }
+      };
+      if (wantLink) { fetchFile().catch(() => {}); }  // link is already out → don't block
+      else { await fetchFile(); }
     }
     return;
   }

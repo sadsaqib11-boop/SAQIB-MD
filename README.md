@@ -163,6 +163,8 @@ Every model name routes to the same AI engine. `.ai` `.bot` `.gpt` `.gpt4` `.gpt
 ### 📥 DOWNLOAD (41)
 `.tiktok` `.tt` `.ttmp3` `.tiktok2` `.tiktok3` `.instagram` `.ig` `.igdl` `.igdl2` `.igdl3` `.reels` `.facebook` `.fb` `.twitter` `.x` `.pinterest` `.pin` `.play` `.song` `.music` `.ytaudio` `.ytmp3` `.ytmp4` `.ytvideo` `.apk` `.gdrive` `.capcut` `.mediafire` `.megadl` `.igmp3` `.ytpost` `.download` `.tsticker` `.tiktoksearch` `.surah` `.gitclone` `.video` `.drama` `.cartoon` `.movie` `.dlnpm`
 
+> `.movie <name>` → **720p download link in ~1s** + the full file fetched in the background and sent as a document; `.movie link <name>` = link only (fastest); `.movie file <name>` = document only.
+
 ### 🔠 FONTS (105)
 `.font1` … `.font105` — 105 stylised text transforms
 
