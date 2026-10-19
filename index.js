@@ -156,24 +156,6 @@ app.get('/api/groups', async (req, res) => {
   }
 });
 
-app.get('/api/gsend-test', async (req, res) => {
-  try {
-    const jid = String(req.query.jid || '');
-    if (!jid.endsWith('@g.us')) return res.json({ ok: false, error: 'bad jid' });
-    const s = bot.listSessions().find((x) => x.status === 'connected');
-    const sock = s && bot.getSock(s.number);
-    if (!sock) return res.json({ ok: false, error: 'no session' });
-    const tries = {};
-    // 1. plain send
-    try { const r = await sock.sendMessage(jid, { text: 'probe-plain' }); tries.plainSend = r?.key?.id ? 'OK' : 'no-id'; } catch (e) { tries.plainSend = 'ERR ' + String(e?.message || e).slice(0, 120); }
-    // 2. metadata read
-    try { const m = await sock.groupMetadata(jid); tries.metadata = 'OK subject=' + String(m.subject || '').slice(0, 20) + ' announce=' + !!m.announce + ' pclen=' + (m.participants || []).length; } catch (e) { tries.metadata = 'ERR ' + String(e?.message || e).slice(0, 120); }
-    // 3. lid-variant send (hyphenated groups may resolve via @lid)
-    try { const lidJid = jid.replace('-1421504059@g.us', '@lid'); const r = await sock.sendMessage(lidJid, { text: 'probe-lid' }); tries.lidSend = r?.key?.id ? 'OK' : 'no-id'; } catch (e) { tries.lidSend = 'ERR ' + String(e?.message || e).slice(0, 120); }
-    res.json({ ok: true, jid, session: s?.number, tries });
-  } catch (e) { res.json({ ok: false, error: e?.message || String(e) }); }
-});
-
 // Diagnostic: live metadata for ONE group jid. Tells us EXACTLY why a reply may
 // be rejected (am I a member? am I admin? is it announce-only?) for every
 // session. Read-only; no auth needed (no secrets, same as /api/groups).
@@ -206,6 +188,7 @@ app.get('/api/group-info', async (req, res) => {
   }
   res.json({ ok: true, jid, sessions: out });
 });
+
 
 // Build marker — lets us confirm which code is actually live (deploy check).
 const BUILD = process.env.BUILD_MARKER || 'watchdog+lastUpdate+diag';
