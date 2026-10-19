@@ -1,5 +1,5 @@
 # SAQIB-MD Premium WhatsApp Bot
-FROM node:20-slim
+FROM node:22-slim
 
 # ffmpeg  -> stickers / audio effects / media conversion / yt-dlp merge
 # yt-dlp  -> downloads (YouTube, Instagram, Facebook, Twitter/X, TikTok, Pinterest…)

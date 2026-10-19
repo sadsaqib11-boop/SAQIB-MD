@@ -5,7 +5,11 @@
     "nixpacksPlan": {
       "phases": {
         "setup": {
-          "nixPkgs": ["nodejs_20", "ffmpeg", "yt-dlp"]
+          "nixPkgs": [
+            "nodejs_22",
+            "ffmpeg",
+            "yt-dlp"
+          ]
         }
       }
     }
