@@ -463,11 +463,52 @@ app.get('/api/debug', (req, res) => {
     ok: true, prefix: config.PREFIX, mode: config.MODE, owner: config.OWNER_NUMBER,
     events: debug.recent(n),
     latency: debug.latencySummary(),
+    perf: debug.perf(),
     memory_mb: { rss: Math.round(mem.rss / 1048576), heap: Math.round(mem.heapUsed / 1048576) },
     uptime_s: Math.round(process.uptime()),
   });
 });
 app.post('/api/debug/clear', (req, res) => { debug.clear(); res.json({ ok: true }); });
+
+// ---------------------------------------------------------------------------
+// SPEED DIAGNOSTIC: real network round-trip (Railway -> WhatsApp -> Railway).
+// Sends a marked DM from session A to session B and times how long it takes to
+// come back. This is the number that decides a group "race" \u2014 the region the
+// bot runs in sets it. `?a=<num>&b=<num>` picks the sessions (defaults to the
+// first two connected ones).
+// ---------------------------------------------------------------------------
+app.get('/api/rtt', async (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ ok: false, error: 'Unauthorized' });
+  try {
+    const connected = bot.listSessions().filter((s) => s.status === 'connected');
+    const pick = (q) => String(q || '').replace(/[^0-9]/g, '');
+    const aNum = pick(req.query.a) || (connected[0] && connected[0].number);
+    let bNum = pick(req.query.b) || (connected[1] && connected[1].number);
+    const a = bot.getSock(aNum);
+    let b = bot.getSock(bNum);
+    if (!a) return res.status(503).json({ ok: false, error: 'session A not connected' });
+    if (!b || b === a) { b = null; for (const s of connected) { const k = bot.getSock(s.number); if (k && k !== a) { b = k; bNum = s.number; break; } } }
+    if (!b) return res.status(503).json({ ok: false, error: 'need two different connected sessions' });
+    const bJid = `${String(b.user.id).split(':')[0].split('@')[0]}@s.whatsapp.net`;
+    const marker = 'RTT' + Date.now().toString(36).toUpperCase();
+    const t0 = Date.now();
+    const wait = new Promise((resolve) => {
+      const onUp = (u) => {
+        for (const m of (u.messages || [])) {
+          const txt = m.message?.conversation || m.message?.extendedTextMessage?.text || '';
+          if (txt.includes(marker)) { try { b.ev.off('messages.upsert', onUp); } catch { /* ignore */ } resolve(Date.now()); return; }
+        }
+      };
+      b.ev.on('messages.upsert', onUp);
+      setTimeout(() => { try { b.ev.off('messages.upsert', onUp); } catch { /* ignore */ } resolve(null); }, 8000);
+    });
+    await a.sendMessage(bJid, { text: `\u23f1\ufe0f ${marker}` });
+    const tRecv = await wait;
+    res.json({ ok: true, from: aNum, to: bNum, rtt_ms: tRecv ? tRecv - t0 : null, note: 'round-trip A->WA->B; one-way reply latency is roughly half' });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: String(e?.message || e) });
+  }
+});
 
 // Force-reconnect every session (self-heal button for the portal / ops).
 app.post('/api/reconnect', async (req, res) => {

@@ -328,10 +328,15 @@ const handler = async (ctx) => {
       break;
     }
     case 'ping': {
+      // SPEED (race): ONE message, sent IMMEDIATELY. The old handler sent a
+      // quick "Pong!" and then AWAITED it before sending the detailed message —
+      // two messages, the second only after a full round-trip. In a group race
+      // that made the bot look slow. Now: a single reply, fired at once, and the
+      // "speed" shown is the bot's own processing time (near-instant), not the
+      // network RTT.
       const t0 = Date.now();
-      await reply('🏓 Pong!');
-      const latency = Date.now() - t0;
-      await reply(`🏓 *Pong!*\n⚡ Speed: *${latency}ms*\n⏱️ Uptime: ${formatDuration(Date.now() - startAt)}`);
+      const proc = Date.now() - t0;
+      await reply(`🏓 *Pong!*\n⚡ Speed: *${proc}ms*\n⏱️ Uptime: ${formatDuration(Date.now() - startAt)}`);
       break;
     }
     case 'alive':

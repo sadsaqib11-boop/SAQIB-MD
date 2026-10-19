@@ -42,6 +42,19 @@ const ok = (name, cond) => { console.log(`${cond ? '\u2705' : '\u274c'} ${name}`
   ok('.menu sends the bot picture BY URL (cacheable)', sends[0] && sends[0].kind === 'image-url');
   ok('.menu picture URL is versioned (?v=) so a changed pic is never stale', sends[0] && /[?&]v=/.test(String(sends[0].url)));
 
+  // 1b) .ping -> exactly ONE message (was two, the 2nd only after a round-trip)
+  {
+    const s2 = [];
+    const c2 = {
+      command: 'ping', arg: '', args: [], prefix: '.', from: '123@s.whatsapp.net',
+      senderNum: '923106762478', pushname: 'T', isOwner: true, m: { key: {} },
+      reply: async () => { s2.push('text'); return { key: { id: 'x' } }; },
+      send: async () => { s2.push('send'); return { key: { id: 'x' } }; },
+    };
+    await main.handler(c2);
+    ok('.ping sends exactly ONE message', s2.length === 1);
+  }
+
   // 2) socket options include mediaCache
   const botsrc = fs.readFileSync(path.join(__dirname, '..', 'lib', 'bot.js'), 'utf8');
   ok('socket options wire in mediaCache', /session\.mediaCache = new Map\(\)/.test(botsrc) && /^\s*mediaCache,\s*$/m.test(botsrc));
