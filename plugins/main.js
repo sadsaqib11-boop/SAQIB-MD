@@ -152,36 +152,23 @@ let _picCache = { key: null, buf: null };
 function resetBotPic() { _picCache = { key: null, buf: null }; }
 async function sendMenu(ctx, text) {
   const pic = path.resolve(config.BOT_PIC);
-  // WhatsApp's caption limit is 1024 UTF-8 BYTES (not chars). Stylized menu
-  // text (𝚂𝙰𝚀𝙸𝙱, │ ├ ─, emoji) costs 3-4 bytes/char, so a 670-char menu is
-  // ~1900 bytes — WhatsApp itself TRUNCATES an over-limit caption mid-list and
-  // the rest leaks into a second message. COMPACT first: drop heavy box
-  // decorations + live-status lines so the WHOLE menu fits one caption.
-  const compact = (s) => s
-    .split('\n')
-    .filter((l) => !/⌬?\s*(USER|RANK|RAM|UPTIME|TIME)\s*:/.test(l)) // live-status noise
-    .filter((l) => !/TIP|menuall/.test(l))                          // tip block
-    .join('\n')
-    .replace(/[│├└┌◇⌬「」─•]/g, '')
-    .replace(/[ \t]{2,}/g, ' ')
-    .replace(/\n{2,}/g, '\n')
-    .trim();
+  // WhatsApp caption cap ≈ 1024 UTF-8 BYTES. The compact categories menu is
+  // built to fit; this is just a byte-safe LAST-RESORT cut (never mid-line) for
+  // any caller that still overflows. Whole menu in ONE message — no split.
   try {
     if (fs.existsSync(pic)) {
       const st = fs.statSync(pic);
       const key = pic + '|' + st.mtimeMs + '|' + st.size;
       if (_picCache.key !== key) _picCache = { key, buf: readImageBuffer(pic) };
       let caption = text;
-      if (Buffer.byteLength(caption, 'utf8') > 1000) {
-        caption = compact(text);
-        // Last-resort byte-safe cut (never mid-line) if still over.
-        if (Buffer.byteLength(caption, 'utf8') > 1000) {
-          while (Buffer.byteLength(caption, 'utf8') > 1000 && caption.includes('\n')) {
-            caption = caption.slice(0, caption.lastIndexOf('\n')).trim();
-          }
-        }
+      while (Buffer.byteLength(caption, 'utf8') > 1000 && caption.includes('\n')) {
+        caption = caption.slice(0, caption.lastIndexOf('\n')).trim();
       }
       await ctx.send(ctx.from, { image: _picCache.buf, caption }, { quoted: ctx.m });
+      if (caption.length < text.length) {
+        const rest = text.slice(caption.length).trim();
+        if (rest) await ctx.reply(rest);
+      }
       return;
     }
   } catch { /* fall back to text */ }
@@ -189,6 +176,26 @@ async function sendMenu(ctx, text) {
 }
 
 /* -------------------------------- handler -------------------------------- */
+// COMPACT MENU (user rule, 2026-10-19): the categories view must fit ONE
+// picture message (WhatsApp caption cap ≈ 1024 UTF-8 bytes) while still showing
+// the tips. Built straight from the registry — no heavy box decorations.
+function compactMenuText(prefix, live) {
+  const cats = [...categories().entries()];
+  const total = cats.reduce((n, c) => n + c[1].length, 0);
+  const lines = [];
+  lines.push(`🕌 *${config.BOT_NAME}* ⚡ v${config.BOT_VERSION}`);
+  lines.push(`👤 ${live.user} · ${live.rank} · 🟢 *${String(config.MODE).toUpperCase()}*`);
+  lines.push(`📦 *${total} commands* · prefix *${prefix}*`);
+  lines.push('');
+  const cells = cats.map(([cat, cmds]) => `${cat} ${cmds.length}`);
+  for (let i = 0; i < cells.length; i += 3) lines.push(cells.slice(i, i + 3).join('  ·  '));
+  lines.push('');
+  lines.push(`💡 ${prefix}menu <category> → us ke commands`);
+  lines.push(`💡 ${prefix}menuall → sab ${total} commands`);
+  lines.push(`✨ _${config.BOT_NAME} — by ${config.OWNER_NAME}_`);
+  return lines.join('\n');
+}
+
 const handler = async (ctx) => {
   const { command, reply } = ctx;
   // Every user sees the menu in THEIR OWN chosen style (falls back to the
@@ -199,7 +206,7 @@ const handler = async (ctx) => {
     case 'menu':
     case 'help': {
       const q = ctx.arg ? ctx.arg.trim() : '';
-      if (!q) return sendMenu(ctx, categoriesText(style, prefix, liveMenuData(ctx)));
+      if (!q) return sendMenu(ctx, compactMenuText(prefix, liveMenuData(ctx)));
       const cat = findCategory(q);
       if (!cat) {
         return reply(`❌ Category *"${q}"* was not found.\n\n💡 Type ${prefix}menu to see all categories.`);

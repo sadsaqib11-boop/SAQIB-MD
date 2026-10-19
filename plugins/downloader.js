@@ -165,56 +165,30 @@ const fmtDur = (s) => (s ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).p
 async function askSongSearch(ctx, query) {
   const q = String(query).trim();
   if (isUrl(q)) return askDownload(ctx, q);
-  // Search CACHE (1h): repeat `.song` of the same query = INSTANT list.
+  // Search CACHE (1h): repeat `.song` of the same query = INSTANT result.
   const ckey = `songq|${q.toLowerCase()}`;
   let list = srcCache.get(ckey);
   if (!list) {
-    // searchRankedRace: the HTTP search (~0.5s) RACES the yt-dlp search (~1s)
-    // and the first to answer wins, then it is relevance-ranked so the real
-    // track beats covers/remixes. Up to 8 results = a fuller "related" list.
-    try { list = (await ytdlp.searchRankedRace(q, 8)).slice(0, 8); } catch { /* ignore */ }
+    // searchRankedRace: HTTP search (~0.5s) races yt-dlp search (~1s); the
+    // winner is relevance-ranked so the real track beats covers/remixes.
+    try { list = (await ytdlp.searchRankedRace(q, 5)).slice(0, 5); } catch { /* ignore */ }
     if (list && list.length) srcCache.set(ckey, list);
   }
   if (!list || !list.length) return askDownload(ctx, q);
-  interactions.set(ctx.from, ctx.sender, 'choice', {
-    options: list.map((r) => ({
-      run: async (c) => {
-        // STEP 2: song chosen — now a SHORT audio/video menu (1 = Audio,
-        // 2 = Video), exactly the "pehle jaisa" flow Saqib wants.
-        interactions.set(c.from, c.sender, 'choice', {
-          options: [
-            { run: async (c2) => { try { await ytSearchDownload(c2, r.url, true); } catch (e) { await c2.reply('\u274c ' + (e.message || 'Download fail.')); } } },
-            { run: async (c2) => { try { await ytSearchDownload(c2, r.url, false); } catch (e) { await c2.reply('\u274c ' + (e.message || 'Download fail.')); } } },
-          ],
-        });
-        await c.reply('🎵 Reply *1* = Audio\n🎬 Reply *2* = Video');
-      },
-    })),
-  });
-  // SHORT text: ek line per result (title + duration only) — no channel/views
-  // clutter. The full meta was making the picker a wall of text.
-  const lines = list.map((r, i) =>
-    `${i + 1}\ufe0f\u20e3 *${String(r.title).slice(0, 45)}* \u00b7 ${fmtDur(r.duration)}`,
-  ).join('\n');
-  const caption =
-    `\ud83c\udfa7 *${q}*\n\n${lines}\n\n_Number reply karo_`;
-  // PREMIUM: show the top result's thumbnail with the list as the caption.
-  // The thumbnail is fetched HERE with a short timeout so it can never stall
-  // the reply; if it fails, we fall back to a plain text list.
-  const topId = extractVideoId(list[0] && list[0].url);
-  if (topId) {
-    try {
-      const tr = await fetch(`https://i.ytimg.com/vi/${topId}/mqdefault.jpg`, { signal: AbortSignal.timeout(2500) });
-      if (tr.ok) {
-        const buf = Buffer.from(await tr.arrayBuffer());
-        if (buf.length > 500) {
-          await ctx.send(ctx.from, { image: buf, caption }, { quoted: ctx.m });
-          return;
-        }
-      }
-    } catch { /* fall back to text */ }
+  // AUTO-PICK (user rule, 2026-10-19): NO option wall. The bot itself picks
+  // the best-ranked hit — the flow that made .tts feel instant. A query that
+  // starts with "video"/"v " sends video instead of audio.
+  const wantVideo = /^(v|video)\b/i.test(q);
+  const best = list[0];
+  try {
+    await ytSearchDownload(ctx, best.url, !wantVideo);
+  } catch (e) {
+    // best failed? try the runner-up once instead of dying
+    const alt = list.find((r) => r.url !== best.url);
+    if (!alt) return ctx.reply('\u274c ' + (e.message || 'Download fail.'));
+    try { await ytSearchDownload(ctx, alt.url, !wantVideo); }
+    catch (e2) { await ctx.reply('\u274c ' + (e2.message || 'Download fail.')); }
   }
-  return ctx.reply(caption);
 }
 
 /* --------------------------- TikTok search helpers --------------------------- */
