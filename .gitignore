@@ -38,3 +38,6 @@ saqib-prefixes.json
 saqib-reacts.json
 saqib-langs.json
 saqib-menustyles.json
+
+# runtime referral data (volume-backed)
+saqib-referrals.json

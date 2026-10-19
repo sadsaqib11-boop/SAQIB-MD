@@ -132,9 +132,17 @@ app.get('/api/groups', async (req, res) => {
       if (!sock) continue;
       let groups = [];
       try { groups = await sock.groupFetchAllParticipating(); } catch (e) { out.push({ session: s.number, error: e?.message || String(e) }); continue; }
-      const meId = String(sock.user?.id || '').split(':')[0].split('@')[0];
+      const norm = (j) => String(j || '').split('@')[0].split(':')[0].replace(/[^0-9]/g, '');
+      const meIds = new Set([sock.user?.id, sock.user?.lid, sock.user?.phoneNumber].map(norm).filter(Boolean));
       for (const [jid, meta] of Object.entries(groups || {})) {
-        const me = (meta.participants || []).find((p) => String(p.id || '').split('@')[0].split(':')[0] === meId);
+        // Match the bot against EVERY id form a participant can carry (id / lid /
+        // phoneNumber / jid). The old `p.id === meId` compare silently reported
+        // botAdmin=false whenever WhatsApp stored the bot under a LID — the exact
+        // "I'm admin but the bot keeps saying make me admin" confusion.
+        const me = (meta.participants || []).find((p) => {
+          const ids = [p.id, p.lid, p.phoneNumber, p.jid].map(norm).filter(Boolean);
+          return ids.some((id) => meIds.has(id));
+        });
         out.push({
           session: s.number, jid, name: meta.subject || '', size: (meta.participants || []).length,
           announceOnly: !!meta.announce, botAdmin: !!(me && (me.admin === 'admin' || me.admin === 'superadmin')),
