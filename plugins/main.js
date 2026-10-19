@@ -176,9 +176,11 @@ async function sendMenu(ctx, text, opts = {}) {
       const key = pic + '|' + st.mtimeMs + '|' + st.size;
       if (_picCache.key !== key) _picCache = { key, buf: readImageBuffer(pic) };
       // SPEED: send by URL so the upload is cached (mediaCache) and reused on
-      // every later menu. Fall back to the raw buffer if the URL send fails.
+      // every later menu. The `?v=<mtime>` query makes the URL change whenever
+      // the picture changes (`.botpic`), so the cache never serves a stale image.
+      // Fall back to the raw buffer if the URL send fails.
       try {
-        return await ctx.send(ctx.from, { image: { url: BOTPIC_URL }, caption: text }, { quoted: ctx.m });
+        return await ctx.send(ctx.from, { image: { url: `${BOTPIC_URL}?v=${Math.round(st.mtimeMs)}` }, caption: text }, { quoted: ctx.m });
       } catch { /* URL send failed \u2014 fall through to the buffer */ }
       return await ctx.send(ctx.from, { image: _picCache.buf, caption: text }, { quoted: ctx.m });
     }

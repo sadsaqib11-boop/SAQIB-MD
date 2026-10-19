@@ -34,12 +34,13 @@ const ok = (name, cond) => { console.log(`${cond ? '\u2705' : '\u274c'} ${name}`
     senderNum: '923106762478', pushname: 'T', isOwner: true, m: { key: {} },
     reply: async () => { sends.push({ kind: 'text' }); return { key: { id: 'x' } }; },
     send: async (jid, content) => {
-      sends.push({ kind: content.image ? (content.image.url ? 'image-url' : 'image-buffer') : 'text' });
+      sends.push({ kind: content.image ? (content.image.url ? 'image-url' : 'image-buffer') : 'text', url: content.image && content.image.url });
       return { key: { id: 'x' } };
     },
   };
   await main.handler(ctx);
   ok('.menu sends the bot picture BY URL (cacheable)', sends[0] && sends[0].kind === 'image-url');
+  ok('.menu picture URL is versioned (?v=) so a changed pic is never stale', sends[0] && /[?&]v=/.test(String(sends[0].url)));
 
   // 2) socket options include mediaCache
   const botsrc = fs.readFileSync(path.join(__dirname, '..', 'lib', 'bot.js'), 'utf8');
