@@ -731,7 +731,7 @@ const handler = async (ctx) => {
 
     if (!wantLink) {
       if (!ytdlp.available()) return reply('❌ The downloader engine (yt-dlp) is not available.');
-      const cached = dlcache.get('movie', `${query}@720`);
+      const cached = dlcache.get('movie', `${query}@1080`);
       if (cached) {
         await reply(`⚡ *${query}* — already downloaded, sending instantly…`);
         await sendMovieDoc(ctx, cached, query, false);
@@ -740,8 +740,8 @@ const handler = async (ctx) => {
       await reply(`🎬 *${query}* — downloading the full movie to send you…\n⏳ _Big film = thoda wait. Sirf link chahiye? → ${config.PREFIX}movie link ${query}_`);
       try {
         const file = await Promise.race([
-          ytdlp.downloadMovie(query, { maxHeight: 720 }),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (12min)')), 720000)),
+          ytdlp.downloadMovie(query, { maxHeight: 1080 }),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (30min)')), 1800000)),
         ]);
         await sendMovieDoc(ctx, file, query, false);
       } catch (e) {
@@ -780,11 +780,11 @@ const handler = async (ctx) => {
       if (!base) {
         // No public URL configured → fall back to downloading and sending.
         await reply(`🎬 *${title}* — server link not configured, downloading the file instead…`);
-        const cached = dlcache.get('movie', `${query}@720`);
+        const cached = dlcache.get('movie', `${query}@1080`);
         if (cached) { await sendMovieDoc(ctx, cached, query, false); return; }
         const file = await Promise.race([
-          ytdlp.downloadMovie(query, { maxHeight: 720 }),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (12min)')), 720000)),
+          ytdlp.downloadMovie(query, { maxHeight: 1080 }),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('download timeout (30min)')), 1800000)),
         ]);
         await sendMovieDoc(ctx, file, title, false);
         return;
